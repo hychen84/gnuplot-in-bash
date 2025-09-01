@@ -1,4 +1,4 @@
-# A quick start for using gnuplot for in-terminal plotting
+# A quick start for using gnuplot/me
 
 This is a bash script to use gnuplot, to output a simple graph and output to a PDF file.
 
