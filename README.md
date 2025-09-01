@@ -1,6 +1,12 @@
+# Screen-Graph
+
 A quick start for using gnuplot for in-terminal plotting
 
+This is a bash script to use gnuplot, to output a simple graph and output to a PDF file.
+
 <img width="480" height="898" alt="image" src="https://github.com/user-attachments/assets/40603705-d29e-4383-bb8b-9a3f57c24209" />
+
+## Usage
 
 Change Space:
 
