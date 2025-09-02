@@ -1108,8 +1108,8 @@ function gnuplot_gpval() {
                 Graph[Nx][Ny] = $16; Total_graph += $16
 				gsub(/0+$/,"",$18); gsub(/\.$/,"",$18); Xsize[Nx][Ny] = $18; XSnum[$18]++
 				gsub(/0+$/,"",$20); gsub(/\.$/,"",$20); Ysize[Nx][Ny] = $20; YSnum[$20]++
-				dy[Nx][Ny] = $22 ~ /\^/ ? -0.3 : 0    # Xlabel
-				dx[Nx][Ny] = $24 ~ /_/  ? -0.3 : 0    # Ylabel
+				dy[Nx][Ny] = $22 ~ /\^/ ? -0.5 : 0    # Xlabel
+				dx[Nx][Ny] = $24 ~ /_/  ? -0.5 : 0    # Ylabel
                 Xtics[Nx][Ny] = $28
                 Ytics[Nx][Ny] = $30
                 Ztics[Nx][Ny] = $32
