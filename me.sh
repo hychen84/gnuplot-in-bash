@@ -2086,7 +2086,7 @@ Font:     me -font cm|arial|times<<,13>>
 Merge:    me -m0|-ma|-mc|-mf
 Layout:   me -N<<number>>|-Z<<number>>
 Space:    me -space 10,10
-──────<-- combine with figure -a -->─────────────
+────<-- available with choosing figure -a -->────
 Figure:   me -a|-b|-c|···
 Datafile: me xxx.txt yyy.txt
 X-column: me -u '1:c'
@@ -2102,10 +2102,10 @@ X-tics:   me -xt 1
 Y-label:  me -yl '{s//r}({//E})'
 Y-range:  me -yr 0.1:0.4
 Y-tics:   me -yt 0.1
-──────<-- combine with figure -a -->─────────────
+────<-- available with choosing figure -a -->────
 Key box:  me -kb -0.5<<|on|off>>
 Position: me -kp <<position>>
-──────<-- combine with line -a1 -->──────────────
+────<-- available with choosing line -a1 -->─────
 Line:     me -a1|-a2|-a3|···
 Key:      me -K <<text>>|vertical|horizontal
 Label:    me -L <<text>>
@@ -2127,10 +2127,10 @@ Line width:  me -lw 2
 Point type:  me -pt 7
 Point size:  me -ps 0.5
 Line color:  me -lc 6|palette
-──────<-- combine with line -a1 -->──────────────
+────<-- available with choosing line -a1 -->─────
 Swap:        me -swap <<a1>><<a2>>
 Move:        me -move <<a1>><<a2>>
-──────<-- combine with figure -a -->─────────────
+────<-- available with choosing figure -a -->────
 Graph:       me -graph 2d|3d|map
 Z-label:     me -zl '{s/D}{//E}'
 Z-range:     me -zr 0.1:0.4
@@ -2138,7 +2138,7 @@ Z-tics:      me -zt 0.1
 View:        me -view rot-x,rot-z
 Pm3d:        me -pm3d on|off<<|colormap>>
 Axis3d:      me -axis3d on|off
-──────<-- only used as graph=map -->─────────────
+────<-- only used as graph=map -->───────────────
 Color-box:   me -cb vertical|horizontal
 Color-range: me -cr 0.1:0.4
 Color-tics:  me -ct 1
