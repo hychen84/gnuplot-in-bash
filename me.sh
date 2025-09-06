@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.409 released on 2025-09-06 (since 2007/12/25)
+# ME build 7.5.410 released on 2025-09-07 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1114,6 +1114,7 @@ function gnuplot_gpval() {
 				gsub(/0+$/,"",$20); gsub(/\.$/,"",$20); Ysize[x][y] = $20; YSnum[$20]++
 				dy[x][y] = $22 ~ /\^[^.]/ ? -0.5 : 0    # Xlabel
 				dx[x][y] = $24 ~ /_/  ? -0.5 : 0    # Ylabel
+                Ylabel[x][y] = $24
                 Xtics[x][y] = $28
                 Ytics[x][y] = $30
                 Ztics[x][y] = $32
@@ -1176,6 +1177,7 @@ function gnuplot_gpval() {
 					lxt[i] = ticlength(Xmax[i][j], Xmin[i][j], "single")
 					lyt[i] = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j])
 					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j]-2, "["i","j",xlp]="0.25+dy[i][j]
+					YL = YL Ylabel[i][j]
 				} else if (Graph[i][j]) {
 				print "--0--"
 					xsizemax0 = xsizemax0 < Xsize[i][j] ? Xsize[i][j] : xsizemax0
@@ -1184,6 +1186,7 @@ function gnuplot_gpval() {
 					lyt[i] = ticlength(DYmax[i][j], DYmin[i][j], Ytics[i][j])
 					lct[i] = ticlength(Cmax[i][j],  Cmin[i][j],  Ctics[i][j])
 					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",ylp]="lyt[i]-2, "["i","j",xlp]="0.25+dy[i][j]
+					YL = YL Ylabel[i][j]
 				}
                 if (i > 0) {
                     if (Avg_graph == 3) {
@@ -1200,6 +1203,7 @@ function gnuplot_gpval() {
 			ysizemax = ysizemax3
 		} else {
 			margin = margin < lyt[0]-lxt[Nx]*0.5 ? lyt[0]-lxt[Nx]*0.5 : margin
+			margin = YL == "" ? margin + 1.5 : margin + 3
 			if (Avg_graph == 0) {
 				xsizemax = xsizemax0
 				ysizemax = ysizemax0
@@ -1208,7 +1212,7 @@ function gnuplot_gpval() {
 				ysizemax = ysizemax2			
 			}
 		}
-		print "[hspace]="hspace+3, "[margin]="margin+2, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
+		print "[hspace]="hspace+3, "[margin]="margin, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
 	}' .me/gpval)
 }
 
