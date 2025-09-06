@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.404 released on 2025-08-31 (since 2007/12/25)
+# ME build 7.5.406 released on 2025-09-06 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -104,31 +104,31 @@ function print_parameters() {
         [[ ${Label[$i]} > 0 ]] && Lstr[$i]="L" || Lstr[$i]="\"\""
     done
     awk -v align=${Align[0]} -v xsite="${Xsite[*]}" -v ysite="${Ysite[*]}" -v lstr="${Lstr[*]}" '
-    function separator(i,x) {
-        if (i < x) {
+    function separator(i) {
+        if (i < Nx) {
             if (align == "N") {printf "│"} else {printf " "}
         }
     }
 	function separate_line() {
 		if (align == "N") {
-			for (i=0; i<=x; i++) {
+			for (i=0; i<=Nx; i++) {
 				printf "   \033[2m"
 				for (k=0; k<L[i]+3; k++) printf "─"
-				if (i < x) printf "  \033[0m│"
+				if (i < Nx) printf "  \033[0m│"
 			}
 			printf "\033[0m\n"
 		} else {
-			for (k=0; k<=h_line+x*3-1; k++) printf "─"
+			for (k=0; k<=h_line+Nx*3-1; k++) printf "─"
 			printf "\n"
 		}
 	}
 	function show_info() {
 		separate_line()
-		for (i=0; i<=x; i++) {
+		for (i=0; i<=Nx; i++) {
             split(A[i][j][1],c," ")
 			w25 = L[i] - length(c[25] c[26] c[27]) - 11
 			printf "    【%s】 Size=（%s,%s）%*s",c[25],c[26],c[27],w25," "
-			separator(i,x)
+			separator(i)
 		}
 		printf "\n"
 	}
@@ -137,7 +137,8 @@ function print_parameters() {
         x = Xsite[$1+1]
         y = Ysite[$1+1]
         A[x][y][$2] = $0
-        N[y] = N[y] > $2 ? N[y] : $2
+		Lx[y] = x > Lx[y] ? x : Lx[y]
+        Ly[y] = Ly[y] > $2 ? Ly[y] : $2
         L_cap[x] = L_cap[x] > length($3) ? L_cap[x] : length($3)
 		L_data[x] = L_data[x] > length($5 $6) ? L_data[x] : length($5 $6)
         switch($7) {
@@ -168,14 +169,16 @@ function print_parameters() {
         if (Xsize != $26) {Xsize = $26; show_on ++}
         if (Ysize != $27) {Ysize = $27; show_on ++}
 		if ($13 != "\"\"") {Kstr[$1] = "K"}
+		Nx = x > Nx ? x : Nx
+		Ny = y > Ny ? y : Ny
     }
     END {
-        for (j=0; j<=y; j++) {
+        for (j=0; j<=Ny; j++) {
 			Graph = 0
-            for (l=1; l<=N[j]; l++) {
+            for (l=1; l<=Ly[j]; l++) {
                 if (l == 1) {
 					h_line = 0
-                    for (i=0; i<=x; i++) {
+                    for (i=0; i<=Lx[j]; i++) {
                         split(A[i][j][1],c," ")
                         if (Lstr[c[1]+1] == "L" || Kstr[c[1]] == "K") {
 							gsub("\"","",Lstr[c[1]+1])
@@ -192,12 +195,12 @@ function print_parameters() {
 							w3 = d[2] == "" ? w3-1 : w3
 							printf "\033[2m%c: %s \033[0m%s%*s\033[90m%4s\033[0m ",c[1]+97,d[1],d[2],w3," ",LK
                         }
-                        separator(i,x)
+                        separator(i)
                         h_line += L[i] + 6
                     }
                     printf "\n"
                 }
-                for (i=0; i<=x; i++) {
+                for (i=0; i<=Lx[j]; i++) {
                     split(A[i][j][l],c," ")
 					gsub("§","$",c[6])
                     gsub("‖","||",c[6])
@@ -231,34 +234,34 @@ function print_parameters() {
                     } else {
                         printf "%*s",L[i]+8," "
                     }
-                    separator(i,x)
+                    separator(i)
                 }
                 printf "\n"
 			}
-			for (i=0; i<=x; i++) {
+			for (i=0; i<=Lx[j]; i++) {
 				split(A[i][j][1],c," ")
 				gsub("¶","",c[14])
 				w15 = L_range[i][j] - length(c[15]) + 1
 				w14 = L[i] - (L_range[i][j]+6) - (length(c[14])+5) + 1
 				printf "    xr=［%s］,%*sxl=\"%s\"%*s",c[15], w15," ",c[14], w14," "
-				separator(i,x)
+				separator(i)
 			}
 			printf "\n"
-			for (i=0; i<=x; i++) {
+			for (i=0; i<=Lx[j]; i++) {
 				split(A[i][j][1],c," ")
 				gsub("¶","",c[17])
 				w18 = L_range[i][j] - length(c[18]) + 1
 				w17 = L[i] - (L_range[i][j]+6) - (length(c[17])+5) + 1
 				printf "    yr=［%s］,%*syl=\"%s\"%*s",c[18], w18," ",c[17], w17," "
-				separator(i,x)
+				separator(i)
 			}
 			printf "\n"
-			for (i=0; i<=x; i++) {
+			for (i=0; i<=Lx[j]; i++) {
 				split(A[i][j][1],c," ")
 				if (c[4] == "splot") {Graph ++}
 			}
 			if (Graph > 0) {
-				for (i=0; i<=x; i++) {
+				for (i=0; i<=Lx[j]; i++) {
 					split(A[i][j][1],c," ")
 					gsub("¶","",c[20])
 					w21 = L_range[i][j] - length(c[21]) + 1
@@ -266,13 +269,13 @@ function print_parameters() {
 					if (c[25] == "map")     {printf "    cr=［%s］%*s",c[23],L[i]-(L_range[i][j]+5)+2," "}
 					else if (c[25] == "3d") {printf "    zr=［%s］,%*szl=\"%s\"%*s",c[21], w21," ",c[20], w20," "}
 					else {printf "%*s",L[i]+8," "}
-					separator(i,x)
+					separator(i)
 				}
 				printf "\n"
 			}
-            if (j < y) {
+            if (j < Ny) {
                 if (align == "N" && show_on == 3) {
-                    for (i=0; i<x; i++) printf "%*s│", L[i]+8, " "
+                    for (i=0; i<Nx; i++) printf "%*s│", L[i]+8, " "
                     printf "\n"
                 } else {
                     if (show_on > 3) show_info()
@@ -282,7 +285,7 @@ function print_parameters() {
 		}
 		if (show_on > 3) {j--; show_info()}
         if (h_line < 86) h_line = 86
-		for (k=0; k<=h_line+x*3-1; k++) printf "─"
+		for (k=0; k<=h_line+Nx*3-1; k++) printf "─"
 		printf "\n"
     }' .me/table
 	IFS=""
@@ -849,7 +852,8 @@ function next() {
 #<-- Parameters : Table -->
 for ((n=0; n<${#Arg[*]}; n++)); do
 	if [ -e ${Arg[$n]} ]; then
-		[[ ${Arg[$n]#*.} == "gp" || ${Arg[$n]#*.} == "pdf" || ${Arg[$n]#*.} == "eps" || ${Arg[$n]#*.} == "zip" ]] && continue
+		Ex=${Arg[$n]##*.}
+		[[ $Ex == "gp" || $Ex == "pdf" || $Ex == "PDF" || $Ex == "eps" || $Ex == "zip" ]] && continue
         datafile+=(${Arg[$n]});next;continue
 	elif [ "${Arg[$n]//[:,0-9]/}" == "[]" ]; then
 		get_column ${Arg[$n]};next;continue
@@ -1674,14 +1678,25 @@ function xgnuplot() {
 	gnuplot $Output.gp
 }
 
-function ylprt() {
+function xeps() {
 	if [[ $1 == "" ]]; then
-		df=$(grep "\" u" .me/gp | sed -e 's/.*\"\(.*\)\" u.*/\1/' | uniq)
-		zip -r $Output.zip .me $df
+		A=${Output:-fig}; B="pdf"
 	else
-		df=$(grep "\" u" ${1##.*}.gp | sed -e 's/.*\"\(.*\)\" u.*/\1/' | uniq)
-		zip -r $Output.zip .me ${1##.*}.gp ${1##.*}.pdf $df
+		A=${1%.*};B=${1##*.}
 	fi
+	pdftops $A.$B .me/ps
+	ps2eps -f .me/ps
+	mv .me/ps.eps $A.eps
+}
+
+function xzip() {
+	if [[ $1 == "" ]]; then
+		A=".me/gp";	B=""
+	else
+		A=${1##.*}.gp;	B="${1##.*}.gp ${1##.*}.pdf"
+	fi
+	df=$(grep "\" u" $A | sed -e 's/.*\"\(.*\)\" u.*/\1/' | uniq)
+	zip -r $Output.zip .me $B $df
 }
 
 #<-- Drop 2nd-level parameters -->
@@ -1708,8 +1723,8 @@ for ((n=0; n<${#Arg[*]}; n++)); do
 	fi
 	case ${Arg[$n]} in
 		-gp)	xgnuplot;next;continue;;
-		-eps)	pdftops ${Output:-fig}.pdf .me/ps;ps2eps -f .me/ps;mv .me/ps.eps ${Output:-fig}.eps;next;continue;;
-		-eylprt)ylprt ${Arg[$n+1]};next;continue;;
+		-eps)	xeps ${Arg[$n+1]};next;continue;;
+		-export)xzip ${Arg[$n+1]};next;continue;;
 		-new)	rm .me/.var .me/table .me/gp 2> /dev/null;exit;;
 		-view)	Viewer="${Arg[$n+1]}";next 2;continue;;
 	esac
@@ -2086,26 +2101,26 @@ Font:     me -font cm|arial|times<<,13>>
 Merge:    me -m0|-ma|-mc|-mf
 Layout:   me -N<<number>>|-Z<<number>>
 Space:    me -space 10,10
-────<-- available with choosing figure -a -->────
+────<-- combinable with choosing figure -a -->───
 Figure:   me -a|-b|-c|···
 Datafile: me xxx.txt yyy.txt
 X-column: me -u '1:c'
-Y-column: me [2:8]
+Y-column: me [2:8]|[2,3,7]
+────<-- combinable with choosing figure -a -->───
 Size:     me -size 200,134
 Offset:   me -offset 10,20
 Index:    me -I '(A)'|on|off
 Caption:  me -ic '{s/D}{//E}..=..0.5'
 Position: me -ip <<position>>
+Key box:  me -kb -0.5<<|on|off>>
+Position: me -kp <<position>>
 X-label:  me -xl '{//E}'
 X-range:  me -xr -pi:pi
 X-tics:   me -xt 1
 Y-label:  me -yl '{s//r}({//E})'
 Y-range:  me -yr 0.1:0.4
 Y-tics:   me -yt 0.1
-────<-- available with choosing figure -a -->────
-Key box:  me -kb -0.5<<|on|off>>
-Position: me -kp <<position>>
-────<-- available with choosing line -a1 -->─────
+────<-- combinable with choosing line -a1 -->────
 Line:     me -a1|-a2|-a3|···
 Key:      me -K <<text>>|vertical|horizontal
 Label:    me -L <<text>>
@@ -2127,10 +2142,10 @@ Line width:  me -lw 2
 Point type:  me -pt 7
 Point size:  me -ps 0.5
 Line color:  me -lc 6|palette
-────<-- available with choosing line -a1 -->─────
+────<-- combinable with choosing line -a1 -->────
 Swap:        me -swap <<a1>><<a2>>
 Move:        me -move <<a1>><<a2>>
-────<-- available with choosing figure -a -->────
+────<-- combinable with choosing figure -a -->───
 Graph:       me -graph 2d|3d|map
 Z-label:     me -zl '{s/D}{//E}'
 Z-range:     me -zr 0.1:0.4
@@ -2138,14 +2153,14 @@ Z-tics:      me -zt 0.1
 View:        me -view rot-x,rot-z
 Pm3d:        me -pm3d on|off<<|colormap>>
 Axis3d:      me -axis3d on|off
-────<-- only used as graph=map -->───────────────
+────<-- used only as graph=map -->───────────────
 Color-box:   me -cb vertical|horizontal
 Color-range: me -cr 0.1:0.4
 Color-tics:  me -ct 1
 ─────────────────────────────────────────────────
 Tile:        me -vtile|-htile <<space>><<files>>
 GnuPlot:     me -gp
-EPS file:    me -eps
+EPS file:    me -eps <<file.pdf>>
 Export:      me -export <<filename>>
 Output:      me -O <<filename>>
              me -new|-update" > .me/.right
