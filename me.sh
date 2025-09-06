@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.408 released on 2025-09-06 (since 2007/12/25)
+# ME build 7.5.409 released on 2025-09-06 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1112,7 +1112,7 @@ function gnuplot_gpval() {
                 Graph[x][y] = $16; Total_graph += $16
 				gsub(/0+$/,"",$18); gsub(/\.$/,"",$18); Xsize[x][y] = $18; XSnum[$18]++
 				gsub(/0+$/,"",$20); gsub(/\.$/,"",$20); Ysize[x][y] = $20; YSnum[$20]++
-				dy[x][y] = $22 ~ /\^/ ? -0.5 : 0    # Xlabel
+				dy[x][y] = $22 ~ /\^[^.]/ ? -0.5 : 0    # Xlabel
 				dx[x][y] = $24 ~ /_/  ? -0.5 : 0    # Ylabel
                 Xtics[x][y] = $28
                 Ytics[x][y] = $30
@@ -1208,7 +1208,7 @@ function gnuplot_gpval() {
 				ysizemax = ysizemax2			
 			}
 		}
-		print "[hspace]="hspace+3, "[margin]="margin, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
+		print "[hspace]="hspace+3, "[margin]="margin+2, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
 	}' .me/gpval)
 }
 
