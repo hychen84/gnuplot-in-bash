@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.407 released on 2025-09-06 (since 2007/12/25)
+# ME build 7.5.408 released on 2025-09-06 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1199,7 +1199,7 @@ function gnuplot_gpval() {
 			xsizemax = xsizemax3
 			ysizemax = ysizemax3
 		} else {
-			margin = margin < lyt[0]-lxt[Nx]*0.5 ? lyt[0]-lxt[Nx]*0.5 : margin
+			margin = margin < lyt[0]+lxt[Nx]*0.5 ? lyt[0]+lxt[Nx]*0.5 : margin
 			if (Avg_graph == 0) {
 				xsizemax = xsizemax0
 				ysizemax = ysizemax0
@@ -1208,7 +1208,7 @@ function gnuplot_gpval() {
 				ysizemax = ysizemax2			
 			}
 		}
-		print "[hspace]="hspace+3, "[margin]="margin+1, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
+		print "[hspace]="hspace+3, "[margin]="margin-3, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
 	}' .me/gpval)
 }
 
@@ -1218,7 +1218,7 @@ function gpscript_head() {
 	[[ $Hspace == "*" ]] && hspace=${GPV[hspace]} || hspace=$Hspace
 	[[ $Vspace == "*" ]] && vspace=6 || vspace=$Vspace
 	[[ $Hspace == "*" || $Vspace == "*" ]] && echo "    Space=（$hspace,$vspace）"
-	xspace=$(awk "BEGIN {printf \"%.2f\", ($hspace*(${Layout[0]}-1)-${GPV[margin]})*$Digitscale}")
+	xspace=$(awk "BEGIN {printf \"%.2f\", ($hspace*(${Layout[0]}-1)+${GPV[margin]})*$Digitscale}")
 	yspace=$(awk "BEGIN {printf \"%.2f\",  $vspace*(${Layout[0]}-1)+3}")
 	echo "#<-- Figure head -->
 X_ORIGIN = 0.5*($Wpt - ${GPV[xsizemax]}*${Layout[0]} - $Fontsize*($xspace))/$Wpt.0
