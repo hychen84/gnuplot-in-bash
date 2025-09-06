@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.406 released on 2025-09-06 (since 2007/12/25)
+# ME build 7.5.407 released on 2025-09-06 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1107,53 +1107,55 @@ function gnuplot_gpval() {
 		gsub(/\.0$/,"",$3)
 		switch ($1) {
 			case "GPVAL_LAST_PLOT":
-				Nx = $12
-				Ny = $14
-                Graph[Nx][Ny] = $16; Total_graph += $16
-				gsub(/0+$/,"",$18); gsub(/\.$/,"",$18); Xsize[Nx][Ny] = $18; XSnum[$18]++
-				gsub(/0+$/,"",$20); gsub(/\.$/,"",$20); Ysize[Nx][Ny] = $20; YSnum[$20]++
-				dy[Nx][Ny] = $22 ~ /\^/ ? -0.5 : 0    # Xlabel
-				dx[Nx][Ny] = $24 ~ /_/  ? -0.5 : 0    # Ylabel
-                Xtics[Nx][Ny] = $28
-                Ytics[Nx][Ny] = $30
-                Ztics[Nx][Ny] = $32
-                Ctics[Nx][Ny] = $34
+				x = $12
+				y = $14
+                Graph[x][y] = $16; Total_graph += $16
+				gsub(/0+$/,"",$18); gsub(/\.$/,"",$18); Xsize[x][y] = $18; XSnum[$18]++
+				gsub(/0+$/,"",$20); gsub(/\.$/,"",$20); Ysize[x][y] = $20; YSnum[$20]++
+				dy[x][y] = $22 ~ /\^/ ? -0.5 : 0    # Xlabel
+				dx[x][y] = $24 ~ /_/  ? -0.5 : 0    # Ylabel
+                Xtics[x][y] = $28
+                Ytics[x][y] = $30
+                Ztics[x][y] = $32
+                Ctics[x][y] = $34
+				Nx = x > Nx ? x : Nx
+				Ny = y > Ny ? y : Ny
 				break
 			case "GPVAL_X_MIN":
-				Xmin[Nx][Ny] = $3
+				Xmin[x][y] = $3
 				break
 			case "GPVAL_X_MAX":
-				Xmax[Nx][Ny] = $3
+				Xmax[x][y] = $3
 				break
 			case "GPVAL_DATA_X_MIN":
-				DXmin[Nx][Ny] = $3
+				DXmin[x][y] = $3
 				break
 			case "GPVAL_DATA_X_MAX":
-				DXmax[Nx][Ny] = $3
+				DXmax[x][y] = $3
 				break
 			case "GPVAL_Y_MIN":
-				Ymin[Nx][Ny] = $3
+				Ymin[x][y] = $3
 				break
 			case "GPVAL_Y_MAX":
-				Ymax[Nx][Ny] = $3
+				Ymax[x][y] = $3
 				break
 			case "GPVAL_DATA_Y_MIN":
-				DYmin[Nx][Ny] = $3
+				DYmin[x][y] = $3
 				break
 			case "GPVAL_DATA_Y_MAX":
-				DYmax[Nx][Ny] = $3
+				DYmax[x][y] = $3
 				break
 			case "GPVAL_Z_MIN":
-				Zmin[Nx][Ny] = $3
+				Zmin[x][y] = $3
 				break
 			case "GPVAL_Z_MAX":
-				Zmax[Nx][Ny] = $3
+				Zmax[x][y] = $3
 				break
 			case "GPVAL_DATA_CB_MIN":
-				Cmin[Nx][Ny] = $3
+				Cmin[x][y] = $3
 				break
 			case "GPVAL_DATA_CB_MAX":
-				Cmax[Nx][Ny] = $3
+				Cmax[x][y] = $3
 				break        
 		}
 	}
@@ -1174,7 +1176,8 @@ function gnuplot_gpval() {
 					lxt[i] = ticlength(Xmax[i][j], Xmin[i][j], "single")
 					lyt[i] = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j])
 					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j]-2, "["i","j",xlp]="0.25+dy[i][j]
-				} else {
+				} else if (Graph[i][j]) {
+				print "--0--"
 					xsizemax0 = xsizemax0 < Xsize[i][j] ? Xsize[i][j] : xsizemax0
 					ysizemax0 = ysizemax0 < Ysize[i][j] ? Ysize[i][j] : ysizemax0
 					lxt[i] = ticlength(DXmax[i][j], DXmin[i][j], "single")
