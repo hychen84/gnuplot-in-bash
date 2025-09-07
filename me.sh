@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.410 released on 2025-09-07 (since 2007/12/25)
+# ME build 7.5.411 released on 2025-09-07 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -118,7 +118,7 @@ function print_parameters() {
 			}
 			printf "\033[0m\n"
 		} else {
-			for (k=0; k<=h_line+Nx*3-1; k++) printf "─"
+			for (k=0; k<=h_line+Nx*3; k++) printf "─"
 			printf "\n"
 		}
 	}
@@ -284,8 +284,8 @@ function print_parameters() {
 			}
 		}
 		if (show_on > 3) {j--; show_info()}
-        if (h_line < 86) h_line = 86
-		for (k=0; k<=h_line+Nx*3-1; k++) printf "─"
+        if (h_line < 86) {h_line = 89} else {h_line += Nx*3}
+		for (k=0; k<=h_line; k++) printf "─"
 		printf "\n"
     }' .me/table
 	IFS=""
@@ -760,19 +760,19 @@ function make_table() {
 				if [[ $Merge == "f" ]]; then df=${Files[$j,0]}; else df=${Files[$i,0]}; fi
 				getclosestkey Columns $j 0; col=${Columns[$j,0]:-${Columns[$s,0]}}
 				make_table_line_style $n $k
-				echo $n $k $index $pl $df ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys>> .me/table
+				echo "$n $k $index $pl $df ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 			elif [[ ${Columns[$n]:-0} > 0 && ${Files[$n]:-0} == 0 ]]; then
 				for ((k=1; k<=${Columns[$n]}; k++)); do
 					getclosestkey Columns $n $k; col=${Columns[$n,$k]:-${Columns[$s,$t]}}
 					make_table_line_style $n $k
-					echo $n $k $index $pl ${Files[$n,0]} ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys >> .me/table
+					echo "$n $k $index $pl ${Files[$n,0]} ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 				done
 				((k--))
 			elif [[ ${Columns[$n]:-0} == 0 && ${Files[$n]:-0} > 0 ]]; then
 				getclosestkey Columns $n 0; col=${Columns[$n,0]:-${Columns[$s,0]}}
 				for ((k=1; k<=${Files[$n]}; k++)); do
 					make_table_line_style $n $k
-					echo $n $k $index $pl ${Files[$n,$k]} ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys >> .me/table
+					echo "$n $k $index $pl ${Files[$n,$k]} ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 				done
 				((k--))
 			else
@@ -786,7 +786,7 @@ function make_table() {
 						getclosestkey Columns $n $p; col=${Columns[$n,$p]:-${Columns[$s,$t]}}
 						k=$(((l-1)*N2+m))
 						make_table_line_style $n $k
-						echo $n $k $index $pl $df ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys >> .me/table
+						echo "$n $k $index $pl $df ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 					done
 				done
 			fi
@@ -1176,7 +1176,7 @@ function gnuplot_gpval() {
 					if (YSnum[Ysize[i][j]] == Total_figures || YSnum[Ysize[i][j]] > 1) {ysizemax2 = ysizemax2 < Ysize[i][j] ? Ysize[i][j] : ysizemax2}
 					lxt[i] = ticlength(Xmax[i][j], Xmin[i][j], "single")
 					lyt[i] = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j])
-					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j]-2, "["i","j",xlp]="0.25+dy[i][j]
+					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j]-2.5, "["i","j",xlp]="0.25+dy[i][j]
 					YL = YL Ylabel[i][j]
 				} else if (Graph[i][j]) {
 				print "--0--"
@@ -1662,7 +1662,7 @@ function xgnuplot() {
 	gnuplot .me/gp 2> .me/gpval
 	gnuplot_gpval
     eval declare -A GPV=("$GPV_str")
-    #declare -p GPV
+    declare -p GPV
 	gpscript_head
 	for ((i=0; i<Total_figures; i++)); do
         ix=${Xsite[i]}
