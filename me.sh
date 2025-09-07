@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.411 released on 2025-09-07 (since 2007/12/25)
+# ME build 7.5.412 released on 2025-09-07 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1324,7 +1324,7 @@ function gpscript_set_axis() {
 			yl_pos=$(awk "BEGIN {printf \"%.2f\", ${GPV[$ix,$iy,ylp]}*$Digitscale}")",0■center"
 			xt_pos="0,0.25"
 			yt_pos="0.25,0"
-			vs1=4.01; hs1=$(awk "BEGIN {printf \"%.2f\", ${GPV[hspace]}-1}");;
+			vs1=4.26; hs1=$(awk "BEGIN {printf \"%.2f\", ${GPV[hspace]}-1}");;
 		3d) Lxt=$(awk "BEGIN {printf \"%.2f\", (${GPV[$ix,$iy,lxt]}+2)*$Digitscale}")
             Lyt=$(awk "BEGIN {printf \"%.2f\", (${GPV[$ix,$iy,lyt]}+2)*$Digitscale}")
 			Xrotation=$(awk "BEGIN {printf \"%.2f\", cos($Vx*0.0174533)*cos($Vz*0.0174533)}")
@@ -1356,10 +1356,10 @@ function gpscript_set_axis() {
 set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 			vs1=-1; hs1=-1;;
 	esac
-	vs2=2.01; vs3=1.01
+	vs2=2.76; vs3=1.76
 	unset_xt=0; unset_yt=0
 	hs2=$(awk "BEGIN {printf \"%.2f\", ${GPV[hspace]}-3}")
-	hs3=$(awk "BEGIN {printf \"%.2f\", 1.01}")
+	hs3=$(awk "BEGIN {printf \"%.2f\", 1.76}")
 	if [[ $(echo $vspace $vs1 | awk '{if ($1 >= $2) print 1}') ]]; then
 		echo "set xr[${GPV[$ix,$iy,xr]}]
 set xlabel \"$xl\" offset $xl_pos $Fontset
