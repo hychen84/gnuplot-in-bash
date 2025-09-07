@@ -1176,7 +1176,7 @@ function gnuplot_gpval() {
 					if (YSnum[Ysize[i][j]] == Total_figures || YSnum[Ysize[i][j]] > 1) {ysizemax2 = ysizemax2 < Ysize[i][j] ? Ysize[i][j] : ysizemax2}
 					lxt[i] = ticlength(Xmax[i][j], Xmin[i][j], "single")
 					lyt[i] = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j])
-					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j]-2.5, "["i","j",xlp]="0.25+dy[i][j]
+					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j]-3, "["i","j",xlp]="0.25+dy[i][j]
 					YL = YL Ylabel[i][j]
 				} else if (Graph[i][j]) {
 				print "--0--"
@@ -1662,7 +1662,7 @@ function xgnuplot() {
 	gnuplot .me/gp 2> .me/gpval
 	gnuplot_gpval
     eval declare -A GPV=("$GPV_str")
-    declare -p GPV
+    #declare -p GPV
 	gpscript_head
 	for ((i=0; i<Total_figures; i++)); do
         ix=${Xsite[i]}
