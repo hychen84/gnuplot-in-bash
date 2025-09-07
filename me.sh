@@ -1176,16 +1176,17 @@ function gnuplot_gpval() {
 					if (YSnum[Ysize[i][j]] == Total_figures || YSnum[Ysize[i][j]] > 1) {ysizemax2 = ysizemax2 < Ysize[i][j] ? Ysize[i][j] : ysizemax2}
 					lxt[i] = ticlength(Xmax[i][j], Xmin[i][j], "single")
 					lyt[i] = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j])
-					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j]-3, "["i","j",xlp]="0.25+dy[i][j]
+					lyt[i] = Ymin[i][j] < 0 ? lyt[i]-2.25 : lyt[i]-3
+					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j], "["i","j",xlp]="0.25+dy[i][j]
 					YL = YL Ylabel[i][j]
 				} else if (Graph[i][j]) {
-				print "--0--"
 					xsizemax0 = xsizemax0 < Xsize[i][j] ? Xsize[i][j] : xsizemax0
 					ysizemax0 = ysizemax0 < Ysize[i][j] ? Ysize[i][j] : ysizemax0
 					lxt[i] = ticlength(DXmax[i][j], DXmin[i][j], "single")
 					lyt[i] = ticlength(DYmax[i][j], DYmin[i][j], Ytics[i][j])
 					lct[i] = ticlength(Cmax[i][j],  Cmin[i][j],  Ctics[i][j])
-					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",ylp]="lyt[i]-2, "["i","j",xlp]="0.25+dy[i][j]
+					lyt[i] = DYmin[i][j] < 0 ? lyt[i]-2.25 : lyt[i]-3
+					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",ylp]="lyt[i]+dx[i][j], "["i","j",xlp]="0.25+dy[i][j]
 					YL = YL Ylabel[i][j]
 				}
                 if (i > 0) {
