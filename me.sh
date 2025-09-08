@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.412 released on 2025-09-07 (since 2007/12/25)
+# ME build 7.5.415 released on 2025-09-08 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -289,7 +289,13 @@ function print_parameters() {
 		printf "\n"
     }' .me/table
 	IFS=""
-	show_on=$(awk "BEGIN {print ${#Xsize[*]}*${#Ysize[*]}*${#Graph[*]}}")
+	declare -A Sx; declare -A Sy; declare -A Gp
+    for ((i=0; i<Total_figures; i++)); do
+		Xsize[i]=${Xsize[i-1]}; Sx[${Xsize[i]}]=1
+		Ysize[i]=${Ysize[i-1]}; Sy[${Ysize[i]}]=1
+		Graph[i]=${Graph[i-1]}; Gp[${Graph[i]}]=1
+    done
+	show_on=$(awk "BEGIN {print ${#Sx[*]}*${#Sy[*]}*${#Gp[*]}}")
 	if [[ $show_on == 1 ]]; then
 		echo "【$Graph】Merge=$Merge  Align=${Align[*]}  Space=（$Hspace,$Vspace） Size=（$Xsize,$Ysize） Font=$Font,$Fontsize  FS=\"$FS\"  Output=${Output:-fig}"
 	else
@@ -1176,7 +1182,7 @@ function gnuplot_gpval() {
 					if (YSnum[Ysize[i][j]] == Total_figures || YSnum[Ysize[i][j]] > 1) {ysizemax2 = ysizemax2 < Ysize[i][j] ? Ysize[i][j] : ysizemax2}
 					lxt[i] = ticlength(Xmax[i][j], Xmin[i][j], "single")
 					lyt[i] = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j])
-					lyt[i] = Ymin[i][j] < 0 ? lyt[i]-2.25 : lyt[i]-3
+					lyt[i] = Ymin[i][j] < 0 ? lyt[i]-2.25 : lyt[i]-2.75
 					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j], "["i","j",xlp]="0.25+dy[i][j]
 					YL = YL Ylabel[i][j]
 				} else if (Graph[i][j]) {
@@ -1185,7 +1191,7 @@ function gnuplot_gpval() {
 					lxt[i] = ticlength(DXmax[i][j], DXmin[i][j], "single")
 					lyt[i] = ticlength(DYmax[i][j], DYmin[i][j], Ytics[i][j])
 					lct[i] = ticlength(Cmax[i][j],  Cmin[i][j],  Ctics[i][j])
-					lyt[i] = DYmin[i][j] < 0 ? lyt[i]-2.25 : lyt[i]-3
+					lyt[i] = DYmin[i][j] < 0 ? lyt[i]-2.25 : lyt[i]-2.75
 					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",ylp]="lyt[i]+dx[i][j], "["i","j",xlp]="0.25+dy[i][j]
 					YL = YL Ylabel[i][j]
 				}
@@ -1568,13 +1574,13 @@ function gpscript_plot() {
 }
 
 function gnuplot_enhanced_characters() {
-	case $Font in
+	case $2 in
 		cmr10) sed -e 's|{s/\\245}|{w/\\061}|g
 				s|{s/\\261}|{w/\\247}|g
 				s|{s/\\265}|{w/\\057}|g
 				s|{s/\\271}|{/Symbol \\271}|g
 				s|{s/\\273}|{w/\\274}|g
-				s|{s/\\320}|{/Symbol \\320}|g' .me/gp > .me/tmp
+				s|{s/\\320}|{/Symbol \\320}|g' $1 > .me/tmp
             awk 'BEGIN {
 				for (i=65;i<91;i++) oct[sprintf("%c",i)] = sprintf("%o",i)
 				for (i=97;i<123;i++) oct[sprintf("%c",i)] = sprintf("%o",i+77)
@@ -1588,7 +1594,7 @@ function gnuplot_enhanced_characters() {
 				#for (key in oct) print key, oct[key]
 			}
 			{
-				if ($0 ~ /{s\//) {
+				if ($0 ~ /{s\/[^\/\\]/ || $0 ~ /{s\/\/[^\\]/) {
 					gsub(/{s\/\/|{s\//,"& ",$0)
 					for (i=3; i<=NF; i++) {
 						if ($i ~ /^[a-zA-Z]+}/) {
@@ -1603,7 +1609,7 @@ function gnuplot_enhanced_characters() {
 					}
 				}
 				print $0
-			}' .me/tmp | sed -e 's| / §|/\\|g;s| §|\\|g' > .me/gp
+			}' .me/tmp | sed -e 's| / §|/\\|g;s| §|\\|g' > $1
 			sed -e 's|{/\([^/]\)|{/cmr10 \1|g
 				s|{//|{/cmti10 |g
 				s|{b/\([^/]\)|{/cmb10 \1|g
@@ -1614,7 +1620,14 @@ function gnuplot_enhanced_characters() {
 				s|\||{/cmsy10 \\152}|g
 				s|\|\||{/cmsy10 \\153}|g
 				/label/s|'"'"'|^{/cmsy10 \\060}|g
-				/ t /s|'"'"'|^{/cmsy10 \\060}|g' .me/gp > .me/tmp;;
+				/ t /s|'"'"'|^{/cmsy10 \\060}|g' $1 > .me/tmp;;
+        -cmr10) sed -e 's|{/cmr10 \\|{s/\\|g
+            s|{/cmr10 |{/|g
+            s|{/cmti10 |{//|g
+            s|{/cmb10 |{b/|g
+            s|{/cmbxti10 |{b//|g
+            s|{/cmmi10 |{s//|g
+            s|{/cmsy10 |{w/|g' $1;;
 		Arial) sed -e 's|{s/\\077}|{/cmsy10 \\077}|g
 			s|{s/\\153}|{/cmsy10 \\153}|g
 			s|{/\([^/]\)|{/Arial \1|g
@@ -1623,7 +1636,14 @@ function gnuplot_enhanced_characters() {
 			s|{b//|{/Arial-Bold-Italic |g
 			s|{s/\([^/]\)|{/Symbol \1|g
 			s|{s//|{/Symbol-Oblique |g
-			s|{w/\([^/]\)|{/ZapfDingbats \1|g' .me/gp > .me/tmp;;
+			s|{w/\([^/]\)|{/ZapfDingbats \1|g' $1 > .me/tmp;;
+        -Arial) sed -e 's|{/Arial |{/|g
+            s|{/Arial-Italic |{//|g
+            s|{/Arial-Bold |{b/|g
+            s|{/Arial-Bold-Italic |{b//|g
+            s|{/Symbol |{s/|g
+            s|{/Symbol-Oblique |{s//|g
+            s|{/ZapfDingbats |{w/|g' $1;;
 		Times) sed -e 's|{s/\\077}|{/cmsy10 \\077}|g
 			s|{s/\\153}|{/cmsy10 \\153}|g
 			s|{/\([^/]\)|{/Times \1|g
@@ -1632,16 +1652,23 @@ function gnuplot_enhanced_characters() {
 			s|{b//|{/Times-Bold-Italic |g
 			s|{s/\([^/]\)|{/Symbol \1|g
 			s|{s//|{/Symbol-Oblique |g
-			s|{w/\([^/]\)|{/ZapfDingbats \1|g' .me/gp > .me/tmp;;
+			s|{w/\([^/]\)|{/ZapfDingbats \1|g' $1 > .me/tmp;;
+        -Times) sed -e 's|{/Times |{/|g
+            s|{/Times-Italic |{//|g
+            s|{/Times-Bold |{b/|g
+            s|{/Times-Bold-Italic |{b//|g
+            s|{/Symbol |{s/|g
+            s|{/Symbol-Oblique |{s//|g
+            s|{/ZapfDingbats |{w/|g' $1;;
 	esac
-    sed -e 's|¶||g
-        s|‖|\|\||g
-        s|§|$|g
-		s|■| |g
-    	s|\^\.|\&{^.}|g
-		s|\.\.|\&{.}|g
-		s|\,\,| |g
-		s|\_\_|\&{a}|g' .me/tmp
+    [[ $3 ]] && sed -e 's|¶||g
+                        s|‖|\|\||g
+                        s|§|$|g
+                        s|■| |g
+                        s|\^\.|\&{^.}|g
+                        s|\.\.|\&{.}|g
+                        s|\,\,| |g
+                        s|\_\_|\&{a}|g' .me/tmp
 }
 
 function gpscript_unset_3daxis() {
@@ -1682,7 +1709,7 @@ function xgnuplot() {
         esac
         gpscript_plot $i
 	done
-	gnuplot_enhanced_characters > $Output.gp
+	gnuplot_enhanced_characters .me/gp $Font 1 > $Output.gp
 	gnuplot $Output.gp
 }
 
@@ -1719,12 +1746,16 @@ drop=()
 for ((n=0; n<${#Arg[*]}; n++)); do
 	if [ -e ${Arg[$n]} ]; then
 		case ${Arg[$n]#*.} in
-			gp)	output=$(awk '/set output/{gsub("\"","",$3);print $3;exit}' ${Arg[$n]})
+			gp)	font=$(awk '/set terminal/{split($7,A,",");gsub("\"","",A[1]);print A[1];exit}' ${Arg[$n]})
+                output=$(awk '/set output/{gsub("\"","",$3);print $3;exit}' ${Arg[$n]})
 				save=${Arg[$n]%.*}.pdf
-                [[ $output != $save ]] && sed -i "/output/s/$output/$save/" ${Arg[$n]} 
+                [[ $output != $save ]] && sed -i "/output/s/$output/$save/" ${Arg[$n]}
 				echo ${Arg[$n]}" --> "$save
+                gnuplot_enhanced_characters ${Arg[$n]} -$font > tmp
+                gnuplot_enhanced_characters tmp $font
+                mv .me/tmp ${Arg[$n]}
 				gnuplot ${Arg[$n]}
-				exit;;
+				rm -f tmp;exit;;
 		   zip) unzip -o ${Arg[$n]}
 				exit;;
 		esac
