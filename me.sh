@@ -55,7 +55,7 @@ declare -a Ysite=($(arraytostring Ysite [0]='0'))
 declare -a Hoffset=($(arraytostring Hoffset [0]='0'))
 declare -a Voffset=($(arraytostring Voffset [0]='0'))
 declare -a Xsize=($(arraytostring Xsize [0]='200'))
-declare -a Ysize=($(arraytostring Ysize [0]='134'))
+declare -a Ysize=($(arraytostring Ysize [0]='125'))
 declare -a Index=($(arraytostring Index [0]='(a)'))
 declare -a Caption=($(arraytostring Caption [0]=''))
 declare -a Index_position=($(arraytostring Index_position [0]='auto'))
@@ -437,7 +437,7 @@ function set_graph() {
     Graph[${this:-0}]=${1,,}
 	case ${1,,} in
 		2d) Xsize[${this:-0}]=200
-            Ysize[${this:-0}]=134
+            Ysize[${this:-0}]=125
             Using[${this:-0},1]=1:c
             With[${this:-0},1]=l
 			Index_position[${this:-0}]="auto";;
@@ -2146,7 +2146,7 @@ Datafile: me xxx.txt yyy.txt
 X-column: me -u '1:c'
 Y-column: me [2:8]|[2,3,7]
 ────<-- combinable with choosing figure -a -->───
-Size:     me -size 200,134
+Size:     me -size 200,125
 Offset:   me -offset 10,20
 Index:    me -I '(A)'|on|off
 Caption:  me -ic '{s/D}{//E}..=..0.5'
