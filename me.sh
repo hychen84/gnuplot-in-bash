@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.416 released on 2025-09-09 (since 2007/12/25)
+# ME build 7.5.417 released on 2025-09-09 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1298,22 +1298,25 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset ylabel">> .
 		[[ ${Graph[$1]} == "map" ]] && textcolor="tc lt 5 " || textcolor=""
         echo "set label $((j+1)) \"${Label[$1,$j]}\" at graph ${p2%,*} ${p2##*,} ${textcolor}front $Usrfontset" >> .me/gp
     done
-	if ! [[ ${#Key[*]} == 1 && ${Key[0,1]} == "" ]]; then
-		Key_position[$1]=${Key_position[$1]:-${Key_position[$1-1]:-auto}}
-		if [[ ${Key_position[$1]} == "auto" ]]; then
-			p3="1-XC,1-YC*$Keymargin,right"
-		else
-			p3=${Key_position[$1]}
-		fi		
-		echo "set key at graph ${p3%,*} ${p3##*,} ${Key_layout[$1]:-${Key_layout[0]}} Left reverse samplen 1 spacing 1.5 noautotitle font \",$(awk "BEGIN {print $Fontsize-2}")\"" >> .me/gp
-		Key_box[$1]=${Key_box[$1]:-${Key_box[$1-1]}}
-		Key_box[$1]=${Key_box[$1]//on/0}
-		if [[ ${Key_box[$1]} == "off" ]]; then
-			echo "set key nobox" >> .me/gp
-		else
-			echo "set key box lw 0.5 width ${Key_box[$1]} height 0.25" >> .me/gp
+	Key_layout[$1]=${Key_layout[$1]:-${Key_layout[$1-1]}}
+	Key_box[$1]=${Key_box[$1]:-${Key_box[$1-1]}}; Key_box[$1]=${Key_box[$1]//on/0}
+	for key in ${!Key[*]}; do
+		if [[ ${key%,*} == $1 && ${Key[$key]} != "" ]]; then
+			Key_position[$1]=${Key_position[$1]:-${Key_position[$1-1]:-auto}}
+			if [[ ${Key_position[$1]} == "auto" ]]; then
+				p3="1-XC,1-YC*$Keymargin,right"
+			else
+				p3=${Key_position[$1]}
+			fi		
+			echo "set key at graph ${p3%,*} ${p3##*,} ${Key_layout[$1]} Left reverse samplen 1 spacing 1.25 noautotitle font \",$(awk "BEGIN {print $Fontsize-3}")\"" >> .me/gp
+			if [[ ${Key_box[$1]} == "off" ]]; then
+				echo "set key nobox" >> .me/gp
+			else
+				echo "set key box lw 0.5 width ${Key_box[$1]} height 0.25" >> .me/gp
+			fi
+			break
 		fi
-	fi
+	done
 }
 
 function gpscript_set_axis() {
