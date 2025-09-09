@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.415 released on 2025-09-08 (since 2007/12/25)
+# ME build 7.5.416 released on 2025-09-09 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1099,6 +1099,8 @@ function gnuplot_gpval() {
         if (interval == "single") {tic = max}
         else {
             if (interval == 0) interval = ticstep(max, min)
+			max = substr(max,1,length(interval))
+			min = min < 0 ? substr(min,1,length(interval)+1) : substr(min,1,length(interval))
             max_minus = max - interval
             min_plus = min + interval
             tic = length(max_minus) > length(max) ? max_minus : max
@@ -1121,10 +1123,10 @@ function gnuplot_gpval() {
 				dy[x][y] = $22 ~ /\^[^.]/ ? -0.5 : 0    # Xlabel
 				dx[x][y] = $24 ~ /_/  ? -0.5 : 0    # Ylabel
                 Ylabel[x][y] = $24
-                Xtics[x][y] = $28
-                Ytics[x][y] = $30
-                Ztics[x][y] = $32
-                Ctics[x][y] = $34
+                gsub(/0+$/,"",$28); gsub(/\.$/,"",$28); Xtics[x][y] = $28
+                gsub(/0+$/,"",$30); gsub(/\.$/,"",$30); Ytics[x][y] = $30
+                gsub(/0+$/,"",$32); gsub(/\.$/,"",$32); Ztics[x][y] = $32
+                gsub(/0+$/,"",$34); gsub(/\.$/,"",$34); Ctics[x][y] = $34
 				Nx = x > Nx ? x : Nx
 				Ny = y > Ny ? y : Ny
 				break
