@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a ps file.
 #
-# ME build 7.5.417 released on 2025-09-09 (since 2007/12/25)
+# ME build 7.5.418 released on 2025-09-10 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1099,7 +1099,7 @@ function gnuplot_gpval() {
         if (interval == "single") {tic = max}
         else {
             if (interval == 0) interval = ticstep(max, min)
-			max = substr(max,1,length(interval))
+			max = max < 0 ? substr(max,1,length(interval)+1) : substr(max,1,length(interval))
 			min = min < 0 ? substr(min,1,length(interval)+1) : substr(min,1,length(interval))
             max_minus = max - interval
             min_plus = min + interval
@@ -1107,9 +1107,9 @@ function gnuplot_gpval() {
             if (length(min_plus) > length(tic)) tic = min_plus
             if (length(min) > length(tic)) tic = min
         }
+        t_dot = tic < 0 ? gsub(/\./, "", tic)*0.5 : gsub(/\./, "", tic)*1.0
         t_minus = gsub(/-/, "", tic)*0.67
-        t_dot = gsub(/\./, "", tic)*0.5
-        return (length(tic) + t_minus + t_dot)
+        return (length(tic) + t_dot + t_minus)
     }
 	{
 		gsub(/\.0$/,"",$3)
@@ -1184,8 +1184,7 @@ function gnuplot_gpval() {
 					if (YSnum[Ysize[i][j]] == Total_figures || YSnum[Ysize[i][j]] > 1) {ysizemax2 = ysizemax2 < Ysize[i][j] ? Ysize[i][j] : ysizemax2}
 					lxt[i] = ticlength(Xmax[i][j], Xmin[i][j], "single")
 					lyt[i] = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j])
-					lyt[i] = Ymin[i][j] < 0 ? lyt[i]-2.25 : lyt[i]-2.75
-					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j], "["i","j",xlp]="0.25+dy[i][j]
+					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j]-2.25, "["i","j",xlp]="0.25+dy[i][j]
 					YL = YL Ylabel[i][j]
 				} else if (Graph[i][j]) {
 					xsizemax0 = xsizemax0 < Xsize[i][j] ? Xsize[i][j] : xsizemax0
@@ -1193,8 +1192,7 @@ function gnuplot_gpval() {
 					lxt[i] = ticlength(DXmax[i][j], DXmin[i][j], "single")
 					lyt[i] = ticlength(DYmax[i][j], DYmin[i][j], Ytics[i][j])
 					lct[i] = ticlength(Cmax[i][j],  Cmin[i][j],  Ctics[i][j])
-					lyt[i] = DYmin[i][j] < 0 ? lyt[i]-2.25 : lyt[i]-2.75
-					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",ylp]="lyt[i]+dx[i][j], "["i","j",xlp]="0.25+dy[i][j]
+					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",ylp]="lyt[i]+dx[i][j]-2.25, "["i","j",xlp]="0.25+dy[i][j]
 					YL = YL Ylabel[i][j]
 				}
                 if (i > 0) {
