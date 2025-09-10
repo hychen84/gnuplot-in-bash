@@ -1080,7 +1080,7 @@ function gnuplot_show_variables() {
 }
 
 function gnuplot_gpval() {
-    GPV_str=$(awk -v Total_figures=$Total_figures '
+    awk -v Total_figures=$Total_figures '
     function ticstep(max, min) {
 		xr = max - min; xr = (xr<0 ? -xr : xr)
 		power = 10.0 ** int(log(xr)/log(10))
@@ -1096,8 +1096,12 @@ function gnuplot_gpval() {
 		return (tics*power)
     }
     function ticlength(max, min, interval) {
-        if (interval == "single") {tic = max}
-        else {
+        if (min == "null") {
+            if (interval != 0) {
+                max = max < 0 ? substr(max,1,length(interval)+1) : substr(max,1,length(interval))
+            }
+            tic = max
+        } else {
             if (interval == 0) interval = ticstep(max, min)
 			max = max < 0 ? substr(max,1,length(interval)+1) : substr(max,1,length(interval))
 			min = min < 0 ? substr(min,1,length(interval)+1) : substr(min,1,length(interval))
@@ -1107,7 +1111,7 @@ function gnuplot_gpval() {
             if (length(min_plus) > length(tic)) tic = min_plus
             if (length(min) > length(tic)) tic = min
         }
-        t_dot = tic < 0 ? gsub(/\./, "", tic)*0.5 : gsub(/\./, "", tic)*1.0
+        t_dot = tic < 0 ? gsub(/\./, "", tic)*0.5 : gsub(/\./, "", tic)*0.05
         t_minus = gsub(/-/, "", tic)*0.67
         return (length(tic) + t_dot + t_minus)
     }
@@ -1182,14 +1186,14 @@ function gnuplot_gpval() {
 				} else if (Graph[i][j] == 2) {
 					if (XSnum[Xsize[i][j]] == Total_figures || XSnum[Xsize[i][j]] > 1) {xsizemax2 = xsizemax2 < Xsize[i][j] ? Xsize[i][j] : xsizemax2}
 					if (YSnum[Ysize[i][j]] == Total_figures || YSnum[Ysize[i][j]] > 1) {ysizemax2 = ysizemax2 < Ysize[i][j] ? Ysize[i][j] : ysizemax2}
-					lxt[i] = ticlength(Xmax[i][j], Xmin[i][j], "single")
+					lxt[i] = ticlength(Xmax[i][j], "null", Xtics[i][j])
 					lyt[i] = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j])
 					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",ylp]="lyt[i]+dx[i][j]-2.25, "["i","j",xlp]="0.25+dy[i][j]
 					YL = YL Ylabel[i][j]
 				} else if (Graph[i][j]) {
 					xsizemax0 = xsizemax0 < Xsize[i][j] ? Xsize[i][j] : xsizemax0
 					ysizemax0 = ysizemax0 < Ysize[i][j] ? Ysize[i][j] : ysizemax0
-					lxt[i] = ticlength(DXmax[i][j], DXmin[i][j], "single")
+					lxt[i] = ticlength(DXmax[i][j], "null", Xtics[i][j])
 					lyt[i] = ticlength(DYmax[i][j], DYmin[i][j], Ytics[i][j])
 					lct[i] = ticlength(Cmax[i][j],  Cmin[i][j],  Ctics[i][j])
 					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",ylp]="lyt[i]+dx[i][j]-2.25, "["i","j",xlp]="0.25+dy[i][j]
@@ -1219,8 +1223,8 @@ function gnuplot_gpval() {
 				ysizemax = ysizemax2			
 			}
 		}
-		print "[hspace]="hspace+3, "[margin]="margin, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
-	}' .me/gpval)
+		print "[hspace]="hspace+2, "[margin]="margin, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
+	}' .me/gpval
 }
 
 function gpscript_head() {
@@ -1691,7 +1695,8 @@ function xgnuplot() {
     [[ ${FS:- } == " " ]] && separator=whitespace || separator="'$FS'"
     gnuplot_show_variables
 	gnuplot .me/gp 2> .me/gpval
-	gnuplot_gpval
+    gnuplot_gpval
+	GPV_str=$(gnuplot_gpval)
     eval declare -A GPV=("$GPV_str")
     #declare -p GPV
 	gpscript_head
