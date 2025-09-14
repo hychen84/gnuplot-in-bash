@@ -1,6 +1,6 @@
 #!/bin/bash -f
 # 
-# ME is a bash shell script using gnuplot to make a ps file.
+# ME is a bash shell script using gnuplot to make a PDF file.
 #
 # ME build 7.5.420 released on 2025-09-15 (since 2007/12/25)
 #
@@ -1256,11 +1256,11 @@ function gpscript_set_origin() {
 	[[ ${Voffset[$1]} == "" || ${Voffset[$1]} == "0" ]] && voffset="" || voffset="+("${Voffset[$1]}"/$Hpt.0)"
     Xsize[$1]=${Xsize[$1]:-${Xsize[$1-1]:-${Xsize[0]}}}
     Ysize[$1]=${Ysize[$1]:-${Ysize[$1-1]:-${Ysize[0]}}}
-	if [[ ${Graph[$1]} == "3d" ]]; then
-		Fontset="font \",$(awk "BEGIN {print $Fontsize-2}")\""
-	else
-		Fontset=""
-	fi
+	echo "XC = $Fontsize*$Digitscale/${Xsize[$1]}; YC = $Fontsize*1.00/${Ysize[$1]}
+set origin X_ORIGIN+X_OFFSET*$ix$hoffset,Y_ORIGIN-Y_OFFSET*$iy$voffset
+set size noratio ${Xsize[$1]}/$Wpt.0,${Ysize[$1]}/$Hpt.0
+set border 31
+unset label; unset arrow; unset key; unset grid; unset xlabel; unset ylabel">> .me/gp
     if [[ $1 == 0 ]]; then
         Index[0]=${Index[0]:-'(a)'}
         a1=$(ord ${Index[0]//[^A-Za-z]/})
@@ -1282,11 +1282,6 @@ function gpscript_set_origin() {
 	else
 		p1=${Index_position[$1]}
 	fi
-	echo "XC = $Fontsize*$Digitscale/${Xsize[$1]}; YC = $Fontsize*1.00/${Ysize[$1]}
-set origin X_ORIGIN+X_OFFSET*$ix$hoffset,Y_ORIGIN-Y_OFFSET*$iy$voffset
-set size noratio ${Xsize[$1]}/$Wpt.0,${Ysize[$1]}/$Hpt.0
-set border 31
-unset label; unset arrow; unset key; unset grid; unset xlabel; unset ylabel">> .me/gp
 	if [[ ${index:0:1} != "🗙" ]]; then
 		echo "set label 1 \"${index% }\" at graph ${p1%,*} ${p1##*,} front" >> .me/gp
 	fi
@@ -1329,6 +1324,7 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset ylabel">> .
 }
 
 function gpscript_set_axis() {
+	[[ ${Graph[$1]} == "3d" ]] && Fontset="font \",$(awk "BEGIN {print $Fontsize-2}")\"" || Fontset=""
 	ex=$((${Layout[0]}-1))
 	ey=$((${Layout[1]}-1))
 	Xlabel[$1]=${Xlabel[$1]:-${Xlabel[$1-1]:-¶}}
