@@ -1099,20 +1099,26 @@ function gnuplot_gpval() {
         if (min == "null") {
             if (interval != 0) {
                 tmp1 = max; gsub(/[\.-]/, "", tmp1)
-                max = max < 0 ? substr(max,1,length(interval)+1) : substr(max,1,length(interval))
+                if (max ~ /\./) {
+                    max = max < 0 ? substr(max,1,length(interval)+1) : substr(max,1,length(interval))
+                }
                 tmp2 = max; gsub(/[\.-]/, "", tmp2)
                 max = length(tmp1)/length(tmp2) >= 2 ? "" : substr(max,1,length(interval)-1)
             }
             tic = max
-        } else {
+        } else {            
             if (interval == 0) interval = ticstep(max, min)
-			max = max < 0 ? substr(max,1,length(interval)+1) : substr(max,1,length(interval))
-			min = min < 0 ? substr(min,1,length(interval)+1) : substr(min,1,length(interval))
+            if (max ~ /\./) {
+                max = max < 0 ? substr(max,1,length(interval)+1) : substr(max,1,length(interval))
+            }
+            if (min ~ /\./) {
+                min = min < 0 ? substr(min,1,length(interval)+1) : substr(min,1,length(interval))
+            }
             max_minus = max - interval
             min_plus = min + interval
             tic = length(max_minus) > length(max) ? max_minus : max
-            if (length(min_plus) > length(tic)) tic = min_plus
-            if (length(min) > length(tic)) tic = min
+            tic = length(min_plus) > length(tic) ? min_plus : tic
+            tic = length(min) > length(tic) ? min : tic
         }
         t_dot = gsub(/\./, "", tic)*0.5
         t_minus = gsub(/-/, "", tic)*0.67
@@ -1182,23 +1188,23 @@ function gnuplot_gpval() {
 				if (Graph[i][j] == 3) {
 					xsizemax3 = xsizemax3 < Xsize[i][j] ? Xsize[i][j] : xsizemax3
 					ysizemax3 = ysizemax3 < Ysize[i][j] ? Ysize[i][j] : ysizemax3
-					lxt[i] = ticlength(Xmax[i][j], Xmin[i][j], Xtics[i][j])
-					lyt[i] = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j])
+					result = ticlength(Xmax[i][j], Xmin[i][j], Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[1]; pxl = xt[2]
+					result = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]
 					result = ticlength(Zmax[i][j], Zmin[i][j], Ztics[i][j]); split(result, zt, ","); lzt[i] = zt[1]; pzl = zt[2]
 					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",zmin]="Zmin[i][j], "["i","j",zmax]="Zmax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j], "["i","j",zr]="Zmin[i][j]":"Zmax[i][j], "["i","j",lxt]="lxt[i], "["i","j",lyt]="lyt[i], "["i","j",lzt]="lzt[i], "["i","j",pzl]="pzl
 				} else if (Graph[i][j] == 2) {
 					if (XSnum[Xsize[i][j]] == Total_figures || XSnum[Xsize[i][j]] > 1) {xsizemax2 = xsizemax2 < Xsize[i][j] ? Xsize[i][j] : xsizemax2}
 					if (YSnum[Ysize[i][j]] == Total_figures || YSnum[Ysize[i][j]] > 1) {ysizemax2 = ysizemax2 < Ysize[i][j] ? Ysize[i][j] : ysizemax2}
-					result = ticlength(Xmax[i][j], "null",     Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[1]; pxl = xt[2]
+					result = ticlength(Xmax[i][j], "null", Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[1]; pxl = xt[2]
 					result = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]
 					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",lyt]="lyt[i], "["i","j",lxt]="lxt[i], "["i","j",pyl]="pyl
 					YL = YL Ylabel[i][j]
 				} else if (Graph[i][j] != "" && Graph[i][j] == 0) {
 					xsizemax0 = xsizemax0 < Xsize[i][j] ? Xsize[i][j] : xsizemax0
 					ysizemax0 = ysizemax0 < Ysize[i][j] ? Ysize[i][j] : ysizemax0
-					result = ticlength(DXmax[i][j], "null",      Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[1]; pxl = xt[2]
+					result = ticlength(DXmax[i][j], "null", Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[1]; pxl = xt[2]
 					result = ticlength(DYmax[i][j], DYmin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]
-					result = ticlength( Cmax[i][j],  Cmin[i][j], Ctics[i][j]); split(result, ct, ","); lct[i] = ct[1]; pcl = ct[2]
+					result = ticlength( Cmax[i][j], Cmin[i][j], Ctics[i][j]); split(result, ct, ","); lct[i] = ct[1]; pcl = ct[2]
 					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",lyt]="lyt[i], "["i","j",lxt]="lxt[i], "["i","j",pyl]="pyl
 					YL = YL Ylabel[i][j]
 				}
@@ -1263,7 +1269,7 @@ function gpscript_set_origin() {
 set origin X_ORIGIN+X_OFFSET*$ix$hoffset,Y_ORIGIN-Y_OFFSET*$iy$voffset
 set size noratio ${Xsize[$1]}/$Wpt.0,${Ysize[$1]}/$Hpt.0
 set border 31
-unset label; unset arrow; unset key; unset grid; unset xlabel; unset ylabel">> .me/gp
+unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unset ylabel; unset ytics">> .me/gp
     if [[ $1 == 0 ]]; then
         Index[0]=${Index[0]:-'(a)'}
         a1=$(ord ${Index[0]//[^A-Za-z]/})
@@ -1356,19 +1362,18 @@ function gpscript_set_axis() {
 	   map) xsize=${Xsize[$1]}
 			ysize=${Ysize[$1]}
 			if [ $xsize -eq $ysize ]; then
-            echo "I am here"
-				xl_pos="0,"$(awk "BEGIN {printf \"%.2f\", ${GPV[$ix,$iy,lxt]}+0.75}")"■center"
-				yl_pos=$(awk "BEGIN {printf \"%.2f\", (${GPV[$ix,$iy,lyt]}-1)*$Digitscale}")",0■center■rotate■by■0"
+				xl_pos="0,0.75■center"
+				yl_pos=$(awk "BEGIN {printf \"%.2f\", (0.275+${GPV[$ix,$iy,pyl]})*$Digitscale}")",0■right■rotate■by■0"
                 xt_pos="0,0.625"
                 yt_pos="0.725,0"
             elif [ $xsize -gt $ysize ]; then
 				xl_pos="0,"$(awk "BEGIN {printf \"%.2f\", -0.25+sqrt($ysize/$xsize.0)}")"■center"
- 				yl_pos=$(awk "BEGIN {printf \"%.2f\", ${GPV[$ix,$iy,lyt]}*$Digitscale+$xsize/$ysize.0}")",0■center■rotate■by■0"
+ 				yl_pos=$(awk "BEGIN {printf \"%.2f\", (0.075+${GPV[$ix,$iy,pyl]})*$Digitscale+$xsize/$ysize.0}")",0■right■rotate■by■0"
                 xt_pos="0,0.625-($xsize-$ysize)/$xsize.0"
                 yt_pos="0.375+sqrt(($xsize-$ysize)/$ysize.0),0"
             else
                 xl_pos="0,"$(awk "BEGIN {printf \"%.2f\", 0.25+sqrt($ysize/$xsize.0)}")"■center"
-				yl_pos=$(awk "BEGIN {printf \"%.2f\", (${GPV[$ix,$iy,lyt]}-sqrt($ysize/$xsize.0))*$Digitscale}")",0■center■rotate■by■0"
+				yl_pos=$(awk "BEGIN {printf \"%.2f\", (0..075+${GPV[$ix,$iy,pyl]}-sqrt($ysize/$xsize.0))*$Digitscale}")",0■right■rotate■by■0"
                 xt_pos="0,0.325+sqrt(($ysize-$xsize)/$xsize.0)"
                 yt_pos="1.325-0.5*$ysize/$xsize.0,0"
             fi
@@ -1489,7 +1494,7 @@ function gpscript_set_3d() {
 	Zlabel[$1]=${Zlabel[$1]:-${Zlabel[$1-1]:-¶}}
 	zl=${Zlabel[$1]}
     Ztics[$1]=${Ztics[$1]:-${Ztics[$1-1]:-auto}}
-	zl_pos=$(awk "BEGIN {printf \"%.2f\",${GPV[$ix,$iy,lzt]}*$Digitscale}")",0,0■right■rotate■by■0"
+	zl_pos=$(awk "BEGIN {printf \"%.2f\",(3.25*${GPV[$ix,$iy,lzt]})*$Digitscale}")",0,0■right■rotate■by■0"
 	zt_pos="1.0,0,0"
     Using[$1,1]=${Using[$1,1]:-${Using[$1-1,1]:-1:2:c}}
 	Dgrid=$(gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]})
@@ -1523,7 +1528,7 @@ set hidden3d" >> .me/gp
 	fi
     if [ ${Pm3d[$1]} == "on" ]; then
 		echo "set pm3d depth lighting
-set style fill transparent solid 0.4" >> .me/gp
+set style fill transparent solid 0.2" >> .me/gp
 	fi
 	echo -e "set view ${View[$1]}
 set palette $palette" >> .me/gp
@@ -1691,6 +1696,7 @@ unset xlabel; unset xtics
 unset ylabel; unset ytics
 unset zlabel; unset ztics
 unset border
+unset arrow
 unset grid" >> .me/gp
 }
 
@@ -1698,7 +1704,7 @@ function xgnuplot() {
     [[ ${FS:- } == " " ]] && separator=whitespace || separator="'$FS'"
     gnuplot_show_variables
 	gnuplot .me/gp 2> .me/gpval
-    gnuplot_gpval
+    #gnuplot_gpval
 	GPV_str=$(gnuplot_gpval)
     eval declare -A GPV=("$GPV_str")
     #declare -p GPV
