@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.421 released on 2025-09-15 (since 2007/12/25)
+# ME build 7.5.422 released on 2025-09-16 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1494,7 +1494,7 @@ function gpscript_set_3d() {
 	Zlabel[$1]=${Zlabel[$1]:-${Zlabel[$1-1]:-¶}}
 	zl=${Zlabel[$1]}
     Ztics[$1]=${Ztics[$1]:-${Ztics[$1-1]:-auto}}
-	zl_pos=$(awk "BEGIN {printf \"%.2f\",(3.25*${GPV[$ix,$iy,lzt]})*$Digitscale}")",0,0■right■rotate■by■0"
+	zl_pos=$(awk "BEGIN {printf \"%.2f\",(2.0+5*${GPV[$ix,$iy,pzl]})*$Digitscale}")",0,0■right■rotate■by■0"
 	zt_pos="1.0,0,0"
     Using[$1,1]=${Using[$1,1]:-${Using[$1-1,1]:-1:2:c}}
 	Dgrid=$(gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]})
@@ -1706,8 +1706,7 @@ function xgnuplot() {
 	gnuplot .me/gp 2> .me/gpval
     #gnuplot_gpval
 	GPV_str=$(gnuplot_gpval)
-    eval declare -A GPV=("$GPV_str")
-    #declare -p GPV
+    eval declare -A GPV=("$GPV_str") #; declare -p GPV
 	gpscript_head
 	for ((i=0; i<Total_figures; i++)); do
         ix=${Xsite[i]}
