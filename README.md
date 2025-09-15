@@ -6,17 +6,19 @@ This is a bash script to use gnuplot, to output a simple graph and output to a P
 
 ## Usage
 
+Change Data columns:
+~~~
+me xx1.txt xx2.txt xx3.txt xx4.txt xx5.txt xx6.txt [2]
+~~~
 Change Space:
 ~~~
 me -space 1,0
-~~~
-Change Size:
-~~~
-me -size 200,125
 ~~~ 
 Change Caption of Figure (a):
 ~~~
 me -a -ic '{//d}..=..10'
+me -b -ic '{//d}..=..6'
+me -c -ic '{//d}..=..3'
 ~~~
 Change Axis of Figure (b) and (c):
 ~~~
