@@ -1098,7 +1098,10 @@ function gnuplot_gpval() {
     function ticlength(max, min, interval) {
         if (min == "null") {
             if (interval != 0) {
+                tmp1 = max; gsub(/[\.-]/, "", tmp1)
                 max = max < 0 ? substr(max,1,length(interval)+1) : substr(max,1,length(interval))
+                tmp2 = max; gsub(/[\.-]/, "", tmp2)
+                max = length(tmp1)/length(tmp2) >= 2 ? "" : substr(max,1,length(interval)-1)
             }
             tic = max
         } else {
@@ -1190,7 +1193,7 @@ function gnuplot_gpval() {
 					result = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]
 					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",lyt]="lyt[i], "["i","j",lxt]="lxt[i], "["i","j",pyl]="pyl
 					YL = YL Ylabel[i][j]
-				} else if (Graph[i][j]) {
+				} else if (Graph[i][j] != "" && Graph[i][j] == 0) {
 					xsizemax0 = xsizemax0 < Xsize[i][j] ? Xsize[i][j] : xsizemax0
 					ysizemax0 = ysizemax0 < Ysize[i][j] ? Ysize[i][j] : ysizemax0
 					result = ticlength(DXmax[i][j], "null",      Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[1]; pxl = xt[2]
@@ -1203,7 +1206,7 @@ function gnuplot_gpval() {
                     if (Avg_graph == 3) {
                         hspace = hspace < lzt[i] ? lzt[i] : hspace
                     } else {
-						hspace = hspace < lyt[i]+1.25+lxt[i-1]*0.5 ? lyt[i]+1.25+lxt[i-1]*0.5 : hspace
+						hspace = hspace < lyt[i]+2.75+lxt[i-1]*0.5 ? lyt[i]+2.75+lxt[i-1]*0.5 : hspace
                     }
                 }
             }
@@ -1353,6 +1356,7 @@ function gpscript_set_axis() {
 	   map) xsize=${Xsize[$1]}
 			ysize=${Ysize[$1]}
 			if [ $xsize -eq $ysize ]; then
+            echo "I am here"
 				xl_pos="0,"$(awk "BEGIN {printf \"%.2f\", ${GPV[$ix,$iy,lxt]}+0.75}")"■center"
 				yl_pos=$(awk "BEGIN {printf \"%.2f\", (${GPV[$ix,$iy,lyt]}-1)*$Digitscale}")",0■center■rotate■by■0"
                 xt_pos="0,0.625"
@@ -1694,7 +1698,7 @@ function xgnuplot() {
     [[ ${FS:- } == " " ]] && separator=whitespace || separator="'$FS'"
     gnuplot_show_variables
 	gnuplot .me/gp 2> .me/gpval
-    #gnuplot_gpval
+    gnuplot_gpval
 	GPV_str=$(gnuplot_gpval)
     eval declare -A GPV=("$GPV_str")
     #declare -p GPV
