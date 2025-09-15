@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.420 released on 2025-09-15 (since 2007/12/25)
+# ME build 7.5.421 released on 2025-09-15 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1103,7 +1103,7 @@ function gnuplot_gpval() {
                     max = max < 0 ? substr(max,1,length(interval)+1) : substr(max,1,length(interval))
                 }
                 tmp2 = max; gsub(/[\.-]/, "", tmp2)
-                max = length(tmp1)/length(tmp2) >= 2 ? "" : substr(max,1,length(interval)-1)
+                max = length(tmp1)/length(tmp2) > 1.1 ? "" : substr(max,1,length(interval)-1)
             }
             tic = max
         } else {            
