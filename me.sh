@@ -125,10 +125,12 @@ function print_parameters() {
 	function show_info() {
 		separate_line()
 		for (i=0; i<=Nx; i++) {
-            split(A[i][j][1],c," ")
-			w25 = L[i] - length(c[25] c[26] c[27]) - 11
-			printf "    【%s】 Size=（%s,%s）%*s",c[25],c[26],c[27],w25," "
-			separator(i)
+            if (A[i][j][1]) {
+                split(A[i][j][1],c," ")
+                w25 = L[i] - length(c[25] c[26] c[27]) - 11
+                printf "    【%s】 Size=（%s,%s）%*s",c[25],c[26],c[27],w25," "
+                separator(i)
+            }
 		}
 		printf "\n"
 	}
@@ -1496,7 +1498,7 @@ function gnuplot_dgrid3d() {
 }
 
 function gpscript_set_3d() {
-    Files[$1,0]=${Files[$1,0]:-${Files[$(($1-1)),0]}}
+    Files[$1,0]=${Files[$1,1]:-${Files[$1,0]:-${Files[$(($1-1)),0]}}}
 	Zlabel[$1]=${Zlabel[$1]:-${Zlabel[$1-1]:-¶}}
 	zl=${Zlabel[$1]}
     Ztics[$1]=${Ztics[$1]:-${Ztics[$1-1]:-auto}}
