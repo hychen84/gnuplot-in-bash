@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.423 released on 2025-09-16 (since 2007/12/25)
+# ME build 7.5.424 released on 2025-09-16 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1217,9 +1217,16 @@ function gnuplot_gpval() {
                     } else {
 						hspace = hspace < lyt[i]+2.75+lxt[i-1]*0.5 ? lyt[i]+2.75+lxt[i-1]*0.5 : hspace
                     }
-                }
+                } else {
+					hspace = 0
+				}
             }
-        }
+			if (j > 0) {
+				vspace = Avg_graph == 3 ? -1 : 6
+			} else {
+				vspace = 0
+			}
+       }
 		if (Avg_graph == 3) {
 			margin = margin < lzt[0] ? lzt[0] : margin
 			xsizemax = xsizemax3
@@ -1235,7 +1242,7 @@ function gnuplot_gpval() {
 				ysizemax = ysizemax2			
 			}
 		}
-		print "[hspace]="hspace, "[margin]="margin, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
+		print "[hspace]="hspace, "[vspace]="vspace, "[margin]="margin, "[xsizemax]="xsizemax, "[ysizemax]="ysizemax
 	}' .me/gpval
 }
 
@@ -1243,11 +1250,7 @@ function gpscript_head() {
 	Wpt=$(awk "BEGIN {printf \"%.0f\", $Pagewidth*$Dpi/2.54}")
 	Hpt=$(awk "BEGIN {printf \"%.0f\", $Pageheight*$Dpi/2.54}")
 	[[ $Hspace == "*" ]] && hspace=${GPV[hspace]} || hspace=$Hspace
-	if [[ $Vspace == "*" ]]; then
-        [[ ${GPV[graph]} == 3 ]] && vspace=-1 || vspace=6
-    else
-        vspace=$Vspace
-    fi
+	[[ $Vspace == "*" ]] && vspace=${GPV[vspace]} || vspace=$Vspace
 	[[ $Hspace == "*" || $Vspace == "*" ]] && echo "    Space=（$hspace,$vspace）"
 	xspace=$(awk "BEGIN {printf \"%.2f\", ($hspace*(${Layout[0]}-1)-${GPV[margin]})*$Digitscale}")
 	yspace=$(awk "BEGIN {printf \"%.2f\",  $vspace*(${Layout[0]}-1)+3}")
@@ -1713,7 +1716,7 @@ function xgnuplot() {
     [[ ${FS:- } == " " ]] && separator=whitespace || separator="'$FS'"
     gnuplot_show_variables
 	gnuplot .me/gp 2> .me/gpval
-    #gnuplot_gpval
+    gnuplot_gpval
 	GPV_str=$(gnuplot_gpval)
     eval declare -A GPV=("$GPV_str") #; declare -p GPV
 	gpscript_head
