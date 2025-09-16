@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.422 released on 2025-09-16 (since 2007/12/25)
+# ME build 7.5.423 released on 2025-09-16 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1183,6 +1183,7 @@ function gnuplot_gpval() {
 	}
     END {
         Avg_graph = Total_graph / Total_figures
+        print "[graph]="Avg_graph
         for (j=0; j<=Ny; j++) {
             for (i=0; i<=Nx; i++) {
 				if (Graph[i][j] == 3) {
@@ -1240,7 +1241,11 @@ function gpscript_head() {
 	Wpt=$(awk "BEGIN {printf \"%.0f\", $Pagewidth*$Dpi/2.54}")
 	Hpt=$(awk "BEGIN {printf \"%.0f\", $Pageheight*$Dpi/2.54}")
 	[[ $Hspace == "*" ]] && hspace=${GPV[hspace]} || hspace=$Hspace
-	[[ $Vspace == "*" ]] && vspace=6 || vspace=$Vspace
+	if [[ $Vspace == "*" ]]; then
+        [[ ${GPV[graph]} == 3 ]] && vspace=-1 || vspace=6
+    else
+        vspace=$Vspace
+    fi
 	[[ $Hspace == "*" || $Vspace == "*" ]] && echo "    Space=（$hspace,$vspace）"
 	xspace=$(awk "BEGIN {printf \"%.2f\", ($hspace*(${Layout[0]}-1)-${GPV[margin]})*$Digitscale}")
 	yspace=$(awk "BEGIN {printf \"%.2f\",  $vspace*(${Layout[0]}-1)+3}")
@@ -1284,8 +1289,8 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
 	if [[ ${Index_position[$1]} == "auto" ]]; then
 		case ${Graph[$1]} in
 			2d) p1="XC,1-YC*$Labelmargin,left";;
-			3d) yoffset=$(awk "BEGIN {printf \"%.2f\", 1.6*cos($Vx*0.0174533)*cos($Vz*0.0174533) }")
-				p1="-XC,-XC,1+YC+$yoffset,left";;
+			3d) ipyoffset=$(awk "BEGIN {printf \"%.2f\", 1.6*cos($Vx*0.0174533)*cos($Vz*0.0174533) }")
+				p1="-XC,-XC,1+YC+$ipyoffset,left";;
 		   map) p1="XC,1+YC*$Labelmargin,left";;
 		esac
 	else
@@ -1491,12 +1496,14 @@ function gnuplot_dgrid3d() {
 }
 
 function gpscript_set_3d() {
+    Files[$1,0]=${Files[$1,0]:-${Files[$(($1-1)),0]}}
 	Zlabel[$1]=${Zlabel[$1]:-${Zlabel[$1-1]:-¶}}
 	zl=${Zlabel[$1]}
     Ztics[$1]=${Ztics[$1]:-${Ztics[$1-1]:-auto}}
-	zl_pos=$(awk "BEGIN {printf \"%.2f\",(2.0+5*${GPV[$ix,$iy,pzl]})*$Digitscale}")",0,0■right■rotate■by■0"
+	zl_pos=$(awk "BEGIN {printf \"%.2f\",(7.0-${GPV[$ix,$iy,lzt]}-0.5*${GPV[$ix,$iy,pzl]})*$Digitscale}")",0,0■right■rotate■by■0"
 	zt_pos="1.0,0,0"
     Using[$1,1]=${Using[$1,1]:-${Using[$1-1,1]:-1:2:c}}
+    #gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]}
 	Dgrid=$(gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]})
 	Pm3d[$1]=${Pm3d[$1]:-${Pm3d[$1-1]:-${Pm3d[0]}}}
 	Palette[$1]=${Palette[$1]:-${Palette[$1-1]:-${Palette[0]}}}
@@ -1562,7 +1569,7 @@ set cbtics offset $ct_pos scale 0.1 nomirror ${Ctics[$1]} $Fontset" >> .me/gp
 }
 
 function gpscript_plot() {
-	awk -v Fig=$1 -v Graph=${Graph[$1]/d/} -v quote="'" 'BEGIN {N=1}
+	awk -v Fig=$1 -v quote="'" 'BEGIN {N=1}
 	{if ($1 == Fig) {Data[N] = $0; N++}}
 	END {
 		for (i=1; i<N; i++) {
