@@ -1716,7 +1716,7 @@ function xgnuplot() {
     [[ ${FS:- } == " " ]] && separator=whitespace || separator="'$FS'"
     gnuplot_show_variables
 	gnuplot .me/gp 2> .me/gpval
-    gnuplot_gpval
+    #gnuplot_gpval
 	GPV_str=$(gnuplot_gpval)
     eval declare -A GPV=("$GPV_str") #; declare -p GPV
 	gpscript_head
