@@ -581,7 +581,7 @@ function set_axis() {
 	esac
 	if [[ $3 == "{}" ]]; then
 		unset ${1^}$name[${this:-0}]
-		[[ $2 == "l" || $2 == "t" ]] && eval ${1^}$name[${this:-0}]="¶"
+		[[ $2 == "l" ]] && eval ${1^}$name[${this:-0}]="¶"
 	elif [[ $3 != "" ]]; then
 		eval ${1^}$name[${this:-0}]=\'$a\'
 		echo -e "    $(chr $((${this:-0}+97))):  ${1^}$name= \"$a\""
@@ -1391,7 +1391,7 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 	if [[ $(echo $vspace $vs1 | awk '{if ($1 >= $2) print 1}') ]]; then
 		echo "set xr[${GPV[$ix,$iy,xr]}]
 set xlabel \"$xl\" offset $xl_pos $Fontset" >> .me/gp
-		if [[ $xt == "¶" ]]; then
+		if [[ $xt == "off" ]]; then
 			echo "unset xtics" >> .me/gp
 		else
 			echo "set format x '%g'
@@ -1404,7 +1404,7 @@ set xtics offset $xt_pos nomirror out $xt $Fontset" >> .me/gp
 		else
 			echo "unset xlabel" >> .me/gp
 		fi
-		if [[ $xt == "¶" ]]; then
+		if [[ $xt == "off" ]]; then
 			echo "unset xtics" >> .me/gp
 		else
 			echo "set format x '%g'
@@ -1414,7 +1414,7 @@ set xtics offset $xt_pos nomirror out $xt $Fontset" >> .me/gp
 		echo "set xr[${GPV[$ix,0,xr]}]" >> .me/gp
 		if [ $iy -eq $ey ]; then
 			echo "set xlabel \"$xl\" offset $xl_pos $Fontset" >> .me/gp
-			if [[ $xt == "¶" ]]; then
+			if [[ $xt == "off" ]]; then
 				echo "unset xtics" >> .me/gp
 			else
 				echo "set format x '%g'
@@ -1422,7 +1422,7 @@ set xtics offset $xt_pos nomirror out $xt $Fontset" >> .me/gp
 			fi
 		else
 			echo "unset xlabel" >> .me/gp
-			if [[ $xt == "¶" ]]; then
+			if [[ $xt == "off" ]]; then
 				echo "unset xtics" >> .me/gp
 			else
 				echo "set format x ''
@@ -1433,7 +1433,7 @@ set xtics offset $xt_pos nomirror out $xt $Fontset" >> .me/gp
 		echo "set xr[${GPV[$ix,0,xr]}]" >> .me/gp
 		if [ $iy -eq $ey ]; then
 			echo "set xlabel \"$xl\" offset $xl_pos $Fontset" >> .me/gp
-			if [[ $xt == "¶" ]]; then
+			if [[ $xt == "off" ]]; then
 				echo "unset xtics" >> .me/gp
 			else
 				echo "set format x '%g'
@@ -1449,7 +1449,7 @@ unset xtics" >> .me/gp
 	if [[ $(echo $hspace $hs1 | awk '{if ($1 >= $2) print 1}') ]]; then
 		echo "set yr[${GPV[$ix,$iy,yr]}]
 set ylabel \"$yl\" offset $yl_pos $Fontset" >> .me/gp
-		if [[ $yt == "¶" ]]; then
+		if [[ $yt == "off" ]]; then
 			echo "unset xtics" >> .me/gp
 		else
 			echo "set format y '%g'
@@ -1462,7 +1462,7 @@ set ytics offset $yt_pos nomirror out $yt $Fontset" >> .me/gp
 		else
 			echo "unset ylabel" >> .me/gp
 		fi
-		if [[ $yt == "¶" ]]; then
+		if [[ $yt == "off" ]]; then
 			echo "unset xtics" >> .me/gp
 		else
 			echo "set format y '%g'
@@ -1472,7 +1472,7 @@ set ytics offset $yt_pos nomirror out $yt $Fontset" >> .me/gp
 		echo "set yr[${GPV[0,$iy,yr]}]" >> .me/gp
 		if [ $ix -eq 0 ]; then
 			echo "set ylabel \"$yl\" offset $yl_pos $Fontset" >> .me/gp
-			if [[ $yt == "¶" ]]; then
+			if [[ $yt == "off" ]]; then
 				echo "unset xtics" >> .me/gp
 			else
 				echo "set format y '%g'
@@ -1480,7 +1480,7 @@ set ytics offset $yt_pos nomirror out $yt $Fontset" >> .me/gp
 			fi
 		else
 			echo "unset ylabel" >> .me/gp
-			if [[ $yt == "¶" ]]; then
+			if [[ $yt == "off" ]]; then
 				echo "unset xtics" >> .me/gp
 			else
 				echo "set format y ''
@@ -1491,7 +1491,7 @@ set ytics offset $yt_pos nomirror out $yt $Fontset" >> .me/gp
 		echo "set yr[${GPV[0,$iy,yr]}]" >> .me/gp
 		if [ $ix -eq 0 ]; then
 			echo "set ylabel \"$yl\" offset $yl_pos $Fontset" >> .me/gp
-			if [[ $yt == "¶" ]]; then
+			if [[ $yt == "off" ]]; then
 				echo "unset xtics" >> .me/gp
 			else
 				echo "set format y '%g'
@@ -2218,10 +2218,10 @@ Key box:  me -kb -0.5<<|on|off>>
 Position: me -kp <<position>><<,fontsize>>
 X-label:  me -xl '{//E}'
 X-range:  me -xr -pi:pi
-X-tics:   me -xt 1<<|auto>>
+X-tics:   me -xt 1<<|auto|off>>
 Y-label:  me -yl '{s//r}({//E})'
 Y-range:  me -yr 0.1:0.4
-Y-tics:   me -yt 0.1<<|auto>>
+Y-tics:   me -yt 0.1<<|auto|off>>
 ────<-- combinable with choosing line -a1 -->────
 Line:     me -a1|-a2|-a3|···
 Key:      me -K <<text>>|vertical|horizontal
@@ -2251,14 +2251,14 @@ Move:        me -move <<a1>><<a2>>
 Graph:       me -graph 2d|3d|map
 Z-label:     me -zl '{s/D}{//E}'
 Z-range:     me -zr 0.1:0.4
-Z-tics:      me -zt 0.1<<|auto>>
+Z-tics:      me -zt 0.1<<|auto|off>>
 View:        me -view rot-x,rot-z
 Pm3d:        me -pm3d on|off<<|colormap>>
 Axis3d:      me -axis3d on|off
 ────<-- used only as graph=map -->───────────────
 Color-box:   me -cb vertical|horizontal
 Color-range: me -cr 0.1:0.4
-Color-tics:  me -ct 1<<|auto>>
+Color-tics:  me -ct 1<<|auto|off>>
 ─────────────────────────────────────────────────
 Tile:        me -vtile|-htile <<space>><<files>>
 GnuPlot:     me -gp
