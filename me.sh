@@ -1751,7 +1751,7 @@ function xgnuplot() {
     [[ ${FS:- } == " " ]] && separator=whitespace || separator="'$FS'"
     gnuplot_show_variables
 	gnuplot .me/gp 2> .me/gpval
-    gnuplot_gpval
+    #gnuplot_gpval
 	GPV_str=$(gnuplot_gpval)
     eval declare -A GPV=("$GPV_str") #; declare -p GPV
 	gpscript_head
@@ -2294,7 +2294,7 @@ Output:      me -O <<filename>>
     \245:∞    \261:±    \265:∝    \271:≠
     \273:≈    \320:∠    \077:⊥    \153:∥
 ─────────────────────────────────────────────────
-    {}    (delete)
+    {}    (delete/off)
 <-- Blank -->
     ^.    (quarter-space: \"^.\")
     ..    (half-space: \".\")
