@@ -36,7 +36,7 @@ Dpi=${Dpi:-96}
 Page=${Page:-portrait}
 Pagewidth=${Pagewidth:-21.0}
 Pageheight=${Pageheight:-29.7}
-Font=${Font:-Times}
+Font=${Font:-cmr10}
 Fontsize=${Fontsize:-13}
 Digitscale=${Digitscale:-0.67}
 Labelmargin=${Labelmargin:-1.0}
@@ -1083,6 +1083,11 @@ function gnuplot_show_variables() {
 
 function gnuplot_gpval() {
     awk -v Total_figures=$Total_figures '
+	function ceil(x) {
+		local y
+		y = int(x)
+		return (x > y ? y + 1 : y)
+	}
     function ticstep(max, min) {
 		xr = max - min; xr = (xr<0 ? -xr : xr)
 		power = 10.0 ** int(log(xr)/log(10))
@@ -1106,6 +1111,7 @@ function gnuplot_gpval() {
 		}
 		if (min ~ /\./) {
 			min2 = min < 0 ? substr(min,1,length(interval)+1) : substr(min,1,length(interval))
+			min2 = min2 < min ? min2 + 1 : min2
 		} else {
 			min2 = min
 		}
@@ -1119,7 +1125,7 @@ function gnuplot_gpval() {
 		tmp = max; tmp2 = max2
 		gsub(/[\.-]/, "", tmp); gsub(/[\.-]/, "", tmp2)
 		tic2 = length(tmp2)/length(tmp) <= 0.75 ? "" : substr(max,1,length(interval)-1)
-        return (length(tic) + t_dot + t_minus) "," t_dot + t_minus "," length(tic2)
+        return (length(tic) + t_dot + t_minus) "," t_dot + t_minus "," length(tic2) "," min2 "," interval
     }
 	{
 		gsub(/\.0$/,"",$3)
@@ -1184,24 +1190,24 @@ function gnuplot_gpval() {
 				if (Graph[i][j] == 3) {
 					xsizemax3 = xsizemax3 < Xsize[i][j] ? Xsize[i][j] : xsizemax3
 					ysizemax3 = ysizemax3 < Ysize[i][j] ? Ysize[i][j] : ysizemax3
-					result = ticlength(Xmax[i][j], Xmin[i][j], Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[1]; pxl = xt[2]
-					result = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]
-					result = ticlength(Zmax[i][j], Zmin[i][j], Ztics[i][j]); split(result, zt, ","); lzt[i] = zt[1]; pzl = zt[2]
-					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",zmin]="Zmin[i][j], "["i","j",zmax]="Zmax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j], "["i","j",zr]="Zmin[i][j]":"Zmax[i][j], "["i","j",lxt]="lxt[i], "["i","j",lyt]="lyt[i], "["i","j",lzt]="lzt[i], "["i","j",pzl]="pzl
+					result = ticlength(Xmax[i][j], Xmin[i][j], Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[1]; pxl = xt[2]; xstart = xt[4]; xinc = xt[5]
+					result = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]; ystart = yt[4]; yinc = yt[5]
+					result = ticlength(Zmax[i][j], Zmin[i][j], Ztics[i][j]); split(result, zt, ","); lzt[i] = zt[1]; pzl = zt[2]; zstart = zt[4]; zinc = zt[5]
+					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",zmin]="Zmin[i][j], "["i","j",zmax]="Zmax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j], "["i","j",zr]="Zmin[i][j]":"Zmax[i][j], "["i","j",lxt]="lxt[i], "["i","j",lyt]="lyt[i], "["i","j",lzt]="lzt[i], "["i","j",pzl]="pzl, "["i","j",xt]="xstart","xinc, "["i","j",yt]="ystart","yinc, "["i","j",zt]="zstart","zinc
 				} else if (Graph[i][j] == 2) {
 					if (Xnum[Xsize[i][j]] == Total_figures || Xnum[Xsize[i][j]] > 1) {xsizemax2 = xsizemax2 < Xsize[i][j] ? Xsize[i][j] : xsizemax2}
 					if (Ynum[Ysize[i][j]] == Total_figures || Ynum[Ysize[i][j]] > 1) {ysizemax2 = ysizemax2 < Ysize[i][j] ? Ysize[i][j] : ysizemax2}
-					result = ticlength(Xmax[i][j], Xmin[i][j], Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[3]; pxl = xt[2]
-					result = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]
-					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",lyt]="lyt[i], "["i","j",lxt]="lxt[i], "["i","j",pyl]="pyl
+					result = ticlength(Xmax[i][j], Xmin[i][j], Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[3]; pxl = xt[2]; xstart = xt[4]; xinc = xt[5]
+					result = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]; ystart = yt[4]; yinc = yt[5]
+					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j],  "["i","j",lxt]="lxt[i], "["i","j",lyt]="lyt[i], "["i","j",pyl]="pyl, "["i","j",xt]="xstart","xinc, "["i","j",yt]="ystart","yinc
 					YL = YL Ylabel[i][j]
 				} else if (Graph[i][j] != "" && Graph[i][j] == 0) {
 					xsizemax0 = xsizemax0 < Xsize[i][j] ? Xsize[i][j] : xsizemax0
 					ysizemax0 = ysizemax0 < Ysize[i][j] ? Ysize[i][j] : ysizemax0
-					result = ticlength(DXmax[i][j], DXmin[i][j], Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[3]; pxl = xt[2]
-					result = ticlength(DYmax[i][j], DYmin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]
-					result = ticlength( Cmax[i][j],  Cmin[i][j], Ctics[i][j]); split(result, ct, ","); lct[i] = ct[1]; pcl = ct[2]
-					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",lyt]="lyt[i], "["i","j",lxt]="lxt[i], "["i","j",pyl]="pyl
+					result = ticlength(DXmax[i][j], DXmin[i][j], Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[3]; pxl = xt[2]; xstart = xt[4]; xinc = xt[5]
+					result = ticlength(DYmax[i][j], DYmin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]; ystart = yt[4]; yinc = yt[5]
+					result = ticlength( Cmax[i][j],  Cmin[i][j], Ctics[i][j]); split(result, ct, ","); lct[i] = ct[1]; pcl = ct[2]; cstart = ct[4]; cinc = ct[5]
+					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",lyt]="lyt[i], "["i","j",lxt]="lxt[i], "["i","j",pyl]="pyl, "["i","j",xt]="xstart","xinc, "["i","j",yt]="ystart","yinc, "["i","j",ct]="cstart","cinc
 					YL = YL Ylabel[i][j]
 				}
                 if (i > 0) {
@@ -1404,8 +1410,7 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 		else
 			eval p=\$${1}t_pos
 			[[ $2 == "1" ]] && f="%g" || f=""
-			echo "set format $1 '$f'
-set ${1}tics offset $p nomirror out $t $Fontset" >> .me/gp
+			echo "set ${1}tics offset $p nomirror out ${GPV[$ix,$iy,${1}t]} format '$f' $Fontset" >> .me/gp
 		fi
 	}
 	if [[ $(echo $vspace $vs1 | awk '{if ($1 >= $2) print 1}') ]]; then
@@ -1719,7 +1724,7 @@ function xgnuplot() {
     [[ ${FS:- } == " " ]] && separator=whitespace || separator="'$FS'"
     gnuplot_show_variables
 	gnuplot .me/gp 2> .me/gpval
-    #gnuplot_gpval
+    gnuplot_gpval
 	GPV_str=$(gnuplot_gpval)
     eval declare -A GPV=("$GPV_str") #; declare -p GPV
 	gpscript_head
