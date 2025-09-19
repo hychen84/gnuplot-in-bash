@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.426 released on 2025-09-18 (since 2007/12/25)
+# ME build 7.5.426 released on 2025-09-19 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1388,57 +1388,52 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 	unset_xt=0; unset_yt=0
 	hs2=$(awk "BEGIN {printf \"%.2f\", ${GPV[hspace]}-3}")
 	hs3=$(awk "BEGIN {printf \"%.2f\", 1.76}")
-	if [[ $(echo $vspace $vs1 | awk '{if ($1 >= $2) print 1}') ]]; then
-		echo "set xr[${GPV[$ix,$iy,xr]}]
-set xlabel \"$xl\" offset $xl_pos $Fontset" >> .me/gp
-		if [[ $xt == "off" ]]; then
-			echo "unset xtics" >> .me/gp
+    function set_axislabel() {
+		eval l=\$${1}l
+		if [[ $l == "¶" ]]; then
+			echo "unset ${1}label" >> .me/gp
 		else
-			echo "set format x '%g'
-set xtics offset $xt_pos nomirror out $xt $Fontset" >> .me/gp
+			eval p=\$${1}l_pos
+			echo "set ${1}label \"$l\" offset $p $Fontset" >> .me/gp
 		fi
+    }
+	function set_axistics() {
+		eval t=\$${1}t
+		if [[ $t == "off" ]]; then
+			echo "unset ${1}tics" >> .me/gp
+		else
+			eval p=\$${1}t_pos
+			[[ $2 == "1" ]] && f="%g" || f=""
+			echo "set format $1 '$f'
+set ${1}tics offset $p nomirror out $t $Fontset" >> .me/gp
+		fi
+	}
+	if [[ $(echo $vspace $vs1 | awk '{if ($1 >= $2) print 1}') ]]; then
+		echo "set xr[${GPV[$ix,$iy,xr]}]" >> .me/gp
+        set_axislabel x
+		set_axistics x 1
 	elif [ $(echo $vspace $vs2 | awk '{if ($1 >= $2) print 1}') ]; then
 		echo "set xr[${GPV[$ix,$iy,xr]}]" >> .me/gp
 		if [ $iy -eq $ey ]; then
-			echo "set xlabel \"$xl\" offset $xl_pos $Fontset" >> .me/gp
+			set_axislabel x
 		else
 			echo "unset xlabel" >> .me/gp
 		fi
-		if [[ $xt == "off" ]]; then
-			echo "unset xtics" >> .me/gp
-		else
-			echo "set format x '%g'
-set xtics offset $xt_pos nomirror out $xt $Fontset" >> .me/gp
-		fi
+		set_axistics x 1
 	elif [ $(echo $vspace $vs3 | awk '{if ($1 >= $2) print 1}') ]; then
 		echo "set xr[${GPV[$ix,0,xr]}]" >> .me/gp
 		if [ $iy -eq $ey ]; then
-			echo "set xlabel \"$xl\" offset $xl_pos $Fontset" >> .me/gp
-			if [[ $xt == "off" ]]; then
-				echo "unset xtics" >> .me/gp
-			else
-				echo "set format x '%g'
-set xtics offset $xt_pos nomirror out $xt $Fontset" >> .me/gp
-			fi
+			set_axislabel x
+			set_axistics x 1
 		else
 			echo "unset xlabel" >> .me/gp
-			if [[ $xt == "off" ]]; then
-				echo "unset xtics" >> .me/gp
-			else
-				echo "set format x ''
-set xtics offset $xt_pos nomirror out $xt $Fontset" >> .me/gp
-			fi
+			set_axistics x 0
 		fi
 	else
 		echo "set xr[${GPV[$ix,0,xr]}]" >> .me/gp
 		if [ $iy -eq $ey ]; then
-			echo "set xlabel \"$xl\" offset $xl_pos $Fontset" >> .me/gp
-			if [[ $xt == "off" ]]; then
-				echo "unset xtics" >> .me/gp
-			else
-				echo "set format x '%g'
-set xtics offset $xt_pos nomirror out $xt $Fontset" >> .me/gp
-			fi
+			set_axislabel x
+			set_axistics x 1
 		else
 			echo "unset xlabel
 unset xtics" >> .me/gp
@@ -1447,56 +1442,31 @@ unset xtics" >> .me/gp
 	fi
 	[[ $(echo $hspace $hs3 | awk '{if ($1 < $2) print 1}') && $ix -lt $((${Layout[0]}-1)) && $unset_xt == 0 ]] && echo "set xtics add ('' ${GPV[$ix,$iy,xmax]})" >> .me/gp
 	if [[ $(echo $hspace $hs1 | awk '{if ($1 >= $2) print 1}') ]]; then
-		echo "set yr[${GPV[$ix,$iy,yr]}]
-set ylabel \"$yl\" offset $yl_pos $Fontset" >> .me/gp
-		if [[ $yt == "off" ]]; then
-			echo "unset xtics" >> .me/gp
-		else
-			echo "set format y '%g'
-set ytics offset $yt_pos nomirror out $yt $Fontset" >> .me/gp
-		fi
+		echo "set yr[${GPV[$ix,$iy,yr]}]" >> .me/gp
+        set_axislabel y
+		set_axistics y 1
 	elif [ $(echo $hspace $hs2 | awk '{if ($1 >= $2) print 1}') ]; then
 		echo "set yr[${GPV[$ix,$iy,yr]}]" >> .me/gp
 		if [ $ix -eq 0 ]; then
-			echo "set ylabel \"$yl\" offset $yl_pos $Fontset" >> .me/gp
+			set_axislabel y
 		else
 			echo "unset ylabel" >> .me/gp
 		fi
-		if [[ $yt == "off" ]]; then
-			echo "unset xtics" >> .me/gp
-		else
-			echo "set format y '%g'
-set ytics offset $yt_pos nomirror out $yt $Fontset" >> .me/gp
-		fi
+		set_axistics y 1
 	elif [ $(echo $hspace $hs3 | awk '{if ($1 >= $2) print 1}') ]; then
 		echo "set yr[${GPV[0,$iy,yr]}]" >> .me/gp
 		if [ $ix -eq 0 ]; then
-			echo "set ylabel \"$yl\" offset $yl_pos $Fontset" >> .me/gp
-			if [[ $yt == "off" ]]; then
-				echo "unset xtics" >> .me/gp
-			else
-				echo "set format y '%g'
-set ytics offset $yt_pos nomirror out $yt $Fontset" >> .me/gp
-			fi
+			set_axislabel y
+			set_axistics y 1
 		else
 			echo "unset ylabel" >> .me/gp
-			if [[ $yt == "off" ]]; then
-				echo "unset xtics" >> .me/gp
-			else
-				echo "set format y ''
-set ytics offset $yt_pos nomirror out $yt $Fontset" >> .me/gp
-			fi
+			set_axistics y 0
 		fi
 	else
 		echo "set yr[${GPV[0,$iy,yr]}]" >> .me/gp
 		if [ $ix -eq 0 ]; then
-			echo "set ylabel \"$yl\" offset $yl_pos $Fontset" >> .me/gp
-			if [[ $yt == "off" ]]; then
-				echo "unset xtics" >> .me/gp
-			else
-				echo "set format y '%g'
-set ytics offset $yt_pos nomirror out $yt $Fontset" >> .me/gp
-			fi
+			set_axislabel y
+			set_axistics y 1
 		else
 			echo "unset ylabel
 unset ytics" >> .me/gp
@@ -1504,8 +1474,6 @@ unset ytics" >> .me/gp
 		fi
 	fi
 	[[ $(echo $vspace $vs3 | awk '{if ($1 < $2) print 1}') && $iy -gt 0 && $unset_yt == 0 ]] && echo "set ytics add ('' ${GPV[$ix,$iy,ymax]})" >> .me/gp
-	#[[ $xl == "" ]] && sed -i 's|set xlabel "unset" .*$|unset xlabel|' .me/gp
-	#[[ $yl == "" ]] && sed -i 's|set ylabel "unset" .*$|unset ylabel|' .me/gp
 }
 
 function gnuplot_dgrid3d() {
