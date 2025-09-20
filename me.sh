@@ -575,7 +575,7 @@ function set_axis() {
 		unset ${1^}$name[${this:-0}]
 	elif [[ $3 != "" ]]; then
 		case $2 in
-			l) 	name=label; [[ $3 == "off" ]] && a="🗙" || a=$3;;
+			l) 	name=label; [[ $3 == "off" ]] && a="¶" || a=$3;;
 			r) 	name=range
 				if [[ $3 == ":" ]]; then
 					a="*:*"
@@ -585,7 +585,7 @@ function set_axis() {
 					r1=${3%:*}; r2=${3#*:}
 					a=${r1:-${p1:-*}}:${r2:-${p2:-*}}
 				fi;;
-			t) 	name=tics; [[ $3 == "off" ]] && a="🗙" || a=$3;;
+			t) 	name=tics; [[ $3 == "off" ]] && a="¶" || a=$3;;
 			b)  name=box; a=$3;;
 		esac
 		eval ${1^}$name[${this:-0}]=\'$a\'
@@ -1401,7 +1401,7 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 	hs3=$(awk "BEGIN {printf \"%.2f\", 1.76}")
     function set_axislabel() {
 		eval l=\$${1}l
-		if [[ $l == "🗙" ]]; then
+		if [[ $l == "¶" ]]; then
 			echo "unset ${1}label" >> .me/gp
 		else
 			eval p=\$${1}l_pos
@@ -1410,7 +1410,7 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
     }
 	function set_axistics() {
 		eval t=\$${1}t
-		if [[ $t == "🗙" ]]; then
+		if [[ $t == "¶" ]]; then
 			echo "unset ${1}tics" >> .me/gp
 		else
 			eval p=\$${1}t_pos
