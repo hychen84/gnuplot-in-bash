@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.426 released on 2025-09-19 (since 2007/12/25)
+# ME build 7.5.427 released on 2025-09-20 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -571,18 +571,23 @@ function set_label() {
 }
 
 function set_axis() {
-	a=$3
-    case $2 in
-		l) 	name=label;;
-		r) 	name=range;r1=${3%:*};r2=${3#*:};eval p="\${${1^}$name[${this:-0}]}";p1=${p%:*};p2=${p#*:}
-			if [[ $3 == ":" ]]; then a="*:*"; else a=${r1:-${p1:-*}}:${r2:-${p2:-*}}; fi;;
-		t) 	name=tics;;
-		b)  name=box;;
-	esac
-	if [[ $3 == "{}" ]]; then
+ 	if [[ $3 == "{}" ]]; then
 		unset ${1^}$name[${this:-0}]
-		[[ $2 == "l" ]] && eval ${1^}$name[${this:-0}]="¶"
 	elif [[ $3 != "" ]]; then
+		case $2 in
+			l) 	name=label; [[ $3 == "off" ]] && a="🗙" || a=$3;;
+			r) 	name=range
+				if [[ $3 == ":" ]]; then
+					a="*:*"
+				else
+					eval p="\${${1^}$name[${this:-0}]}"
+					p1=${p%:*}; p2=${p#*:}
+					r1=${3%:*}; r2=${3#*:}
+					a=${r1:-${p1:-*}}:${r2:-${p2:-*}}
+				fi;;
+			t) 	name=tics; [[ $3 == "off" ]] && a="🗙" || a=$3;;
+			b)  name=box; a=$3;;
+		esac
 		eval ${1^}$name[${this:-0}]=\'$a\'
 		echo -e "    $(chr $((${this:-0}+97))):  ${1^}$name= \"$a\""
 	else
@@ -1111,7 +1116,7 @@ function gnuplot_gpval() {
 		}
 		if (min ~ /\./) {
 			min2 = min < 0 ? substr(min,1,length(interval)+1) : substr(min,1,length(interval))
-			min2 = min2 < min ? min2 + 1 : min2
+			if (min2 < min) {delta = interval; gsub(/[1-9]/, "1", delta); min2 += delta}
 		} else {
 			min2 = min
 		}
@@ -1193,7 +1198,7 @@ function gnuplot_gpval() {
 					result = ticlength(Xmax[i][j], Xmin[i][j], Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[1]; pxl = xt[2]; xstart = xt[4]; xinc = xt[5]
 					result = ticlength(Ymax[i][j], Ymin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]; ystart = yt[4]; yinc = yt[5]
 					result = ticlength(Zmax[i][j], Zmin[i][j], Ztics[i][j]); split(result, zt, ","); lzt[i] = zt[1]; pzl = zt[2]; zstart = zt[4]; zinc = zt[5]
-					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",zmin]="Zmin[i][j], "["i","j",zmax]="Zmax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j], "["i","j",zr]="Zmin[i][j]":"Zmax[i][j], "["i","j",lxt]="lxt[i], "["i","j",lyt]="lyt[i], "["i","j",lzt]="lzt[i], "["i","j",pzl]="pzl, "["i","j",xt]="xstart","xinc, "["i","j",yt]="ystart","yinc, "["i","j",zt]="zstart","zinc
+					print "["i","j",xmin]="Xmin[i][j], "["i","j",xmax]="Xmax[i][j], "["i","j",ymin]="Ymin[i][j], "["i","j",ymax]="Ymax[i][j], "["i","j",zmin]="Zmin[i][j], "["i","j",zmax]="Zmax[i][j], "["i","j",xr]="Xmin[i][j]":"Xmax[i][j], "["i","j",yr]="Ymin[i][j]":"Ymax[i][j], "["i","j",zr]="Zmin[i][j]":"Zmax[i][j], "["i","j",lxt]="lxt[i], "["i","j",lyt]="lyt[i], "["i","j",lzt]="lzt[i], "["i","j",pzl]="pzl, "["i","j",xt]="xinc, "["i","j",yt]="yinc, "["i","j",zt]="zinc
 				} else if (Graph[i][j] == 2) {
 					if (Xnum[Xsize[i][j]] == Total_figures || Xnum[Xsize[i][j]] > 1) {xsizemax2 = xsizemax2 < Xsize[i][j] ? Xsize[i][j] : xsizemax2}
 					if (Ynum[Ysize[i][j]] == Total_figures || Ynum[Ysize[i][j]] > 1) {ysizemax2 = ysizemax2 < Ysize[i][j] ? Ysize[i][j] : ysizemax2}
@@ -1207,7 +1212,7 @@ function gnuplot_gpval() {
 					result = ticlength(DXmax[i][j], DXmin[i][j], Xtics[i][j]); split(result, xt, ","); lxt[i] = xt[3]; pxl = xt[2]; xstart = xt[4]; xinc = xt[5]
 					result = ticlength(DYmax[i][j], DYmin[i][j], Ytics[i][j]); split(result, yt, ","); lyt[i] = yt[1]; pyl = yt[2]; ystart = yt[4]; yinc = yt[5]
 					result = ticlength( Cmax[i][j],  Cmin[i][j], Ctics[i][j]); split(result, ct, ","); lct[i] = ct[1]; pcl = ct[2]; cstart = ct[4]; cinc = ct[5]
-					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",lyt]="lyt[i], "["i","j",lxt]="lxt[i], "["i","j",pyl]="pyl, "["i","j",xt]="xstart","xinc, "["i","j",yt]="ystart","yinc, "["i","j",ct]="cstart","cinc
+					print "["i","j",xmin]="DXmin[i][j], "["i","j",xmax]="DXmax[i][j], "["i","j",ymin]="DYmin[i][j], "["i","j",ymax]="DYmax[i][j], "["i","j",cmin]="Cmin[i][j], "["i","j",cmax]="Cmax[i][j], "["i","j",xr]="DXmin[i][j]":"DXmax[i][j], "["i","j",yr]="DYmin[i][j]":"DYmax[i][j], "["i","j",cr]="Cmin[i][j]":"Cmax[i][j], "["i","j",lyt]="lyt[i], "["i","j",lxt]="lxt[i], "["i","j",pyl]="pyl, "["i","j",xt]="xinc, "["i","j",yt]="yinc, "["i","j",ct]="cinc
 					YL = YL Ylabel[i][j]
 				}
                 if (i > 0) {
@@ -1255,7 +1260,7 @@ function gpscript_head() {
 	yspace=$(awk "BEGIN {printf \"%.2f\",  $vspace*(${Layout[0]}-1)+3}")
 	echo "#<-- Figure head -->
 X_ORIGIN = 0.5*($Wpt - ${GPV[xsizemax]}*${Layout[0]} - $Fontsize*($xspace))/$Wpt.0
-Y_ORIGIN = 0.5*($Hpt + ${GPV[ysizemax]}*(${Layout[1]}-2) + $Fontsize*$yspace)/$Hpt.0
+Y_ORIGIN = 0.5*($Hpt + ${GPV[ysizemax]}*(${Layout[1]}-1.5) + $Fontsize*$yspace)/$Hpt.0
 X_OFFSET = (${GPV[xsizemax]} + $Fontsize*$hspace)/$Wpt.0
 Y_OFFSET = (${GPV[ysizemax]} + $Fontsize*$vspace)/$Hpt.0
 
@@ -1396,7 +1401,7 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 	hs3=$(awk "BEGIN {printf \"%.2f\", 1.76}")
     function set_axislabel() {
 		eval l=\$${1}l
-		if [[ $l == "¶" ]]; then
+		if [[ $l == "🗙" ]]; then
 			echo "unset ${1}label" >> .me/gp
 		else
 			eval p=\$${1}l_pos
@@ -1405,18 +1410,17 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
     }
 	function set_axistics() {
 		eval t=\$${1}t
-		if [[ $t == "off" ]]; then
+		if [[ $t == "🗙" ]]; then
 			echo "unset ${1}tics" >> .me/gp
 		else
 			eval p=\$${1}t_pos
-			[[ $2 == "1" ]] && f="%g" || f=""
-			echo "set ${1}tics offset $p nomirror out ${GPV[$ix,$iy,${1}t]} format '$f' $Fontset" >> .me/gp
+			echo "set ${1}tics offset $p nomirror out ${GPV[$ix,$iy,${1}t]} format '$2' $Fontset" >> .me/gp
 		fi
 	}
 	if [[ $(echo $vspace $vs1 | awk '{if ($1 >= $2) print 1}') ]]; then
 		echo "set xr[${GPV[$ix,$iy,xr]}]" >> .me/gp
         set_axislabel x
-		set_axistics x 1
+		set_axistics x "%g"
 	elif [ $(echo $vspace $vs2 | awk '{if ($1 >= $2) print 1}') ]; then
 		echo "set xr[${GPV[$ix,$iy,xr]}]" >> .me/gp
 		if [ $iy -eq $ey ]; then
@@ -1424,32 +1428,32 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 		else
 			echo "unset xlabel" >> .me/gp
 		fi
-		set_axistics x 1
+		set_axistics x "%g"
 	elif [ $(echo $vspace $vs3 | awk '{if ($1 >= $2) print 1}') ]; then
 		echo "set xr[${GPV[$ix,0,xr]}]" >> .me/gp
 		if [ $iy -eq $ey ]; then
 			set_axislabel x
-			set_axistics x 1
+			set_axistics x "%g"
 		else
 			echo "unset xlabel" >> .me/gp
-			set_axistics x 0
+			set_axistics x ""
 		fi
 	else
 		echo "set xr[${GPV[$ix,0,xr]}]" >> .me/gp
 		if [ $iy -eq $ey ]; then
 			set_axislabel x
-			set_axistics x 1
+			set_axistics x "%g"
 		else
 			echo "unset xlabel
 unset xtics" >> .me/gp
 			unset_xt=1
 		fi
 	fi
-	[[ $(echo $hspace $hs3 | awk '{if ($1 < $2) print 1}') && $ix -lt $((${Layout[0]}-1)) && $unset_xt == 0 ]] && echo "set xtics add ('' ${GPV[$ix,$iy,xmax]})" >> .me/gp
+	[[ $(echo $hspace $hs3 | awk '{if ($1 < $2) print 1}') && $ix -lt $((${Layout[0]}-1)) && $unset_xt == 0 && $xl != "🗙" ]] && echo "set xtics add ('' ${GPV[$ix,$iy,xmax]})" >> .me/gp
 	if [[ $(echo $hspace $hs1 | awk '{if ($1 >= $2) print 1}') ]]; then
 		echo "set yr[${GPV[$ix,$iy,yr]}]" >> .me/gp
         set_axislabel y
-		set_axistics y 1
+		set_axistics y "%g"
 	elif [ $(echo $hspace $hs2 | awk '{if ($1 >= $2) print 1}') ]; then
 		echo "set yr[${GPV[$ix,$iy,yr]}]" >> .me/gp
 		if [ $ix -eq 0 ]; then
@@ -1457,28 +1461,28 @@ unset xtics" >> .me/gp
 		else
 			echo "unset ylabel" >> .me/gp
 		fi
-		set_axistics y 1
+		set_axistics y "%g"
 	elif [ $(echo $hspace $hs3 | awk '{if ($1 >= $2) print 1}') ]; then
 		echo "set yr[${GPV[0,$iy,yr]}]" >> .me/gp
 		if [ $ix -eq 0 ]; then
 			set_axislabel y
-			set_axistics y 1
+			set_axistics y "%g"
 		else
 			echo "unset ylabel" >> .me/gp
-			set_axistics y 0
+			set_axistics y ""
 		fi
 	else
 		echo "set yr[${GPV[0,$iy,yr]}]" >> .me/gp
 		if [ $ix -eq 0 ]; then
 			set_axislabel y
-			set_axistics y 1
+			set_axistics y "%g"
 		else
 			echo "unset ylabel
 unset ytics" >> .me/gp
 			unset_yt=1
 		fi
 	fi
-	[[ $(echo $vspace $vs3 | awk '{if ($1 < $2) print 1}') && $iy -gt 0 && $unset_yt == 0 ]] && echo "set ytics add ('' ${GPV[$ix,$iy,ymax]})" >> .me/gp
+	[[ $(echo $vspace $vs3 | awk '{if ($1 < $2) print 1}') && $iy -gt 0 && $unset_yt == 0 && $yl != "🗙" ]] && echo "set ytics add ('' ${GPV[$ix,$iy,ymax]})" >> .me/gp
 }
 
 function gnuplot_dgrid3d() {
@@ -1724,7 +1728,7 @@ function xgnuplot() {
     [[ ${FS:- } == " " ]] && separator=whitespace || separator="'$FS'"
     gnuplot_show_variables
 	gnuplot .me/gp 2> .me/gpval
-    gnuplot_gpval
+    #gnuplot_gpval
 	GPV_str=$(gnuplot_gpval)
     eval declare -A GPV=("$GPV_str") #; declare -p GPV
 	gpscript_head
