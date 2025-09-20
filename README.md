@@ -14,7 +14,7 @@ Change Space:
 ~~~
 me -space 1,0
 ~~~ 
-Change Caption of Figure (a):
+Change Caption of Figure (a), (b), and (c):
 ~~~
 me -a -ic '{//d}..=..10'
 me -b -ic '{//d}..=..6'
