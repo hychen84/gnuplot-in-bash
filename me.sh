@@ -1193,6 +1193,7 @@ function gnuplot_gpval() {
     END {
         Avg_graph = Total_graph / Total_figures
         print "[graph]="Avg_graph
+        hspace = vspace = 0
         for (j=0; j<=Ny; j++) {
             for (i=0; i<=Nx; i++) {
 				if (Graph[i][j] == 3) {
@@ -1224,14 +1225,10 @@ function gnuplot_gpval() {
                     } else {
 						hspace = hspace < lyt[i]+2.75+lxt[i-1]*0.5 ? lyt[i]+2.75+lxt[i-1]*0.5 : hspace
                     }
-                } else {
-					hspace = 0
 				}
             }
 			if (j > 0) {
 				vspace = Avg_graph == 3 ? -1 : 6
-			} else {
-				vspace = 0
 			}
        }
 		if (Avg_graph == 3) {
