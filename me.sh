@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.427 released on 2025-09-20 (since 2007/12/25)
+# ME build 7.5.428 released on 2025-09-23 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -36,7 +36,7 @@ Dpi=${Dpi:-96}
 Page=${Page:-portrait}
 Pagewidth=${Pagewidth:-21.0}
 Pageheight=${Pageheight:-29.7}
-Font=${Font:-cmr10}
+Font=${Font:-Times}
 Fontsize=${Fontsize:-13}
 Digitscale=${Digitscale:-0.67}
 Labelmargin=${Labelmargin:-1.0}
@@ -938,11 +938,14 @@ function set_font() {
 				wget -q http://mirrors.ctan.org/fonts/cm/ps-type1/bakoma/ttf/cmsy10.ttf -P ~/bin/.fonts/;echo "."
 			fi
 			Labelmargin=1.25
-			Font=cmr10;;
+			Font=cmr10
+            sed -i '/^Font=/s/:-.*}/:-cmr10}/' $HOME/bin/me;;
 		arial) Labelmargin=1.0
-			   Font=Arial;;
+			   Font=Arial
+               sed -i '/^Font=/s/:-.*}/:-Arial}/' $HOME/bin/me;;
 		times) Labelmargin=1.0
-			   Font=Times;;
+			   Font=Times
+               sed -i '/^Font=/s/:-.*}/:-Times}/' $HOME/bin/me;;
 	esac
 	[[ $f2 != "" && ${f2//[0-9]/} == "" ]] && Fontsize=$f2
 }
