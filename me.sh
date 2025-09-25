@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.428 released on 2025-09-23 (since 2007/12/25)
+# ME build 7.5.429 released on 2025-09-25 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1557,6 +1557,7 @@ set palette $palette" >> .me/gp
 }
 
 function gpscript_set_map() {
+    Files[$1,0]=${Files[$1,1]:-${Files[$1,0]:-${Files[$(($1-1)),0]}}}
     Using[$1,1]=${Using[$1,1]:-${Using[$1-1,1]:-1:2:c}}
     Dgrid=$(gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]})
 	Palette[$1]=${Palette[$1]:-${Palette[$1-1]:-${Palette[0]}}}
