@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.429 released on 2025-09-25 (since 2007/12/25)
+# ME build 7.5.430 released on 2025-09-27 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -571,22 +571,27 @@ function set_label() {
 }
 
 function set_axis() {
+	case $2 in
+		l) 	name=label;;
+		r) 	name=range;;
+		t) 	name=tics;;
+		b)  name=box;;
+	esac
  	if [[ $3 == "{}" ]]; then
 		unset ${1^}$name[${this:-0}]
 	elif [[ $3 != "" ]]; then
-		case $2 in
-			l) 	name=label; [[ $3 == "off" ]] && a="¶" || a=$3;;
-			r) 	name=range
-				if [[ $3 == ":" ]]; then
-					a="*:*"
-				else
-					eval p="\${${1^}$name[${this:-0}]}"
-					p1=${p%:*}; p2=${p#*:}
-					r1=${3%:*}; r2=${3#*:}
-					a=${r1:-${p1:-*}}:${r2:-${p2:-*}}
-				fi;;
-			t) 	name=tics; [[ $3 == "off" ]] && a="¶" || a=$3;;
-			b)  name=box; a=$3;;
+		case $name in
+			label)	[[ $3 == "off" ]] && a="¶" || a=$3;;
+			range)	if [[ $3 == ":" ]]; then
+						a="*:*"
+					else
+						eval p="\${${1^}$name[${this:-0}]}"
+						p1=${p%:*}; p2=${p#*:}
+						r1=${3%:*}; r2=${3#*:}
+						a=${r1:-${p1:-*}}:${r2:-${p2:-*}}
+					fi;;
+			tics) 	[[ $3 == "off" ]] && a="¶" || a=$3;;
+			box)  	a=$3;;
 		esac
 		eval ${1^}$name[${this:-0}]=\'$a\'
 		echo -e "    $(chr $((${this:-0}+97))):  ${1^}$name= \"$a\""
