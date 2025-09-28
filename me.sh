@@ -2310,7 +2310,7 @@ Output:      me -O <<filename>>
     │      │      │
     │bl    b    br│ bo
     └──────┴──────┘
- <<first|graph>>,0.5,0.5,<<left|right|center>>,<<fontsize>>
+	0.5,0.5,<<left|right|center>>,<<fontsize>>
 ────────────────────────────────────────────────
 <-- Colormaps of Pm3d -->
     heat     \033[34m▬▬\033[36m▬▬\033[96m▬▬\033[97m▬▬\033[91m▬▬\033[31m▬▬\033[0m
