@@ -1726,8 +1726,7 @@ function gnuplot_enhanced_characters() {
                         s|■| |g
                         s|\^\.|\&{^.}|g
                         s|\.\.|\&{.}|g
-                        s|\,\,| |g
-                        s|\_\_|\&{a}|g' .me/tmp
+                        s|\_\_| |g' .me/tmp
 }
 
 function gpscript_unset_3daxis() {
@@ -2291,8 +2290,7 @@ Output:      me -O <<filename>>
 <-- Blank -->
     ^.    (quarter-space: \"^.\")
     ..    (half-space: \".\")
-    ,,    (three-quarters-space whitespace: \" \")
-    __    (full-space: \"A\")" > .me/.left
+    __    (full-space whitespace: \" \")" > .me/.left
 	awk '{
 		L = L > length($0) ? L : length($0)
 		c[NR] = $0
