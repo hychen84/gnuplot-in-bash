@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.430 released on 2025-09-27 (since 2007/12/25)
+# ME build 7.5.431 released on 2025-09-28 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -554,9 +554,10 @@ function set_label() {
 		unset Label[${this:-0},${thisline:-1}]
 		[[ ${this:-0} > 0 && ${Label[${this:-0}]} == 0 ]] && unset Label[${this:-0}]
 	elif [[ $1 != "" ]]; then
-		[[ $((thisline-1)) > ${Label[$this]:-0} ]] && thisline=$((${Label[$this]:-0}+1))
+		[[ $((thisline-1)) > ${Label[${this:-0}]} ]] && thisline=$((${Label[${this:-0}]}+1))
         [[ ${Label[${this:-0},${thisline:-1}]} == "" ]] && ((Label[${this:-0}]++))
-		Label[${this:-0},${thisline:-1}]=$1
+		[[ $1 == "off" ]] && a="¶" || a=$1
+		Label[${this:-0},${thisline:-1}]=$a
 		echo -e "    $(chr $((${this:-0}+97)))${thisline:-1}:  Label= \"${Label[${this:-0},${thisline:-1}]}\"  position= \"${Label_position[${this:-0},${thisline:-1}]}\""
 	else
 		echo "Label:"
@@ -979,10 +980,18 @@ function set_position() {
 			b)  pos="0.5,YC$py,center";;
 			br) pos="1-XC,YC$py,right";;
 			bo) pos="1+XC,YC$py,left";;
-			*) 	[[ ${2//[^,]/} == "," ]] && pos=$2",left" || pos=$2;;
+			*) 	if [[ ${2//[^,]/} == "," ]]; then
+					[[ $2 =~ "_" ]] && pos=${2%%_*}",left_"${2#*_} || pos=$2",left"
+				else
+					pos=$2
+				fi;;
 		esac
 	else
-		[[ ${2//[^,]/} == ",," ]] && pos=$2",left" || pos=$2
+		if [[ ${2//[^,]/} == ",," ]]; then
+			[[ $2 =~ "_" ]] && pos=${2%%_*}",left_"${2#*_} || pos=$2",left"
+		else
+			pos=$2
+		fi
 	fi
 	if [[ $pos == "{}" ]]; then
 		case $1 in
@@ -993,6 +1002,7 @@ function set_position() {
 	elif [[ $pos == "" ]]; then
 		echo "me -${1:0:1}"
 	else
+		pos=${pos//_/■}
 		case $1 in
 			Index) Index_position[${this:-0}]=${pos//,,/,left,}
 				   echo -e "    $(chr $((${this:-0}+97))):  Index= \"${Index[${this:-0}]}\"  position= \"${Index_position[${this:-0}]}\"";;
