@@ -311,7 +311,7 @@ function align_parameters() {
 	{
 		for (i=1; i<=NF; i++) {
 			if ((i-1)%L == 0) {Lj=1; n++; A[n]=L-1}
-            gsub("■","",$i)
+            gsub("■","_",$i)
 			Larr[Lj] = Larr[Lj] < length($i) ? length($i) : Larr[Lj]
             g = gsub("¶","",$i)
             Darr[Lj][n] = $i
@@ -2310,7 +2310,7 @@ Output:      me -O <<filename>>
     │      │      │
     │bl    b    br│ bo
     └──────┴──────┘
-	0.5,0.5,center<<,fontsize>>
+ <<first|graph>>,0.5,0.5,<<left|right|center>>,<<fontsize>>
 ────────────────────────────────────────────────
 <-- Colormaps of Pm3d -->
     heat     \033[34m▬▬\033[36m▬▬\033[96m▬▬\033[97m▬▬\033[91m▬▬\033[31m▬▬\033[0m
