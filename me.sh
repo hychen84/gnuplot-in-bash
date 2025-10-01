@@ -1414,7 +1414,7 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 	unset_xt=0; unset_yt=0
 	hs2=$(awk "BEGIN {printf \"%.2f\", ${GPV[hspace]}-3}")
 	hs3=$(awk "BEGIN {printf \"%.2f\", 1.76}")
-    function set_axislabel() {
+    set_axislabel() {
 		eval l=\$${1}l
 		if [[ $l == "¶" ]]; then
 			echo "unset ${1}label" >> .me/gp
@@ -1423,7 +1423,7 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 			echo "set ${1}label \"$l\" offset $p $Fontset" >> .me/gp
 		fi
     }
-	function set_axistics() {
+	set_axistics() {
 		eval t=\$${1}t
 		if [[ $t == "¶" ]]; then
 			echo "unset ${1}tics" >> .me/gp
