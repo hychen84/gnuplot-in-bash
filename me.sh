@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.432 released on 2025-09-30 (since 2007/12/25)
+# ME build 7.5.433 released on 2025-10-03 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -39,7 +39,7 @@ Pageheight=${Pageheight:-29.7}
 Font=${Font:-Times}
 Fontsize=${Fontsize:-13}
 Digitscale=${Digitscale:-0.67}
-Labelmargin=${Labelmargin:-1.0}
+Labelmargin=${Labelmargin:-1.25}
 Keymargin=${Keymargin:-0.5}
 Merge=${Merge:-c}
 Align=(${Align[*]:-Z 2})
@@ -946,10 +946,10 @@ function set_font() {
 			Labelmargin=1.25
 			Font=cmr10
             sed -i '/^Font=/s/:-.*}/:-cmr10}/' $HOME/bin/me;;
-		arial) Labelmargin=1.0
+		arial) Labelmargin=1.25
 			   Font=Arial
                sed -i '/^Font=/s/:-.*}/:-Arial}/' $HOME/bin/me;;
-		times) Labelmargin=1.0
+		times) Labelmargin=1.25
 			   Font=Times
                sed -i '/^Font=/s/:-.*}/:-Times}/' $HOME/bin/me;;
 	esac
@@ -1313,7 +1313,7 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
 	if [[ ${Index_position[$1]} == "auto" ]]; then
 		case ${Graph[$1]} in
 			2d) p1="XC,1-YC*$Labelmargin,left";;
-			3d) ipyoffset=$(awk "BEGIN {printf \"%.2f\", 1.6*cos($Vx*0.0174533)*cos($Vz*0.0174533) }")
+			3d) ipyoffset=$(awk "BEGIN {printf \"%.2f\", 1.25*cos($Vx*0.0174533)*cos($Vz*0.0174533) }")
 				p1="-XC,-XC,1+YC+$ipyoffset,left";;
 		   map) p1="XC,1+YC*$Labelmargin,left";;
 		esac
