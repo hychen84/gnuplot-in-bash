@@ -1570,14 +1570,13 @@ function gpscript_set_3d() {
 	Pm3d[$1]=${Pm3d[$1]:-${Pm3d[$1-1]:-${Pm3d[0]}}}
 	Palette[$1]=${Palette[$1]:-${Palette[$1-1]:-${Palette[0]}}}
 	gpscript_palette ${Palette[$1]}
-	echo "set zr[${GPV[$ix,$iy,zr]}]" >> .me/gp
 	if [[ $zl == "" ]]; then
 		echo "unset zlabel" >> .me/gp
 	else
 		echo "set zlabel \"$zl\" offset $zl_pos $Fontset" >> .me/gp
 	fi
-	echo "set format z '%g'
-set ztics offset $zt_pos nomirror out ${Ztics[$1]} $Fontset
+	echo "set zr[${GPV[$ix,$iy,zr]}]" >> .me/gp
+	echo "set ztics offset $zt_pos nomirror out ${Ztics[$1]} format '%g' $Fontset
 set ticslevel 0
 set border 21
 set grid x y z vertical lt -1 lc '#d4d3d3'
@@ -1627,8 +1626,7 @@ set pm3d map
 set palette $palette
 set colorbox $colorbox
 set cbr[${GPV[$ix,$iy,cr]}]
-set format cb '%g'
-set cbtics offset $ct_pos scale 0.1 nomirror ${Ctics[$1]} $Fontset" >> .me/gp
+set cbtics offset $ct_pos scale 0.1 nomirror ${Ctics[$1]} format '%g' $Fontset" >> .me/gp
 }
 
 function gpscript_plot() {
@@ -1757,7 +1755,7 @@ function gnuplot_enhanced_characters() {
                         s|§|$|g
                         s|■| |g
                         s|\^\.|\&{^.}|g
-                        s|\\.|\&{.}|g
+                        s|\\\.|\&{.}|g
                         s|\\_| |g' .me/tmp
 }
 
