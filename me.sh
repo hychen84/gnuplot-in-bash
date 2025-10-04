@@ -552,6 +552,7 @@ function set_label() {
 	if [[ $1 == "{}" ]]; then
 		[[ ${Label[${this:-0},${thisline:-1}]} != "" ]] && ((Label[${this:-0}]--))
 		unset Label[${this:-0},${thisline:-1}]
+		unset Label_position[${this:-0},${thisline:-1}]
 		[[ ${this:-0} > 0 && ${Label[${this:-0}]} == 0 ]] && unset Label[${this:-0}]
 	elif [[ $1 != "" ]]; then
 		[[ $((thisline-1)) > ${Label[${this:-0}]} ]] && thisline=$((${Label[${this:-0}]}+1))
@@ -1350,8 +1351,9 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
             tc=""
         fi
         p2=(${p2[*]})
-		[[ ${p2[0]} != "" && ${p2[0]//[0-9]/} == "" ]] && Usrfontset="■font \",$fs\"" || Usrfontset=""
+		[[ ${p2[0]} != "" && ${p2[0]//[0-9]/} == "" ]] && Usrfontset="■font \",${p2[0]}\"" || Usrfontset=""
         echo "set label $((j+1)) \"${Label[$1,$j]}\" at $sys $lc ${align}${tc}front$Usrfontset" >> .me/gp
+		IFS=" "
     done
 	Key_layout[$1]=${Key_layout[$1]:-${Key_layout[$1-1]}}
 	Key_box[$1]=${Key_box[$1]:-${Key_box[$1-1]}}; Key_box[$1]=${Key_box[$1]//on/0}
