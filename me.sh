@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.433 released on 2025-10-03 (since 2007/12/25)
+# ME build 7.5.434 released on 2025-10-04 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -40,7 +40,7 @@ Font=${Font:-Times}
 Fontsize=${Fontsize:-13}
 Digitscale=${Digitscale:-0.67}
 Labelmargin=${Labelmargin:-1.25}
-Keymargin=${Keymargin:-0.5}
+Keyboxmargin=${Keyboxmargin:-0.5}
 Merge=${Merge:-c}
 Align=(${Align[*]:-Z 2})
 Hspace=${Hspace:-*}
@@ -556,9 +556,14 @@ function set_label() {
 	elif [[ $1 != "" ]]; then
 		[[ $((thisline-1)) > ${Label[${this:-0}]} ]] && thisline=$((${Label[${this:-0}]}+1))
         [[ ${Label[${this:-0},${thisline:-1}]} == "" ]] && ((Label[${this:-0}]++))
-		[[ $1 == "off" ]] && a="¶" || a=$1
+		if [[ $1 == "off" ]]; then
+            a="¶"
+            Label_position[${this:-0},${thisline:-1}]="first,0.5,0.5,left_point_pt_7_ps_0.5_lc_6"
+        else
+            a=$1
+        fi
 		Label[${this:-0},${thisline:-1}]=$a
-		echo -e "    $(chr $((${this:-0}+97)))${thisline:-1}:  Label= \"${Label[${this:-0},${thisline:-1}]}\"  position= \"${Label_position[${this:-0},${thisline:-1}]}\""
+		echo -e "    $(chr $((${this:-0}+97)))${thisline:-1}:  Label= \"${Label[${this:-0},${thisline:-1}]//¶/}\"  position= \"${Label_position[${this:-0},${thisline:-1}]}\""
 	else
 		echo "Label:"
 		for ((i=0; i<Total_figures; i++)); do
@@ -958,41 +963,30 @@ function set_font() {
 
 function set_position() {
 	if [[ $1 == "Key" ]]; then
-		[[ ${Key_box[${this:-0}]} == "off" ]] && py=1.0 || py="*$Keymargin"
+		[[ ${Key_box[${this:-0}]} == "off" ]] && py="" || py="*$Keyboxmargin"
 	else
 		py="*$Labelmargin"
 	fi
-	if [[ ${Graph[${this:-0}]} != "3d" ]]; then
-		case $2 in
-			sh) pos="-XC*5,1+YC$py,left";;
-			hl) pos="XC,1+YC$py,left";;
-			h)  pos="0.5,1+YC$py,center";;
-			hr) pos="1-XC,1+YC$py,right";;
-			tl) pos="XC,1-YC$py,left";;
-			t)  pos="0.5,1-YC$py,center";;
-			tr) pos="1-XC,1-YC$py,right";;
-			to) pos="1+XC,1-YC$py,left";;
-			l)  pos="XC,0.5,left";;
-			c)  pos="0.5,0.5,center";;
-			r)  pos="1-XC,0.5,right";;
-			o)  pos="1+XC,0.5,left";;
-			bl) pos="XC,YC$py,left";;
-			b)  pos="0.5,YC$py,center";;
-			br) pos="1-XC,YC$py,right";;
-			bo) pos="1+XC,YC$py,left";;
-			*) 	if [[ ${2//[^,]/} == "," ]]; then
-					[[ $2 =~ "_" ]] && pos=${2%%_*}",left_"${2#*_} || pos=$2",left"
-				else
-					pos=$2
-				fi;;
-		esac
-	else
-		if [[ ${2//[^,]/} == ",," ]]; then
-			[[ $2 =~ "_" ]] && pos=${2%%_*}",left_"${2#*_} || pos=$2",left"
-		else
-			pos=$2
-		fi
-	fi
+	[[ ${Graph[${this:-0}]} == "3d" ]] && pz="0," || pz=""
+    case $2 in
+        sh) pos="-XC*5,1+YC$py,${pz}left";;
+        hl) pos="XC,1+YC$py,${pz}left";;
+        h)  pos="0.5,1+YC$py,${pz}center";;
+        hr) pos="1-XC,1+YC$py,${pz}right";;
+        tl) pos="XC,1-YC$py,${pz}left";;
+        t)  pos="0.5,1-YC$py,${pz}center";;
+        tr) pos="1-XC,1-YC$py,${pz}right";;
+        to) pos="1+XC,1-YC$py,${pz}left";;
+        l)  pos="XC,0.5,${pz}left";;
+        c)  pos="0.5,0.5,${pz}center";;
+        r)  pos="1-XC,0.5,${pz}right";;
+        o)  pos="1+XC,0.5,${pz}left";;
+        bl) pos="XC,YC$py,${pz}left";;
+        b)  pos="0.5,YC$py,${pz}center";;
+        br) pos="1-XC,YC$py,${pz}right";;
+        bo) pos="1+XC,YC$py,${pz}left";;
+        *) 	pos=$2;;
+    esac
 	if [[ $pos == "{}" ]]; then
 		case $1 in
 			Index) unset Index_position[${this:-0}];;
@@ -1007,7 +1001,7 @@ function set_position() {
 			Index) Index_position[${this:-0}]=${pos//,,/,left,}
 				   echo -e "    $(chr $((${this:-0}+97))):  Index= \"${Index[${this:-0}]}\"  position= \"${Index_position[${this:-0}]}\"";;
 			Label) Label_position[${this:-0},${thisline:-1}]=${pos//,,/,left,}
-				   echo -e "    $(chr $((${this:-0}+97)))${thisline:-1}:  Label= \"${Label[${this:-0},${thisline:-1}]}\"  position= \"${Label_position[${this:-0},${thisline:-1}]}\"";;
+				   echo -e "    $(chr $((${this:-0}+97)))${thisline:-1}:  Label= \"${Label[${this:-0},${thisline:-1}]//¶/}\"  position= \"${Label_position[${this:-0},${thisline:-1}]}\"";;
 			Key)   Key_position[${this:-0}]=${pos//,,/,left,}
 				   echo -e "    $(chr $((${this:-0}+97))):  Key box= \"${Key_box[${this:-0}]}\"  position= \"${Key_position[${this:-0}]}\"";;
 		esac
@@ -1324,14 +1318,40 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
 		echo "set label 1 \"${index% }\" at graph ${p1%,*} ${p1##*,} front" >> .me/gp
 	fi
     for ((j=1; j<=${Label[$1]:-0}; j++)); do
-        p2=${Label_position[$1,$j]:-${Label_position[0,1]}}
-		fs=${p2##*,}
-		if [[ ${fs//[0-9]/} == "" ]]; then
-			Usrfontset="font \",$fs\""
-			p2=${p2%,*}
+        Label_position[$1,$j]=${Label_position[$1,$j]:-${Label_position[$1,$((j-1))]:-${Label_position[0,1]}}}
+        IFS=","
+        p2=(${Label_position[$1,$j]})
+        if [[ ${p2[0]} == "first" || ${p2[0]} == "second" ]]; then
+            sys=${p2[0]}
+            unset p2[0]
+        else
+            sys="graph"
+        fi
+        p2=(${p2[*]})
+		if [[ ${Graph[$1]} == "3d" ]]; then
+			lc=${p2[0]}","${p2[1]}","${p2[2]}
+			unset p2[0]; unset p2[1]; unset p2[2]
+		else
+			lc=${p2[0]}","${p2[1]}
+			unset p2[0]; unset p2[1]
 		fi
-		[[ ${Graph[$1]} == "map" ]] && textcolor="tc lt 5 " || textcolor=""
-        echo "set label $((j+1)) \"${Label[$1,$j]}\" at graph ${p2%,*} ${p2##*,} ${textcolor}front $Usrfontset" >> .me/gp
+        p2=(${p2[*]})
+        if [[ ${p2[0]} == "left" || ${p2[0]} == "right" || ${p2[0]} == "center" ]]; then
+            align=${p2[0]}"■"
+            unset p2[0]
+        else
+            align=""
+        fi
+        p2=(${p2[*]})
+        if [[ ${p2[0]} =~ "■" ]]; then
+            tc=${p2[0]}"■"
+            unset p2[0]
+        else
+            tc=""
+        fi
+        p2=(${p2[*]})
+		[[ ${p2[0]} != "" && ${p2[0]//[0-9]/} == "" ]] && Usrfontset="■font \",$fs\"" || Usrfontset=""
+        echo "set label $((j+1)) \"${Label[$1,$j]}\" at $sys $lc ${align}${tc}front$Usrfontset" >> .me/gp
     done
 	Key_layout[$1]=${Key_layout[$1]:-${Key_layout[$1-1]}}
 	Key_box[$1]=${Key_box[$1]:-${Key_box[$1-1]}}; Key_box[$1]=${Key_box[$1]//on/0}
@@ -1339,7 +1359,7 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
 		if [[ ${key%,*} == $1 && ${Key[$key]} != "" ]]; then
 			Key_position[$1]=${Key_position[$1]:-${Key_position[$1-1]:-auto}}
 			if [[ ${Key_position[$1]} == "auto" ]]; then
-				p3="1-XC,1-YC*$Keymargin,right"
+				p3="1-XC,1-YC*$Keyboxmargin,right"
 			else
 				p3=${Key_position[$1]}
 			fi
@@ -2322,23 +2342,23 @@ Output:      me -O <<filename>>
     │      │      │
     │bl    b    br│ bo
     └──────┴──────┘
-	0.5,0.5,<<left|right|center>>,<<fontsize>>
-────────────────────────────────────────────────
-<-- Colormaps of Pm3d -->
+position=<<system>>,coordiante,<<graph>>,<<fontsize>>
+system:      first|second
+coordiante:  0.5,0.5<<,left|,right|,center>>
+graph:       point_pt_7_ps_0.5_lc_6|tc_lt_5
+fontsize:    11
+────<-- Colormaps of Pm3d -->───────────────────
     heat     \033[34m▬▬\033[36m▬▬\033[96m▬▬\033[97m▬▬\033[91m▬▬\033[31m▬▬\033[0m
     jet      \033[34m▬▬\033[36m▬▬\033[92m▬▬\033[93m▬▬\033[91m▬▬\033[31m▬▬\033[0m
     parula   \033[34m▬▬\033[94m▬▬\033[36m▬▬\033[92m▬▬\033[93m▬▬\033[97m▬▬\033[0m  (default)
     viridis  \033[35m▬▬\033[34m▬▬\033[94m▬▬\033[36m▬▬\033[92m▬▬\033[93m▬▬\033[0m
-    green
-    grey
-────────────────────────────────────────────────
-<-- Numerics -->
+    green/grey
+────<-- Numerics -->────────────────────────────
 Transpose:   me -tra
 Calculation: me -cal '\$1*sin(30)'
 Derivative:  me -der d3/d1
 Integral:    me -int 'exp(\$2-c1)*d1'
-Fourier:     me -fft 1:2<<:3>>
-BZ Offset:   me -bz pi,pi" > .me/.right
+Fourier:     me -fft 1:2<<:3>> -bz pi,pi" > .me/.right
 	sed -i -e "/^[^<]/{s!<<!$L!g;s!>>!$R!g;s!|!$S!g};s!<--!$C<--!g;s!-->!-->$N!g" .me/.left
 	sed -i -e "/^[^<]/{s!<<!$L!g;s!>>!$R!g;s!|!$S!g};s!<--!$C<--!g;s!-->!-->$N!g" .me/.right
 	paste -d '' .me/.left .me/.right
