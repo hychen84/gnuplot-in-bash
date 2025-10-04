@@ -16,9 +16,9 @@ me -space 1,0
 ~~~ 
 Change caption of figure (a), (b), and (c):
 ~~~
-me -a -ic '{//d}..=..10'
-me -b -ic '{//d}..=..6'
-me -c -ic '{//d}..=..3'
+me -a -ic '{//d}\.=\.10'
+me -b -ic '{//d}\.=\.6'
+me -c -ic '{//d}\.=\.3'
 ~~~
 Change axis-label of figure (b) and (c):
 ~~~
