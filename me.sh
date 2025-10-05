@@ -2306,17 +2306,17 @@ Output:      me -O <<filename>>
     {s// }  (Symbol-Oblique)
     {w/ }   (Artistic)
 <-- Greek Letters -->
-    A:A    B:B    C:Χ    D:Δ    E:Ε    F:Φ
-    G:Γ    H:Η    I:Ι    K:Κ    L:Λ    M:M
-    N:N    O:O    P:Π    Q:Θ    R:Ρ    S:Σ
-    T:Τ    U:Υ    W:Ω    X:Ξ    Y:Ψ    Z:Z
-    a:α    b:β    c:χ    d:δ    e:ε    f:φ
-    g:γ    h:η    i:ι    k:κ    l:λ    m:μ
-    n:ν    o:ο    p:π    q:θ    r:ρ    s:σ
-    t:τ    u:υ    w:ω    x:ξ    y:ψ    z:ζ
+    A:A    a:α    I:Ι    i:ι    R:Ρ    r:ρ
+    B:B    b:β    K:Κ    k:κ    S:Σ    s:σ
+    C:Χ    c:χ    L:Λ    l:λ    T:Τ    t:τ
+    D:Δ    d:δ    M:M    m:μ    U:Υ    u:υ
+    E:Ε    e:ε    N:N    n:ν    W:Ω    w:ω
+    F:Φ    f:φ    O:O    o:ο    X:Ξ    x:ξ
+    G:Γ    g:γ    P:Π    p:π    Y:Ψ    y:ψ
+    H:Η    h:η    Q:Θ    q:θ    Z:Z    z:ζ   
 <-- Math Symbols -->
-    \245:∞    \261:±    \265:∝    \271:≠
-    \273:≈    \320:∠    \077:⊥    \153:∥
+    \245:∞    \265:∝    \273:≈    \077:⊥
+    \261:±    \271:≠    \320:∠    \153:∥
 ─────────────────────────────────────────────────
     {}    (delete/off)
 <-- Blank -->
