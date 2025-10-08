@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.434 released on 2025-10-04 (since 2007/12/25)
+# ME build 7.5.435 released on 2025-10-08 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -508,8 +508,9 @@ function set_index() {
 		Index[${this:-0}]=$1
 	else
 		echo "Index:"
-		for ((i=0; i<Total_figures; i++)); do			
-			L=$L"—$(chr $((i+97)))—index=—\"${Index[i]:-¶}\"—caption=—\"${Caption[i]:-¶}\"—position=—\"${Index_position[i]:-¶}\""
+		for ((i=0; i<Total_figures; i++)); do
+            Caption[$i]=${Caption[i]:-¶}
+			L=$L"—$(chr $((i+97)))—index=—\"${Index[i]:-¶}\"—caption=—\"${Caption[i]//■/}\"—position=—\"${Index_position[i]:-¶}\""
 		done
         align_parameters 7 $L
 	fi
@@ -1014,7 +1015,7 @@ function gpscript_palette() {
 	JET="defined (0 '#000090', 1 '#000fff', 2 '#0090ff', 3 '#0fffee', 4 '#90ff70', 5 '#ffee00', 6 '#ff7000', 7 '#ee0000', 8 '#7f0000')"
 	PARULA="defined (0 '#352a87', 1 '#2053d4', 2 '#0d75dc', 3 '#0c93d2', 4 '#07a9c2', 5 '#38b99e', 6 '#7cbf7b', 7 '#b7bd64', 8 '#f1b94a', 9 '#fad32a', 10 '#f9fb0e')"
 	VIRIDIS="viridis"
-	GREEN="defined (0 '#005A32', 1 '#238B45', 2 '#41AB5D', 3 '#74C476', 4 '#A1D99B', 5 '#C7E9C0', 6 '#E5F5E0', 7 '#F7FCF5')"
+	GREEN="defined (0 '#F7FCF5', 1 '#E5F5E0', 2 '#C7E9C0', 3 '#A1D99B', 4 '#74C476', 5 '#41AB5D', 6 '#238B45', 7 '#005A32')"
 	GREY="defined (0 '#252525', 1 '#525252', 2 '#737373', 3 '#969696', 4 '#bdbdbd', 5 '#d9d9d9', 6 '#f0f0f0', 7 '#ffffff')"
     palette=$(eval echo \$$1)
 }
@@ -1405,10 +1406,10 @@ function gpscript_set_axis() {
             Lyt=$(awk "BEGIN {printf \"%.2f\", (${GPV[$ix,$iy,lyt]}+2)*$Digitscale}")
 			Xrotation=$(awk "BEGIN {printf \"%.2f\", cos($Vx*0.0174533)*cos($Vz*0.0174533)}")
 			Yrotation=$(awk "BEGIN {printf \"%.2f\", sin($Vx*0.0174533)*cos($Vz*0.0174533)}")
-            xl_pos=$(awk "BEGIN {printf \"%.2f,%.2f\",  $Lxt*$Xrotation,-$Lxt*$Yrotation*0.25}")",0■left"
-			yl_pos=$(awk "BEGIN {printf \"%.2f,%.2f\", -$Lyt*$Xrotation,-$Lyt*$Yrotation*0.25}")",0■right"
-			xt_pos=$(awk "BEGIN {printf \"%.2f,%.2f\", 1.5*$Xrotation,-0.25*$Yrotation}")",0"
-            yt_pos="0,"$(awk "BEGIN {printf \"%.2f\", -0.25*$Yrotation}")",0"
+            xl_pos=$(awk "BEGIN {printf \"%.2f,%.2f\",  $Lxt*$Xrotation,-$Lxt*$Yrotation*0.25}")"■left"
+			yl_pos=$(awk "BEGIN {printf \"%.2f,%.2f\", -$Lyt*$Xrotation,-$Lyt*$Yrotation*0.25}")"■right"
+			xt_pos=$(awk "BEGIN {printf \"%.2f,%.2f\", 1.5*$Xrotation,-0.25*$Yrotation}")
+            yt_pos="0,"$(awk "BEGIN {printf \"%.2f\", -0.25*$Yrotation}")
 			vs1=-1; hs1=-1;;
 	   map) xsize=${Xsize[$1]}
 			ysize=${Ysize[$1]}
@@ -1564,8 +1565,8 @@ function gpscript_set_3d() {
 	Zlabel[$1]=${Zlabel[$1]:-${Zlabel[$1-1]:-¶}}
 	zl=${Zlabel[$1]}
     Ztics[$1]=${Ztics[$1]:-${Ztics[$1-1]:-auto}}
-	zl_pos=$(awk "BEGIN {printf \"%.2f\",(7.0-${GPV[$ix,$iy,lzt]}-0.5*${GPV[$ix,$iy,pzl]})*$Digitscale}")",0,0■right■rotate■by■0"
-	zt_pos="1.0,0,0"
+	zl_pos=$(awk "BEGIN {printf \"%.2f\",(7.0-${GPV[$ix,$iy,lzt]}-0.5*${GPV[$ix,$iy,pzl]})*$Digitscale}")",0■right■rotate■by■0"
+	zt_pos="1.0,0"
     Using[$1,1]=${Using[$1,1]:-${Using[$1-1,1]:-1:2:c}}
     #gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]}
 	Dgrid=$(gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]})
@@ -1598,7 +1599,7 @@ set hidden3d" >> .me/gp
 	fi
     if [ ${Pm3d[$1]} == "on" ]; then
 		echo "set pm3d depth lighting
-set style fill transparent solid 0.2" >> .me/gp
+set style fill transparent solid 0.1" >> .me/gp
 	fi
 	echo -e "set view ${View[$1]}
 set palette $palette" >> .me/gp
