@@ -1015,7 +1015,7 @@ function gpscript_palette() {
 	JET="defined (0 '#000090', 1 '#000fff', 2 '#0090ff', 3 '#0fffee', 4 '#90ff70', 5 '#ffee00', 6 '#ff7000', 7 '#ee0000', 8 '#7f0000')"
 	PARULA="defined (0 '#352a87', 1 '#2053d4', 2 '#0d75dc', 3 '#0c93d2', 4 '#07a9c2', 5 '#38b99e', 6 '#7cbf7b', 7 '#b7bd64', 8 '#f1b94a', 9 '#fad32a', 10 '#f9fb0e')"
 	VIRIDIS="viridis"
-	GREEN="defined (0 '#A8DA61', 1 '#66CC00', 2 '#66CC33', 3 '#00CC00', 4 '#009900')"
+	GREEN="defined (0 '#8CB402', 1 '#ECFAD5', 2 '#A5E49D', 3 '#8CCE72', 4 '#69B84A')"
 	GREY="defined (0 '#252525', 1 '#525252', 2 '#737373', 3 '#969696', 4 '#bdbdbd', 5 '#d9d9d9', 6 '#f0f0f0', 7 '#ffffff')"
     palette=$(eval echo \$$1)
 }
