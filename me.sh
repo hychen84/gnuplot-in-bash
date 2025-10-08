@@ -1599,7 +1599,7 @@ set hidden3d" >> .me/gp
 	fi
     if [ ${Pm3d[$1]} == "on" ]; then
 		echo "set pm3d depth lighting
-set style fill transparent solid 0.1" >> .me/gp
+set style fill transparent solid 0.15" >> .me/gp
 	fi
 	echo -e "set view ${View[$1]}
 set palette $palette" >> .me/gp
