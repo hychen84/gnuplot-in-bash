@@ -206,23 +206,24 @@ function print_parameters() {
                     split(A[i][j][l],c," ")
 					gsub("§","$",c[6])
                     gsub("‖","||",c[6])
+                    if (c[25] == "¶") {ind = "🗙"} else {ind = c[2]}
                     if (c[7]) {
                         switch(c[7]) {
                             case "l":
                                 w = L[i] - (length(c[5] c[6] c[8] c[9])+14) + 2
-                                printf "   %2d. \"%s\" u %s dt %s lw %s%*s",c[2],c[5],c[6],c[8],c[9], w," "
+                                printf "   %2d. \"%s\" u %s dt %s lw %s%*s",ind,c[5],c[6],c[8],c[9], w," "
                                 break
                             case "p":
                                 w = L[i] - (length(c[5] c[6] c[10] c[11])+14) + 2
-                                printf "   %2d. \"%s\" u %s pt %s ps %s%*s",c[2],c[5],c[6],c[10],c[11], w," "
+                                printf "   %2s. \"%s\" u %s pt %s ps %s%*s",ind,c[5],c[6],c[10],c[11], w," "
                                 break
                             case "lp":
                                 w = L[i] - (length(c[5] c[6] c[8] c[10])+14) + 2
-                                printf "   %2d. \"%s\" u %s dt %s pt %s%*s",c[2],c[5],c[6],c[8],c[10], w," "
+                                printf "   %2d. \"%s\" u %s dt %s pt %s%*s",ind,c[5],c[6],c[8],c[10], w," "
                                 break
                             case "pm3d":
                                 w = L[i] - (length(c[5] c[6])+11) + 2
-                                printf "   %2d. \"%s\" u %s pm3d%*s",c[2],c[5],c[6], w," "
+                                printf "   %2d. \"%s\" u %s pm3d%*s",ind,c[5],c[6], w," "
                                 break
                             case "¶":
                                 w = L[i] - (length(c[5] c[6])+6) + 2
