@@ -2258,10 +2258,10 @@ Key box:  me -kb -0.5<<|on|off>>
 Position: me -kp <<position>><<,fontsize>>
 X-label:  me -xl '{//E}'
 X-range:  me -xr -pi:pi
-X-tics:   me -xt 1<<|auto|off>>
+X-tics:   me -xt 1<<|auto|off>>|start,incr
 Y-label:  me -yl '{s//r}({//E})'
 Y-range:  me -yr 0.1:0.4
-Y-tics:   me -yt 0.1<<|auto|off>>
+Y-tics:   me -yt 0.1<<|auto|off>>|start,incr
 ────<-- combinable with choosing line -a1 -->────
 Line:     me -a1|-a2|-a3|···
 Key:      me -K <<text>>|vertical|horizontal
@@ -2291,14 +2291,14 @@ Move:        me -move <<a1>><<a2>>
 Graph:       me -graph 2d|3d|map|off
 Z-label:     me -zl '{s/D}{//E}'
 Z-range:     me -zr 0.1:0.4
-Z-tics:      me -zt 0.1<<|auto|off>>
+Z-tics:      me -zt 0.1<<|auto|off>>|start,incr
 View:        me -view rot-x,rot-z
 Pm3d:        me -pm3d on|off<<|colormap>>
 Axis3d:      me -axis3d on|off
 ────<-- used only as graph=map -->───────────────
 Color-box:   me -cb vertical|horizontal
 Color-range: me -cr 0.1:0.4
-Color-tics:  me -ct 1<<|auto|off>>
+Color-tics:  me -ct 1<<|auto|off>>|start,incr
 ─────────────────────────────────────────────────
 Tile:        me -vtile|-htile <<space>><<files>>
 GnuPlot:     me -gp
