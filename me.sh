@@ -1283,10 +1283,10 @@ function gpscript_head() {
 	xspace=$(awk "BEGIN {printf \"%.2f\", ($hspace*(${Layout[0]}-1)-${GPV[margin]})*$Digitscale}")
 	yspace=$(awk "BEGIN {printf \"%.2f\",  $vspace*(${Layout[0]}-1)+3}")
 	echo "#<-- Figure head -->
-X_ORIGIN = 0.5*($Wpt - ${GPV[xsizemax]}*${Layout[0]} - $Fontsize*($xspace))/$Wpt.0
-Y_ORIGIN = 0.5*($Hpt + ${GPV[ysizemax]}*(${Layout[1]}-1.5) + $Fontsize*$yspace)/$Hpt.0
-X_OFFSET = (${GPV[xsizemax]} + $Fontsize*$hspace)/$Wpt.0
-Y_OFFSET = (${GPV[ysizemax]} + $Fontsize*$vspace)/$Hpt.0
+ORIGIN_X = 0.5*($Wpt - ${GPV[xsizemax]}*${Layout[0]} - $Fontsize*($xspace))/$Wpt.0
+ORIGIN_Y = 0.5*($Hpt + ${GPV[ysizemax]}*(${Layout[1]}-1.5) + $Fontsize*$yspace)/$Hpt.0
+OFFSET_X = (${GPV[xsizemax]} + $Fontsize*$hspace)/$Wpt.0
+OFFSET_Y = (${GPV[ysizemax]} + $Fontsize*$vspace)/$Hpt.0
 
 set datafile separator $separator
 set encoding iso_8859_1
@@ -1304,7 +1304,7 @@ function gpscript_set_origin() {
     Xsize[$1]=${Xsize[$1]:-${Xsize[$1-1]:-${Xsize[0]}}}
     Ysize[$1]=${Ysize[$1]:-${Ysize[$1-1]:-${Ysize[0]}}}
 	echo "XC = $Fontsize*$Digitscale/${Xsize[$1]}; YC = $Fontsize*1.00/${Ysize[$1]}
-set origin X_ORIGIN+X_OFFSET*$ix$hoffset,Y_ORIGIN-Y_OFFSET*$iy$voffset
+set origin ORIGIN_X+OFFSET_X*$ix$hoffset,ORIGIN_Y-OFFSET_Y*$iy$voffset
 set size noratio ${Xsize[$1]}/$Wpt.0,${Ysize[$1]}/$Hpt.0
 set border 31
 unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unset ylabel; unset ytics">> .me/gp
