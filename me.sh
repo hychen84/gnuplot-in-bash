@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.435 released on 2025-10-08 (since 2007/12/25)
+# ME build 7.5.436 released on 2025-10-11 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -436,8 +436,10 @@ function get_column() {
 }
 
 function set_graph() {
-    Graph[${this:-0}]=${1,,}
-	case ${1,,} in
+	if [[ ${Graph[${this:-0}]:-${Graph[$((this-1))]}} == "¶" ]]; then
+		[[ ${1,,} == "2d" || ${1,,} == "3d" || ${1,,} == "map" ]] && Graph[${this:-0}]=${1,,}
+	else
+		case ${1,,} in
 		2d) Xsize[${this:-0}]=200
             Ysize[${this:-0}]=125
             Using[${this:-0},1]=1:c
@@ -454,9 +456,11 @@ function set_graph() {
 			Using[${this:-0},1]=1:2:c
 			With[${this:-0},1]=¶
 			Index_position[${this:-0}]="auto";;
+	   off) Graph[${this:-0}]="¶";;
         {}) unset Graph[${this:-0}];;
          *) exit;;
-	esac
+		esac
+	fi
 	[[ $1 == "" ]] && echo "Graph:"
 }
 
@@ -754,16 +758,20 @@ function make_table_axis() {
 }
 
 function make_table_line_style() {
-    [[ $gr == "2d" ]] && pl=plot || pl=splot
-	getclosestkey Using $1 $2; uc=${Using[$1,$2]:-${Using[$s,$t]:-1:c}}
+	getclosestkey Using $1 $2; uc=${Using[$1,$2]:-${Using[$s,$t]:-1:c}}; uc=${uc//§/$}
 	getclosestkey With $1 $2; ws=${With[$1,$2]:-${With[$s,$t]:-l}}
 	getclosestkey Dt $1 $2; dt=${Dt[$1,$2]:-${Dt[$s,$t]:-1}}
 	getclosestkey Lw $1 $2; lw=${Lw[$1,$2]:-${Lw[$s,$t]:-2}}
 	getclosestkey Pt $1 $2; pt=${Pt[$1,$2]:-${Pt[$s,$t]:-7}}
 	getclosestkey Ps $1 $2; ps=${Ps[$1,$2]:-${Ps[$s,$t]:-0.5}}
-	getclosestkey Lc $1 $2; lc=${Lc[$1,$2]:-${Lc[$s,$t]:-c}}
-	u=${u//§/$}
-	[[ $lc =~ "#" ]] && lc=${lc^^}
+	getclosestkey Lc $1 $2; lc=${Lc[$1,$2]:-${Lc[$s,$t]:-c}}; [[ $lc =~ "#" ]] && lc=${lc^^}
+    if [[ $gr == "2d" ]]; then
+		pl=plot
+	elif [[ $gr == "¶" ]]; then
+		[[ ${uc//[^:]/} == ":" ]] && pl=plot || pl=splot 
+	else
+		pl=splot
+	fi	
 }
 
 function make_table() {
@@ -1788,14 +1796,16 @@ function xgnuplot() {
 		Vx=${View[$1]%,*}; Vz=${View[$1]#*,}
  		echo -e "\n# --- Figure $((i+1)) ---" >> .me/gp
         gpscript_set_origin $i
-        gpscript_set_axis $i
-        case ${Graph[i]} in
-            3d) gpscript_set_3d $i
-                Axis3d[$i]=${Axis3d[i]:-${Axis3d[i-1]:-on}}
-                [[ ${Axis3d[i]} == "off" ]] && gpscript_unset_3daxis;;
-		   map) gpscript_set_map $i;;
-        esac
-        gpscript_plot $i
+		if [[ ${Graph[i]} != "¶" ]]; then
+			gpscript_set_axis $i
+			case ${Graph[i]} in
+				3d) gpscript_set_3d $i
+					Axis3d[$i]=${Axis3d[i]:-${Axis3d[i-1]:-on}}
+					[[ ${Axis3d[i]} == "off" ]] && gpscript_unset_3daxis;;
+			   map) gpscript_set_map $i;;
+			esac
+			gpscript_plot $i
+		fi
 	done
 	gnuplot_enhanced_characters .me/gp $Font 1 > $Output.gp
 	gnuplot $Output.gp
@@ -2273,7 +2283,7 @@ Line color:  me -lc 6|palette
 Swap:        me -swap <<a1>><<a2>>
 Move:        me -move <<a1>><<a2>>
 ────<-- combinable with choosing figure -a -->───
-Graph:       me -graph 2d|3d|map
+Graph:       me -graph 2d|3d|map|off
 Z-label:     me -zl '{s/D}{//E}'
 Z-range:     me -zr 0.1:0.4
 Z-tics:      me -zt 0.1<<|auto|off>>
