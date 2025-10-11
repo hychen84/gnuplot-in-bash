@@ -1095,8 +1095,12 @@ function gnuplot_show_variables() {
                 split(c[6], u, "■")
                 gsub("§", "$", u[1])
                 gsub("‖", "||", u[1])
+				if (c[16] ~ /,/) {split(c[16], d, ","); xt = d[2]} else {xt = c[16]}
+				if (c[19] ~ /,/) {split(c[19], d, ","); yt = d[2]} else {yt = c[19]}
+				if (c[22] ~ /,/) {split(c[22], d, ","); zt = d[2]} else {zt = c[22]}
+				if (c[24] ~ /,/) {split(c[24], d, ","); ct = d[2]} else {ct = c[24]}
                 if (c[2] == 1) {
-                    printf "%s [%s] [%s] [%s] \"%s\" u %s t \"ix= %d iy= %d Graph= %d Xsize= %f Ysize= %f xl= %s yl= %s zl= %s xt= %f yt= %f zt= %f ct= %f \"", c[4], c[15], c[18], c[21], c[5], u[1], ix[i], iy[i], c[25], c[26], c[27], c[14], c[17], c[20], c[16], c[19], c[22], c[24]
+                    printf "%s [%s] [%s] [%s] \"%s\" u %s t \"ix= %d iy= %d Graph= %d Xsize= %f Ysize= %f xl= %s yl= %s zl= %s xt= %f yt= %f zt= %f ct= %f \"", c[4], c[15], c[18], c[21], c[5], u[1], ix[i], iy[i], c[25], c[26], c[27], c[14], c[17], c[20], xt, yt, zt, ct
                 } else {
                     printf " \"%s\" u %s", c[5], u[1]
                 }
@@ -1460,7 +1464,8 @@ set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
 			echo "unset ${1}tics" >> .me/gp
 		else
 			eval p=\$${1}t_pos
-			echo "set ${1}tics offset $p nomirror out ${GPV[$ix,$iy,${1}t]} format '$2' $Fontset" >> .me/gp
+			eval t=\$${1}t; [[ ! $t =~ "," ]] && t=${GPV[$ix,$iy,${1}t]}
+			echo "set ${1}tics offset $p nomirror out $t format '$2' $Fontset" >> .me/gp
 		fi
 	}
 	if [[ $(echo $vspace $vs1 | awk '{if ($1 >= $2) print 1}') ]]; then
