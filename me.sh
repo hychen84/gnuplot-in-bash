@@ -118,7 +118,7 @@ function print_parameters() {
 			}
 			printf "\033[0m\n"
 		} else {
-			for (k=0; k<=h_line+Nx*3; k++) printf "─"
+			for (k=0; k<=h_line+Nx*3-1; k++) printf "─"
 			printf "\n"
 		}
 	}
@@ -127,7 +127,7 @@ function print_parameters() {
 		for (i=0; i<=Nx; i++) {
             if (A[i][j][1]) {
                 split(A[i][j][1],c," ")
-                w25 = L[i] - length(c[25] c[26] c[27]) - 11
+                w25 = i<Nx ? L[i] - length(c[25] c[26] c[27]) - 11 : L[i] - length(c[25] c[26] c[27]) - 13
                 printf "    【%s】 Size=（%s,%s）%*s",c[25],c[26],c[27],w25," "
                 separator(i)
             }
@@ -188,13 +188,13 @@ function print_parameters() {
 						} else {
                             LK = " "
                         }
-                        w3 = L[i] - length(c[3])
-                        if (c[3] !~ "🗙") {
+                        w3 = i<Lx[j] ? L[i] - length(c[3]) : L[i] - length(c[3]) - 2
+                        if (c[3] !~ /🗙/) {
 							gsub("■"," ",c[3])
 							printf "\033[2m%c: \033[0m%s%*s\033[90m%4s\033[0m ",c[1]+97,c[3],w3," ",LK
                         } else {
 							split(c[3],d,"■")
-							w3 = d[2] == "" ? w3-1 : w3
+							w3 = d[2]=="" ? w3-1 : w3
 							printf "\033[2m%c: %s \033[0m%s%*s\033[90m%4s\033[0m ",c[1]+97,d[1],d[2],w3," ",LK
                         }
                         separator(i)
@@ -210,27 +210,27 @@ function print_parameters() {
                     if (c[7]) {
                         switch(c[7]) {
                             case "l":
-                                w = L[i] - (length(c[5] c[6] c[8] c[9])+14) + 2
+                                w = i<Lx[j] ? L[i] - (length(c[5] c[6] c[8] c[9])+14) + 2 : L[i] - (length(c[5] c[6] c[8] c[9])+14)
                                 printf "   %2d. \"%s\" u %s dt %s lw %s%*s",ind,c[5],c[6],c[8],c[9], w," "
                                 break
                             case "p":
-                                w = L[i] - (length(c[5] c[6] c[10] c[11])+14) + 2
+                                w = i<Lx[j] ? L[i] - (length(c[5] c[6] c[10] c[11])+14) + 2 : L[i] - (length(c[5] c[6] c[10] c[11])+14)
                                 printf "   %2s. \"%s\" u %s pt %s ps %s%*s",ind,c[5],c[6],c[10],c[11], w," "
                                 break
                             case "lp":
-                                w = L[i] - (length(c[5] c[6] c[8] c[10])+14) + 2
+                                w = i<Lx[j] ? L[i] - (length(c[5] c[6] c[8] c[10])+14) + 2 : L[i] - (length(c[5] c[6] c[8] c[10])+14)
                                 printf "   %2d. \"%s\" u %s dt %s pt %s%*s",ind,c[5],c[6],c[8],c[10], w," "
                                 break
                             case "pm3d":
-                                w = L[i] - (length(c[5] c[6])+11) + 2
+                                w = i<Lx[j] ? L[i] - (length(c[5] c[6])+11) + 2 : L[i] - (length(c[5] c[6])+11)
                                 printf "   %2d. \"%s\" u %s pm3d%*s",ind,c[5],c[6], w," "
                                 break
                             case "¶":
-                                w = L[i] - (length(c[5] c[6])+6) + 2
+                                w = i<Lx[j] ? L[i] - (length(c[5] c[6])+6) + 2 : L[i] - (length(c[5] c[6])+6)
                                 printf "   %2d. \"%s\" u %s%*s",c[2],c[5],c[6], w," "
                                 break
                             default:
-                                w = L[i] - (length(c[5] c[6] c[7])+7) + 2
+                                w = i<Lx[j] ? L[i] - (length(c[5] c[6] c[7])+7) + 2 : L[i] - (length(c[5] c[6] c[7])+7)
                                 printf "   %2d. \"%s\" u %s %s%*s",c[2],c[5],c[6],c[7], w," "
                                 break
                         }
@@ -245,7 +245,7 @@ function print_parameters() {
 				split(A[i][j][1],c," ")
 				gsub("¶","",c[14])
 				w15 = L_range[i][j] - length(c[15]) + 1
-				w14 = L[i] - (L_range[i][j]+6) - (length(c[14])+5) + 1
+				w14 = i<Lx[j] ? L[i] - (L_range[i][j]+6) - (length(c[14])+5) + 1 : L[i] - (L_range[i][j]+6) - (length(c[14])+5) - 1
 				printf "    xr=［%s］,%*sxl=\"%s\"%*s",c[15], w15," ",c[14], w14," "
 				separator(i)
 			}
@@ -254,7 +254,7 @@ function print_parameters() {
 				split(A[i][j][1],c," ")
 				gsub("¶","",c[17])
 				w18 = L_range[i][j] - length(c[18]) + 1
-				w17 = L[i] - (L_range[i][j]+6) - (length(c[17])+5) + 1
+				w17 = i<Lx[j] ? L[i] - (L_range[i][j]+6) - (length(c[17])+5) + 1 : L[i] - (L_range[i][j]+6) - (length(c[17])+5) - 1
 				printf "    yr=［%s］,%*syl=\"%s\"%*s",c[18], w18," ",c[17], w17," "
 				separator(i)
 			}
@@ -268,7 +268,7 @@ function print_parameters() {
 					split(A[i][j][1],c," ")
 					gsub("¶","",c[20])
 					w21 = L_range[i][j] - length(c[21]) + 1
-					w20 = L[i] - (L_range[i][j]+6) - (length(c[20])+5) + 1
+					w20 = i<Lx[j] ? L[i] - (L_range[i][j]+6) - (length(c[20])+5) + 1 : L[i] - (L_range[i][j]+6) - (length(c[20])+5) - 1
 					if (c[25] == "map")     {printf "    cr=［%s］%*s",c[23],L[i]-(L_range[i][j]+5)+2," "}
 					else if (c[25] == "3d") {printf "    zr=［%s］,%*szl=\"%s\"%*s",c[21], w21," ",c[20], w20," "}
 					else {printf "%*s",L[i]+8," "}
@@ -288,7 +288,7 @@ function print_parameters() {
 		}
 		if (show_on > 3) {j--; show_info()}
         if (h_line < 86) {h_line = 89} else {h_line += Nx*3}
-		for (k=0; k<=h_line; k++) printf "─"
+		for (k=0; k<=h_line-1; k++) printf "─"
 		printf "\n"
     }' .me/table
 	IFS=""
