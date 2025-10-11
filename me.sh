@@ -294,9 +294,9 @@ function print_parameters() {
 	IFS=""
 	declare -A Sx; declare -A Sy; declare -A Gp
     for ((i=0; i<Total_figures; i++)); do
-		Xsize[i]=${Xsize[i-1]}; Sx[${Xsize[i]}]=1
-		Ysize[i]=${Ysize[i-1]}; Sy[${Ysize[i]}]=1
-		Graph[i]=${Graph[i-1]}; Gp[${Graph[i]}]=1
+		Xsize[i]=${Xsize[i]:-${Xsize[i-1]}}; Sx[${Xsize[i]}]=1
+		Ysize[i]=${Ysize[i]:-${Ysize[i-1]}}; Sy[${Ysize[i]}]=1
+		Graph[i]=${Graph[i]:-${Graph[i-1]}}; Gp[${Graph[i]}]=1
     done
 	show_on=$(awk "BEGIN {print ${#Sx[*]}*${#Sy[*]}*${#Gp[*]}}")
 	if [[ $show_on == 1 ]]; then
