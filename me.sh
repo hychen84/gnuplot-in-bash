@@ -1667,8 +1667,7 @@ function gpscript_plot() {
 			gsub("■", " ", c[6])
 			gsub("§", "$", c[6])
             gsub("‖", "||", c[6])
-            gsub(quote, "", c[12])
-			if (c[12] ~ /#/) {c[12] = "\""c[12]"\""}
+            gsub(quote, "", c[12]); if (c[12] ~ /#/) {c[12] = "\""c[12]"\""}
 			#--- plot using ---
 			if (c[2] == 1) {printf "%s \"%s\" u %s ", c[4], c[5], c[6]} 
 			else {printf "%*s \"%s\" u %s ", length(c[4]), " ", c[5], c[6]}
@@ -1677,7 +1676,7 @@ function gpscript_plot() {
 			else if (c[7] == "l") {printf "w %s dt %s lw %s lc %s ", c[7], c[8],  c[9],  c[12]}
 			else if (c[7] == "p") {printf "w %s pt %s ps %s lc %s ", c[7], c[10], c[11], c[12]}
 			else if (c[7] == "lp") {printf "w %s dt %s lw %s pt %s ps %s lc %s ", c[7], c[8], c[9], c[10] ,c[11], c[12]}
-			else if (c[7] == "histrogram") {printf "w %s lc %s ", c[7], c[12]}
+			else if (c[7] == "histogram") {printf "w %s lc %s ", c[7], c[12]}
 			else {printf "w %s ",c[7]}
 			#--- key ---
 			if (c[13] != "\"\"") printf "t %s ", c[13]
