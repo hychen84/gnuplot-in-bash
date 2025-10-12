@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.436 released on 2025-10-11 (since 2007/12/25)
+# ME build 7.5.437 released on 2025-10-12 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -440,20 +440,31 @@ function set_graph() {
 	if [[ ${Graph[${this:-0}]:-${Graph[$((this-1))]}} == "¶" ]]; then
 		[[ ${1,,} == "2d" || ${1,,} == "3d" || ${1,,} == "map" ]] && Graph[${this:-0}]=${1,,}
 	else
+		Graph[${this:-0}]=${1,,}
 		case ${1,,} in
 		2d) Xsize[${this:-0}]=200
             Ysize[${this:-0}]=125
             Using[${this:-0},1]=1:c
             With[${this:-0},1]=l
 			Index_position[${this:-0}]="auto";;
-	    3d) Xsize[${this:-0}]=200
-			Ysize[${this:-0}]=186
+	    3d) if [[ ${Graph[${this:-0}]} == "2d" ]]; then
+				Xsize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.37}")
+				Ysize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*0.93}")
+			else
+				Xsize[${this:-0}]=200
+				Ysize[${this:-0}]=186
+			fi
 			Using[${this:-0},1]=1:2:c
 			With[${this:-0},1]=pm3d
 			Pm3d[${this:-0}]=on
 			Index_position[${this:-0}]="auto";;
-	   map) Xsize[${this:-0}]=150
-			Ysize[${this:-0}]=150
+	   map) if [[ ${Graph[${this:-0}]} == "2d" ]]; then
+				Xsize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.23}")
+				Ysize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.23}")
+			else
+				Xsize[${this:-0}]=150
+				Ysize[${this:-0}]=150
+			fi
 			Using[${this:-0},1]=1:2:c
 			With[${this:-0},1]=¶
 			Index_position[${this:-0}]="auto";;
@@ -624,7 +635,7 @@ function set_axis() {
 }
 
 function set_style() {
-	c="${2//||/‖}";c="${c//_/■}"
+	c=${2//||/‖};c=${c//$/§};c=${c//_/■};c=${c//\$c/\$¢};c=${c//:c/:¢};c=${c//c:/¢:};c=${c/%c/¢}
 	case $1 in
 		u) name=Using;;
 		w) name=With;;
@@ -633,7 +644,7 @@ function set_style() {
 	if [[ $2 == "{}" ]]; then
         unset $name[${this:-0},${thisline:-1}]
 	elif [[ $2 != "" ]]; then
-		eval $name[${this:-0},${thisline:-1}]="\"${c//$/§}\""
+		eval $name[${this:-0},${thisline:-1}]="\"$c\""
 		echo -e "    $(chr $((${this:-0}+97)))${thisline:-1}:  $name= \"$c\""
 	else
         echo "Line Style:"
@@ -795,19 +806,19 @@ function make_table() {
 				if [[ $Merge == "f" ]]; then df=${Files[$j,0]}; else df=${Files[$i,0]}; fi
 				getclosestkey Columns $j 0; col=${Columns[$j,0]:-${Columns[$s,0]}}
 				make_table_line_style $n $k
-				echo "$n $k $index $pl $df ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
+				echo "$n $k $index $pl $df ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 			elif [[ ${Columns[$n]:-0} > 0 && ${Files[$n]:-0} == 0 ]]; then
 				for ((k=1; k<=${Columns[$n]}; k++)); do
 					getclosestkey Columns $n $k; col=${Columns[$n,$k]:-${Columns[$s,$t]}}
 					make_table_line_style $n $k
-					echo "$n $k $index $pl ${Files[$n,0]} ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
+					echo "$n $k $index $pl ${Files[$n,0]} ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 				done
 				((k--))
 			elif [[ ${Columns[$n]:-0} == 0 && ${Files[$n]:-0} > 0 ]]; then
 				getclosestkey Columns $n 0; col=${Columns[$n,0]:-${Columns[$s,0]}}
 				for ((k=1; k<=${Files[$n]}; k++)); do
 					make_table_line_style $n $k
-					echo "$n $k $index $pl ${Files[$n,$k]} ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
+					echo "$n $k $index $pl ${Files[$n,$k]} ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 				done
 				((k--))
 			else
@@ -821,7 +832,7 @@ function make_table() {
 						getclosestkey Columns $n $p; col=${Columns[$n,$p]:-${Columns[$s,$t]}}
 						k=$(((l-1)*N2+m))
 						make_table_line_style $n $k
-						echo "$n $k $index $pl $df ${uc/c/$col} $ws $dt $lw $pt $ps ${lc/c/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
+						echo "$n $k $index $pl $df ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 					done
 				done
 			fi
@@ -1647,26 +1658,28 @@ set cbtics offset $ct_pos scale 0.1 nomirror ${Ctics[$1]} format '%g' $Fontset" 
 }
 
 function gpscript_plot() {
-	awk -v Fig=$1 -v quote="'" 'BEGIN {N=1}
-	{if ($1 == Fig) {Data[N] = $0; N++}}
+	awk -v Fig=$1 -v quote="'" 'BEGIN {N=1; style_histogram = 0}
+	{if ($1 == Fig) {Data[N] = $0; N++; if ($7 == "histogram") style_histogram = 1}}
 	END {
+		if (style_histogram == 1) {printf "set style histogram rowstacked\nset style fill solid noborder\nset boxwidth 1.0 absolute\n"}
 		for (i=1; i<N; i++) {
 			split(Data[i], c, " ")
 			gsub("■", " ", c[6])
 			gsub("§", "$", c[6])
             gsub("‖", "||", c[6])
             gsub(quote, "", c[12])
-			if (c[2] == 1) {
-				printf "%s \"%s\" u %s ", c[4], c[5], c[6]
-			} else {
-				printf "%*s \"%s\" u %s ", length(c[4]), " ", c[5], c[6]
-			}
-            if (c[12] ~ /#/) {c[12] = "\""c[12]"\""}
-			if (c[7] == "¶" ) {printf ""}
-			else if (c[7] == "l" ) {printf "w %s dt %s lw %s lc %s ", c[7], c[8],  c[9],  c[12]}
-			else if (c[7] == "p" ) {printf "w %s pt %s ps %s lc %s ", c[7], c[10], c[11], c[12]}
+			if (c[12] ~ /#/) {c[12] = "\""c[12]"\""}
+			#--- plot using ---
+			if (c[2] == 1) {printf "%s \"%s\" u %s ", c[4], c[5], c[6]} 
+			else {printf "%*s \"%s\" u %s ", length(c[4]), " ", c[5], c[6]}
+			#--- with ---
+			if (c[7] == "¶") {printf ""}
+			else if (c[7] == "l") {printf "w %s dt %s lw %s lc %s ", c[7], c[8],  c[9],  c[12]}
+			else if (c[7] == "p") {printf "w %s pt %s ps %s lc %s ", c[7], c[10], c[11], c[12]}
 			else if (c[7] == "lp") {printf "w %s dt %s lw %s pt %s ps %s lc %s ", c[7], c[8], c[9], c[10] ,c[11], c[12]}
+			else if (c[7] == "histrogram") {printf "w %s lc %s ", c[7], c[12]}
 			else {printf "w %s ",c[7]}
+			#--- key ---
 			if (c[13] != "\"\"") printf "t %s ", c[13]
 			if (i < N-1) {
 				printf ",\\\n"
@@ -2284,7 +2297,7 @@ Dash type:   me -dt 1
 Line width:  me -lw 2
 Point type:  me -pt 7
 Point size:  me -ps 0.5
-Line color:  me -lc 6|palette
+Line color:  me -lc 6|c|palette
 ────<-- combinable with choosing line -a1 -->────
 Swap:        me -swap <<a1>><<a2>>
 Move:        me -move <<a1>><<a2>>
