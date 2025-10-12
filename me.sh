@@ -500,8 +500,6 @@ function set_csparameters() {
 			View) View[${this:-0}]=${p1:-${View[${this:-0}]%,*}},${p2:-${View[${this:-0}]#*,}}
 				  echo "    $(chr $((${this:-0}+97))):  view= \"${View[${this:-0}]}\"";;
 		esac
-	elif [[ $1 == "Size" ]]; then
-		echo -e "Size:    \033[2m(map = 2D × 1.23, 3D: y = x × 0.93)\033[0m"
 	elif [[ $1 == "Offset" || $1 == "View" ]]; then
 		echo "$1:"
 		for ((i=0; i<Total_figures; i++)); do
@@ -605,17 +603,17 @@ function set_axis() {
 		unset ${1^}$name[${this:-0}]
 	elif [[ $3 != "" ]]; then
 		case $name in
-			label)	[[ $3 == "off" ]] && a="¶" || a=$3;;
-			range)	if [[ $3 == ":" ]]; then
-						a="*:*"
-					else
-						eval p="\${${1^}$name[${this:-0}]}"
-						p1=${p%:*}; p2=${p#*:}
-						r1=${3%:*}; r2=${3#*:}
-						a=${r1:-${p1:-*}}:${r2:-${p2:-*}}
-					fi;;
-			tics) 	[[ $3 == "off" ]] && a="¶" || a=$3;;
-			box)  	a=$3;;
+		  label) [[ $3 == "off" ]] && a="¶" || a=$3;;
+		  range) if [[ $3 == ":" ]]; then
+					 a="*:*"
+			     else
+					 eval p="\${${1^}$name[${this:-0}]}"
+					 p1=${p%:*}; p2=${p#*:}
+					 r1=${3%:*}; r2=${3#*:}
+					 a=${r1:-${p1:-*}}:${r2:-${p2:-*}}
+				 fi;;
+		   tics) [[ $3 == "off" ]] && a="¶" || a=$3;;
+			box) a=$3;;
 		esac
 		eval ${1^}$name[${this:-0}]=\'$a\'
 		echo -e "    $(chr $((${this:-0}+97))):  ${1^}$name= \"$a\""
@@ -637,7 +635,7 @@ function set_axis() {
 function set_style() {
 	c=${2//||/‖};c=${c//$/§};c=${c//_/■};c=${c//\$c/\$¢};c=${c//:c/:¢};c=${c//c:/¢:};c=${c/%c/¢}
 	case $1 in
-		u) name=Using;;
+	    u) name=Using;;
 		w) name=With;;
 		*) name=${1^};;
 	esac
@@ -657,57 +655,6 @@ function set_style() {
 	fi
 }
 
-function set_line2line() {
-    a1=$(($(ord ${1%%[0-9]*})-97)); b1=${1#[a-z]}
-    a2=$(($(ord ${2%%[0-9]*})-97)); b2=${2#[a-z]}
-	if [[ $a1 != $a2 ]]; then
-		echo "Cannot $3 figure (${1%[0-9]*}) and figure (${2%[0-9]*})."
-		exit
-	fi
-}
-
-function swap_lines() {
-    tmp=${Files[$a1,$1]}; Files[$a1,$1]=${Files[$a2,$2]}; Files[$a2,$2]=$tmp
-    tmp=${Columns[$a1,$1]}; Columns[$a1,$1]=${Columns[$a2,$2]}; Columns[$a2,$2]=$tmp
-    tmp=${Using[$a1,$1]}; Using[$a1,$1]=${Using[$a2,$2]}; Using[$a2,$2]=$tmp
-    tmp=${With[$a1,$1]}; With[$a1,$1]=${With[$a2,$2]}; With[$a2,$2]=$tmp
-    tmp=${Dt[$a1,$1]}; Dt[$a1,$1]=${Dt[$a2,$2]}; Dt[$a2,$2]=$tmp
-    tmp=${Lw[$a1,$1]}; Lw[$a1,$1]=${Lw[$a2,$2]}; Lw[$a2,$2]=$tmp
-    tmp=${Pt[$a1,$1]}; Pt[$a1,$1]=${Pt[$a2,$2]}; Pt[$a2,$2]=$tmp
-    tmp=${Ps[$a1,$1]}; Ps[$a1,$1]=${Ps[$a2,$2]}; Ps[$a2,$2]=$tmp
-    tmp=${Lc[$a1,$1]}; Lc[$a1,$1]=${Lc[$a2,$2]}; Lc[$a2,$2]=$tmp
-    tmp=${Key[$a1,$1]}; Key[$a1,$1]=${Key[$a2,$2]}; Key[$a2,$2]=$tmp
-}
-
-function unset_empty_lines(){
-	for key in ${!Files[*]}; do [[ ${Files[$key]} == "" ]] && unset Files[$key]; done
-	for key in ${!Columns[*]}; do [[ ${Columns[$key]} == "" ]] && unset Columns[$key]; done
-	for key in ${!Using[*]}; do [[ ${Using[$key]} == "" ]] && unset Using[$key]; done
-	for key in ${!With[*]}; do [[ ${With[$key]} == "" ]] && unset With[$key]; done
-	for key in ${!Dt[*]}; do [[ ${Dt[$key]} == "" ]] && unset Dt[$key]; done
-	for key in ${!Lw[*]}; do [[ ${Lw[$key]} == "" ]] && unset Lw[$key]; done
-	for key in ${!Pt[*]}; do [[ ${Pt[$key]} == "" ]] && unset Pt[$key]; done
-	for key in ${!Ps[*]}; do [[ ${Ps[$key]} == "" ]] && unset Ps[$key]; done
-	for key in ${!Lc[*]}; do [[ ${Lc[$key]} == "" ]] && unset Lc[$key]; done
-	for key in ${!Key[*]}; do [[ ${Key[$key]} == "" ]] && unset Key[$key]; done
-}
-
-function set_swap() {
-    set_line2line $1 $2 swap
-	swap_lines $b1 $b2
-	unset_empty_elements
-}
-
-function set_move() {
-    set_line2line $1 $2 move
-	if [ $b1 -gt $b2 ]; then
-		for ((i=b1; i>b2; i--)); do swap_lines $i $((i-1)); done
-	else
-		for ((i=b1; i<b2; i++)); do swap_lines $i $((i+1)); done
-	fi
-	unset_empty_elements
-}
-
 function unset_select_line() {
 	[[ ${Files[$1,$2]} ]] && Files[$1]=$((${Files[$1]:-1}-1))
 	[[ ${Columns[$1,$2]} ]] && Columns[$1]=$((${Columns[$1]:-1}-1))
@@ -725,6 +672,19 @@ function unset_select_line() {
 		Lc[$1,$j]=${Lc[$1,$((j+1))]}; Lc[$1,$((j+1))]=""
 		Key[$1,$j]=${Key[$1,$((j+1))]}; Key[$1,$((j+1))]=""
 	done
+}
+
+function unset_empty_lines(){
+	for key in ${!Files[*]}; do [[ ${Files[$key]} == "" ]] && unset Files[$key]; done
+	for key in ${!Columns[*]}; do [[ ${Columns[$key]} == "" ]] && unset Columns[$key]; done
+	for key in ${!Using[*]}; do [[ ${Using[$key]} == "" ]] && unset Using[$key]; done
+	for key in ${!With[*]}; do [[ ${With[$key]} == "" ]] && unset With[$key]; done
+	for key in ${!Dt[*]}; do [[ ${Dt[$key]} == "" ]] && unset Dt[$key]; done
+	for key in ${!Lw[*]}; do [[ ${Lw[$key]} == "" ]] && unset Lw[$key]; done
+	for key in ${!Pt[*]}; do [[ ${Pt[$key]} == "" ]] && unset Pt[$key]; done
+	for key in ${!Ps[*]}; do [[ ${Ps[$key]} == "" ]] && unset Ps[$key]; done
+	for key in ${!Lc[*]}; do [[ ${Lc[$key]} == "" ]] && unset Lc[$key]; done
+	for key in ${!Key[*]}; do [[ ${Key[$key]} == "" ]] && unset Key[$key]; done
 }
 
 function getclosestkey() {
@@ -920,8 +880,6 @@ for ((n=0; n<${#Arg[*]}; n++)); do
 		-L)  set_label ${Arg[$n+1]};next 2;continue;;
 		-[cxyz][blrt]) set_axis ${Arg[$n]:1:1} ${Arg[$n]:2:1} ${Arg[$n+1]};next 2;continue;;
 		-u|-w|-dt|-lw|-pt|-ps|-lc) set_style ${Arg[$n]#-} ${Arg[$n+1]};next 2;continue;;
-        -swap) set_swap ${Arg[$n+1]} ${Arg[$n+2]};next 3;continue;;
-        -move) set_move ${Arg[$n+1]} ${Arg[$n+2]};next 3;continue;;
 		-tra) skipupdate=1;continue;;
 		-cal) skipupdate=1;continue;;
 		-der) skipupdate=1;continue;;
@@ -2256,30 +2214,30 @@ Font:     me -font cm|arial|times<<,13>>
 Merge:    me -m0|-ma|-mc|-mf
 Layout:   me -N<<number>>|-Z<<number>>
 Space:    me -space 10,10
-────<-- combinable with choosing figure -a -->───
 Figure:   me -a|-b|-c|···
+Line:     me -a1|-a2|-a3|···
+──────<-- me -a1 -->─────────────────────────────
 Datafile: me xxx.txt yyy.txt
-X-column: me -u '1:c'
-Y-column: me [2:8]|[2,3,7]
-────<-- combinable with choosing figure -a -->───
+Y-column: me [2]|[2:8]|[2,3,7]
+X-column: me -u  '1:c'
+──────<-- me -a  -->─────────────────────────────
 Size:     me -size 200,125
 Offset:   me -offset 10,20
-Index:    me -I '(A)'|on|off
-Caption:  me -ic '{s/D}{//E}..=..0.5'
-Position: me -ip <<position>>
-Key box:  me -kb -0.5<<|on|off>>
-Position: me -kp <<position>><<,fontsize>>
+Index:    me -I  '(A)'|on|off
+Caption:  me -ic '{s/D}{//E}\.=\.0.5'
+position: me -ip <<position>>
+──────<-- me -a1 -->─────────────────────────────
+Label:    me -L  <<text>>
+position: me -lp <<position>><<,fontsize>>
+──────<-- me -a1 -->─────────────────────────────
+Key:      me -K  <<text>>|vertical|horizontal
+──────<-- me -a  -->─────────────────────────────
+Key box:  me -kb -0.5|on|off
+position: me -kp <<position>><<,fontsize>>
+──────<-- me -a  -->─────────────────────────────
 X-label:  me -xl '{//E}'
 X-range:  me -xr -pi:pi
-X-tics:   me -xt 1<<|auto|off>>|start,incr
-Y-label:  me -yl '{s//r}({//E})'
-Y-range:  me -yr 0.1:0.4
-Y-tics:   me -yt 0.1<<|auto|off>>|start,incr
-────<-- combinable with choosing line -a1 -->────
-Line:     me -a1|-a2|-a3|···
-Key:      me -K <<text>>|vertical|horizontal
-Label:    me -L <<text>>
-Position: me -lp <<position>><<,fontsize>>" > .me/.left
+X-tics:   me -xt 0.5|<<start,incr>>|auto|off" > .me/.left
 	awk '{
 		L = L > length($0) ? L : length($0)
 		c[NR] = $0
@@ -2290,28 +2248,28 @@ Position: me -lp <<position>><<,fontsize>>" > .me/.left
 		}
 	}' .me/.left > .me/.left_new
 	mv .me/.left_new .me/.left
-	echo "Using:       me -u '1:(\$2>0?\$2:1/0)'
-With:        me -w l|p
+	echo "Y-label:     me -yl '{s//r}({//E})'
+Y-range:     me -yr 0:4
+Y-tics:      me -yt 1|<<start,incr>>|auto|off
+─────────<-- me -a1 -->──────────────────────────
+Using:       me -u  '1:(\$2>0?\$2:1/0)'
+With:        me -w  l|p|lp|histogram
 Dash type:   me -dt 1
 Line width:  me -lw 2
 Point type:  me -pt 7
 Point size:  me -ps 0.5
 Line color:  me -lc 6|c|palette
-────<-- combinable with choosing line -a1 -->────
-Swap:        me -swap <<a1>><<a2>>
-Move:        me -move <<a1>><<a2>>
-────<-- combinable with choosing figure -a -->───
+─────────<-- me -a  -->──────────────────────────
 Graph:       me -graph 2d|3d|map|off
 Z-label:     me -zl '{s/D}{//E}'
 Z-range:     me -zr 0.1:0.4
-Z-tics:      me -zt 0.1<<|auto|off>>|start,incr
+Z-tics:      me -zt 0.1|<<start,incr>>|auto|off
 View:        me -view rot-x,rot-z
-Pm3d:        me -pm3d on|off<<|colormap>>
+Pm3d:        me -pm3d <<colormap>>|on|off
 Axis3d:      me -axis3d on|off
-────<-- used only as graph=map -->───────────────
 Color-box:   me -cb vertical|horizontal
 Color-range: me -cr 0.1:0.4
-Color-tics:  me -ct 1<<|auto|off>>|start,incr
+Color-tics:  me -ct 0.1|<<start,incr>>|auto|off
 ─────────────────────────────────────────────────
 Tile:        me -vtile|-htile <<space>><<files>>
 GnuPlot:     me -gp
