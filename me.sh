@@ -2216,7 +2216,7 @@ Layout:   me -N<<number>>|-Z<<number>>
 Space:    me -space 10,10
 Figure:   me -a|-b|-c|···
 Line:     me -a1|-a2|-a3|···
-──────<-- me -a1 -->─────────────────────────────
+──────<-- me -a / -a1 -->────────────────────────
 Datafile: me xxx.txt yyy.txt
 Y-column: me [2]|[2:8]|[2,3,7]
 X-column: me -u  '1:c'
@@ -2235,7 +2235,7 @@ Key:      me -K  <<text>>|vertical|horizontal
 Key box:  me -kb -0.5|on|off
 position: me -kp <<position>><<,fontsize>>
 ──────<-- me -a  -->─────────────────────────────
-X-label:  me -xl '{//E}'
+X-label:  me -xl '{//E}'|off
 X-range:  me -xr -pi:pi
 X-tics:   me -xt 0.5|<<start,incr>>|auto|off" > .me/.left
 	awk '{
@@ -2248,7 +2248,7 @@ X-tics:   me -xt 0.5|<<start,incr>>|auto|off" > .me/.left
 		}
 	}' .me/.left > .me/.left_new
 	mv .me/.left_new .me/.left
-	echo "Y-label:     me -yl '{s//r}({//E})'
+	echo "Y-label:     me -yl '{s//r}({//E})'|off
 Y-range:     me -yr 0:4
 Y-tics:      me -yt 1|<<start,incr>>|auto|off
 ─────────<-- me -a1 -->──────────────────────────
@@ -2261,7 +2261,7 @@ Point size:  me -ps 0.5
 Line color:  me -lc 6|c|palette
 ─────────<-- me -a  -->──────────────────────────
 Graph:       me -graph 2d|3d|map|off
-Z-label:     me -zl '{s/D}{//E}'
+Z-label:     me -zl '{s/D}{//E}'|off
 Z-range:     me -zr 0.1:0.4
 Z-tics:      me -zt 0.1|<<start,incr>>|auto|off
 View:        me -view rot-x,rot-z
