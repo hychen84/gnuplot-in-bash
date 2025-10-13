@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.437 released on 2025-10-12 (since 2007/12/25)
+# ME build 7.5.438 released on 2025-10-13 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -299,7 +299,7 @@ function print_parameters() {
 		Graph[i]=${Graph[i]:-${Graph[i-1]}}; Gp[${Graph[i]}]=1
     done
 	show_on=$(awk "BEGIN {print ${#Sx[*]}*${#Sy[*]}*${#Gp[*]}}")
-	if [[ $show_on == 1 ]]; then
+	if [[ $show_on -le 1 ]]; then
 		echo "【$Graph】Merge=$Merge  Align=${Align[*]}  Space=（$Hspace,$Vspace） Size=（$Xsize,$Ysize） Font=$Font,$Fontsize  FS=\"$FS\"  Output=${Output:-fig}"
 	else
 		echo "Merge=$Merge  Align=${Align[*]}  Space=（$Hspace,$Vspace） Font=$Font,$Fontsize  FS=\"$FS\"  Output=${Output:-fig}"
