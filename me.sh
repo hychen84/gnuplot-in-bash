@@ -261,7 +261,7 @@ function print_parameters() {
 			printf "\n"
 			for (i=0; i<=Lx[j]; i++) {
 				split(A[i][j][1],c," ")
-				if (c[4] == "splot") {Graph ++}
+				if (c[25] && c[25] != "2d") {Graph ++}
 			}
 			if (Graph > 0) {
 				for (i=0; i<=Lx[j]; i++) {
