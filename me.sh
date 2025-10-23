@@ -471,14 +471,14 @@ function set_graph() {
 	if [[ ${Graph[${this:-0}]:-${Graph[$((this-1))]}} == "¶" ]]; then
 		[[ ${1,,} == "2d" || ${1,,} == "3d" || ${1,,} == "map" ]] && Graph[${this:-0}]=${1,,}
 	else
-		Graph[${this:-0}]=${1,,}
 		case ${1,,} in
 		2d) Xsize[${this:-0}]=200
             Ysize[${this:-0}]=125
             Using[${this:-0},1]=1:¢
             With[${this:-0},1]=l
-			Index_position[${this:-0}]="auto";;
-	    3d) if [[ ${Graph[${this:-0}]} == "2d" ]]; then
+			Index_position[${this:-0}]="auto"
+			Graph[${this:-0}]=${1,,};;
+	    3d) if [[ ${Graph[${this:-0}]} == "2d" && $Total_figures > 1 ]]; then
 				Xsize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.37}")
 				Ysize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*0.93}")
 			else
@@ -488,8 +488,9 @@ function set_graph() {
 			Using[${this:-0},1]=1:2:¢
 			With[${this:-0},1]=pm3d
 			Pm3d[${this:-0}]=on
-			Index_position[${this:-0}]="auto";;
-	   map) if [[ ${Graph[${this:-0}]} == "2d" ]]; then
+			Index_position[${this:-0}]="auto"
+			Graph[${this:-0}]=${1,,};;
+	   map) if [[ ${Graph[${this:-0}]} == "2d" && $Total_figures > 1 ]]; then
 				Xsize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.23}")
 				Ysize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.23}")
 			else
@@ -498,7 +499,8 @@ function set_graph() {
 			fi
 			Using[${this:-0},1]=1:2:¢
 			With[${this:-0},1]=¶
-			Index_position[${this:-0}]="auto";;
+			Index_position[${this:-0}]="auto"
+			Graph[${this:-0}]=${1,,};;
 	   off) Graph[${this:-0}]="¶";;
         {}) unset Graph[${this:-0}];;
          *) exit;;
