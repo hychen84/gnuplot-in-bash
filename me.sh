@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.439 released on 2025-10-24 (since 2007/12/25)
+# ME build 7.5.440 released on 2025-10-24 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -443,10 +443,21 @@ function get_column() {
         for ((i=1; i<=${Columns[$this]:-0}; i++)); do
             unset Columns[$this,$i]
         done
-        for ((i=1; i<=${#cols[*]}; i++)); do
-            Columns[$this,$i]=${cols[$i-1]}
-        done
-        Columns[$this]=${#cols[*]}
+		if [[ ${Columns[$this,0]} == "" ]]; then
+			[[ ${Columns["N"]} -le $this ]] && ((Columns["N"]++))
+			Columns[$this,0]=$cols
+			if [[ ${#cols[*]} > 1 ]]; then
+				for ((i=1; i<=${#cols[*]}; i++)); do
+					Columns[$this,$i]=${cols[$i-1]}
+				done
+				Columns[$this]=${#cols[*]}
+			fi			
+		else
+			for ((i=1; i<=${#cols[*]}; i++)); do
+				Columns[$this,$i]=${cols[$i-1]}
+			done
+			Columns[$this]=${#cols[*]}
+		fi
     else
         Columns=()
         for ((i=0; i<${#cols[*]}; i++)); do
@@ -783,8 +794,10 @@ function make_table() {
 			esac
 			make_table_axis $n
 			if [[ ${Columns[$n]:-0} == 0 && ${Files[$n]:-0} == 0 ]]; then
-				if [[ $Merge == "f" ]]; then df=${Files[$j,0]}; else df=${Files[$i,0]}; fi
-				getclosestkey Columns $j 0; col=${Columns[$j,0]:-${Columns[$s,0]}}
+				if [[ $Merge == "f" ]]
+				then df=${Files[$j,0]}; getclosestkey Columns $i 0; col=${Columns[$i,0]:-${Columns[$s,0]}}
+				else df=${Files[$i,0]}; getclosestkey Columns $j 0; col=${Columns[$j,0]:-${Columns[$s,0]}}
+				fi
 				make_table_line_style $n $k
 				echo "$n $k $index $pl $df ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 			elif [[ ${Columns[$n]:-0} > 0 && ${Files[$n]:-0} == 0 ]]; then
