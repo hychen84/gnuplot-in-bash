@@ -383,17 +383,22 @@ function get_file() {
 		[[ ${Files[$this,$thisline]} == "" ]] && ((Files[$this]++))
 		Files[$this,$thisline]=${datafile[0]}
 	elif [ $this ]; then
+		[[ $((this+1)) > ${Files["N"]} ]] && this=${Files["N"]}
         for ((i=1; i<=${Files[$this]:-0}; i++)); do
             unset Files[$this,$i]
+			unset Files[$this]
         done
+		[[ $datafile == "." ]] && return
 		if [[ ${Files[$this,0]} == "" ]]; then
 			[[ ${Files["N"]} -le $this ]] && ((Files["N"]++))
 			Files[$this,0]=$datafile
+			if [[ ${#datafile[*]} > 1 ]]; then
+				for ((i=1; i<=${#datafile[*]}; i++)); do
+					Files[$this,$i]=${datafile[$i-1]}
+				done
+				Files[$this]=${#datafile[*]}
+			fi			
 		else
-			if [[ $datafile == "." ]]; then
-				Files[$this]=0
-				return
-			fi
 			for ((i=1; i<=${#datafile[*]}; i++)); do
 				Files[$this,$i]=${datafile[$i-1]}
 			done
