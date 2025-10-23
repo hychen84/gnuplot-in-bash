@@ -525,8 +525,8 @@ function set_csparameters() {
 					  Voffset[${this:-0}]=${p2:-${Voffset[${this:-0}]:-${Voffset[0]}}}
 				  fi
 				  echo "    $(chr $((${this:-0}+97))):  Offset= \"${Hoffset[${this:-0}]},${Voffset[${this:-0}]}\"";;
-			Size) getclosestkey Xsize ${this:-0}; Xsize[${this:-0}]=${p1:-${Xsize[${this:-0}]:-${Xsize[t]}}}
-				  getclosestkey Ysize ${this:-0}; Ysize[${this:-0}]=${p2:-${Ysize[${this:-0}]:-${Ysize[t]}}}
+			Size) closestindex Xsize ${this:-0}; Xsize[${this:-0}]=${p1:-${Xsize[${this:-0}]:-${Xsize[t]}}}
+				  closestindex Ysize ${this:-0}; Ysize[${this:-0}]=${p2:-${Ysize[${this:-0}]:-${Ysize[t]}}}
 				  echo "    $(chr $((${this:-0}+97))):  Size= \"${Xsize[${this:-0}]},${Ysize[${this:-0}]}\"";;
 			View) View[${this:-0}]=${p1:-${View[${this:-0}]%,*}},${p2:-${View[${this:-0}]#*,}}
 				  echo "    $(chr $((${this:-0}+97))):  view= \"${View[${this:-0}]}\"";;
@@ -718,7 +718,7 @@ function unset_empty_lines(){
 	for key in ${!Key[*]}; do [[ ${Key[$key]} == "" ]] && unset Key[$key]; done
 }
 
-function getclosestkey() {
+function closestindex() {
     declare -n aa=$1
     if [[ ! $3 ]]; then
         for ((t=$2; t>=0; t--)); do [[ ${aa[t]} ]] && return; done; ((t++))
@@ -734,40 +734,40 @@ function getclosestkey() {
 }
 
 function make_table_axis() {
-    getclosestkey Graph $1; gr=${Graph[$1]:-${Graph[t]:-2d}}
-    getclosestkey Xsize $1; xs=${Xsize[$1]:-${Xsize[t]}}
-    getclosestkey Ysize $1; ys=${Ysize[$1]:-${Ysize[t]}}
+    closestindex Graph $1; gr=${Graph[$1]:-${Graph[t]:-2d}}
+    closestindex Xsize $1; xs=${Xsize[$1]:-${Xsize[t]}}
+    closestindex Ysize $1; ys=${Ysize[$1]:-${Ysize[t]}}
     if [[ $1 == 0 ]]; then
         Index[0]=${Index[0]:-'(a)'}
         a1=$(ord ${Index[0]//[^A-Za-z]/})
     fi
 	if [[ ${Index[n]} == "" ]]; then
-		getclosestkey Index $1; index=${Index[$1]:-${Index[t]}}
+		closestindex Index $1; index=${Index[$1]:-${Index[t]}}
 		index=${index/[A-Za-z]/$(chr $((a1+$1)))}${Caption[$1]}
 	else
 		index=${Index[$1]}${Caption[$1]}
 	fi
-	getclosestkey Xlabel $1; xl=${Xlabel[$1]:-${Xlabel[t]:-¶}}
-	getclosestkey Ylabel $1; yl=${Ylabel[$1]:-${Ylabel[t]:-¶}}
-	getclosestkey Zlabel $1; zl=${Zlabel[$1]:-${Zlabel[t]:-¶}}
-	getclosestkey Xrange $1; xr=${Xrange[$1]:-${Xrange[t]:-*:*}}
-	getclosestkey Yrange $1; yr=${Yrange[$1]:-${Yrange[t]:-*:*}}
-	getclosestkey Zrange $1; zr=${Zrange[$1]:-${Zrange[t]:-*:*}}
-	getclosestkey Crange $1; cr=${Crange[$1]:-${Crange[t]:-*:*}}
-	getclosestkey Xtics $1; xt=${Xtics[$1]:-${Xtics[t]:-auto}}
-	getclosestkey Ytics $1; yt=${Ytics[$1]:-${Ytics[t]:-auto}}
-	getclosestkey Ztics $1; zt=${Ztics[$1]:-${Ztics[t]:-auto}}
-	getclosestkey Ctics $1; ct=${Ctics[$1]:-${Ctics[t]:-auto}}
+	closestindex Xlabel $1; xl=${Xlabel[$1]:-${Xlabel[t]:-¶}}
+	closestindex Ylabel $1; yl=${Ylabel[$1]:-${Ylabel[t]:-¶}}
+	closestindex Zlabel $1; zl=${Zlabel[$1]:-${Zlabel[t]:-¶}}
+	closestindex Xrange $1; xr=${Xrange[$1]:-${Xrange[t]:-*:*}}
+	closestindex Yrange $1; yr=${Yrange[$1]:-${Yrange[t]:-*:*}}
+	closestindex Zrange $1; zr=${Zrange[$1]:-${Zrange[t]:-*:*}}
+	closestindex Crange $1; cr=${Crange[$1]:-${Crange[t]:-*:*}}
+	closestindex Xtics $1; xt=${Xtics[$1]:-${Xtics[t]:-auto}}
+	closestindex Ytics $1; yt=${Ytics[$1]:-${Ytics[t]:-auto}}
+	closestindex Ztics $1; zt=${Ztics[$1]:-${Ztics[t]:-auto}}
+	closestindex Ctics $1; ct=${Ctics[$1]:-${Ctics[t]:-auto}}
 }
 
 function make_table_line_style() {
-	getclosestkey Using $1 $2; uc=${Using[$1,$2]:-${Using[$s,$t]:-1:c}}; uc=${uc//§/$}
-	getclosestkey With $1 $2; ws=${With[$1,$2]:-${With[$s,$t]:-l}}
-	getclosestkey Dt $1 $2; dt=${Dt[$1,$2]:-${Dt[$s,$t]:-1}}
-	getclosestkey Lw $1 $2; lw=${Lw[$1,$2]:-${Lw[$s,$t]:-2}}
-	getclosestkey Pt $1 $2; pt=${Pt[$1,$2]:-${Pt[$s,$t]:-7}}
-	getclosestkey Ps $1 $2; ps=${Ps[$1,$2]:-${Ps[$s,$t]:-0.5}}
-	getclosestkey Lc $1 $2; lc=${Lc[$1,$2]:-${Lc[$s,$t]:-c}}; [[ $lc =~ "#" ]] && lc=${lc^^}
+	closestindex Using $1 $2; uc=${Using[$1,$2]:-${Using[$s,$t]:-1:c}}; uc=${uc//§/$}
+	closestindex With $1 $2; ws=${With[$1,$2]:-${With[$s,$t]:-l}}
+	closestindex Dt $1 $2; dt=${Dt[$1,$2]:-${Dt[$s,$t]:-1}}
+	closestindex Lw $1 $2; lw=${Lw[$1,$2]:-${Lw[$s,$t]:-2}}
+	closestindex Pt $1 $2; pt=${Pt[$1,$2]:-${Pt[$s,$t]:-7}}
+	closestindex Ps $1 $2; ps=${Ps[$1,$2]:-${Ps[$s,$t]:-0.5}}
+	closestindex Lc $1 $2; lc=${Lc[$1,$2]:-${Lc[$s,$t]:-c}}; [[ $lc =~ "#" ]] && lc=${lc^^}
     if [[ $gr == "2d" ]]; then
 		pl=plot
 	elif [[ $gr == "¶" ]]; then
@@ -795,20 +795,20 @@ function make_table() {
 			make_table_axis $n
 			if [[ ${Columns[$n]:-0} == 0 && ${Files[$n]:-0} == 0 ]]; then
 				if [[ $Merge == "f" ]]
-				then df=${Files[$j,0]}; getclosestkey Columns $i 0; col=${Columns[$i,0]:-${Columns[$s,0]}}
-				else df=${Files[$i,0]}; getclosestkey Columns $j 0; col=${Columns[$j,0]:-${Columns[$s,0]}}
+				then df=${Files[$j,0]}; closestindex Columns $i 0; col=${Columns[$i,0]:-${Columns[$s,0]}}
+				else df=${Files[$i,0]}; closestindex Columns $j 0; col=${Columns[$j,0]:-${Columns[$s,0]}}
 				fi
 				make_table_line_style $n $k
 				echo "$n $k $index $pl $df ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 			elif [[ ${Columns[$n]:-0} > 0 && ${Files[$n]:-0} == 0 ]]; then
 				for ((k=1; k<=${Columns[$n]}; k++)); do
-					getclosestkey Columns $n $k; col=${Columns[$n,$k]:-${Columns[$s,$t]}}
+					closestindex Columns $n $k; col=${Columns[$n,$k]:-${Columns[$s,$t]}}
 					make_table_line_style $n $k
 					echo "$n $k $index $pl ${Files[$n,0]} ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 				done
 				((k--))
 			elif [[ ${Columns[$n]:-0} == 0 && ${Files[$n]:-0} > 0 ]]; then
-				getclosestkey Columns $n 0; col=${Columns[$n,0]:-${Columns[$s,0]}}
+				closestindex Columns $n 0; col=${Columns[$n,0]:-${Columns[$s,0]}}
 				for ((k=1; k<=${Files[$n]}; k++)); do
 					make_table_line_style $n $k
 					echo "$n $k $index $pl ${Files[$n,$k]} ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
@@ -821,8 +821,10 @@ function make_table() {
 				fi
 				for ((l=1; l<=N1; l++)); do
 					for ((m=1; m<=N2; m++)); do
-						if [[ $Merge == "c" ]]; then df=${Files[$n,$m]}; p=$l; else df=${Files[$n,$l]}; p=$m; fi
-						getclosestkey Columns $n $p; col=${Columns[$n,$p]:-${Columns[$s,$t]}}
+						if [[ $Merge == "c" ]]
+						then df=${Files[$n,$m]}; closestindex Columns $n $l; col=${Columns[$n,$l]:-${Columns[$s,$t]}}
+						else df=${Files[$n,$l]}; closestindex Columns $n $m; col=${Columns[$n,$m]:-${Columns[$s,$t]}}
+						fi						
 						k=$(((l-1)*N2+m))
 						make_table_line_style $n $k
 						echo "$n $k $index $pl $df ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
