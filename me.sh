@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.438 released on 2025-10-13 (since 2007/12/25)
+# ME build 7.5.439 released on 2025-10-24 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -82,13 +82,13 @@ declare -a Pm3d=($(arraytostring Pm3d [0]='off'))
 declare -a Palette=($(arraytostring Palette [0]='PARULA'))
 declare -a Axis3d=($(arraytostring Axis3d [0]='on'))
 declare -a Plot=($(arraytostring Plot [0]='1'))
-declare -A Using=($(arraytostring Using [0,1]='1:c'))
+declare -A Using=($(arraytostring Using [0,1]='1:¢'))
 declare -A With=($(arraytostring With [0,1]='l'))
 declare -A Dt=($(arraytostring Dt [0,1]='1'))
 declare -A Lw=($(arraytostring Lw [0,1]='2'))
 declare -A Pt=($(arraytostring Pt [0,1]='7'))
 declare -A Ps=($(arraytostring Ps [0,1]='0.5'))
-declare -A Lc=($(arraytostring Lc [0,1]='c'))
+declare -A Lc=($(arraytostring Lc [0,1]='¢'))
 BZoffset=(${BZoffset[*]:-pi pi})" > .me/.var
 }
 
@@ -209,6 +209,7 @@ function print_parameters() {
                 }
                 for (i=0; i<=Lx[j]; i++) {
                     split(A[i][j][l],c," ")
+                    gsub("¢","c",c[6])
 					gsub("§","$",c[6])
                     gsub("‖","||",c[6])
                     if (c[25] == "¶") {ind = "🗙"} else {ind = c[2]}
@@ -385,14 +386,19 @@ function get_file() {
         for ((i=1; i<=${Files[$this]:-0}; i++)); do
             unset Files[$this,$i]
         done
-		if [[ $datafile == "." ]]; then
-			Files[$this]=0
-			return
+		if [[ ${Files[$this,0]} == "" ]]; then
+			[[ ${Files["N"]} -le $this ]] && ((Files["N"]++))
+			Files[$this,0]=$datafile
+		else
+			if [[ $datafile == "." ]]; then
+				Files[$this]=0
+				return
+			fi
+			for ((i=1; i<=${#datafile[*]}; i++)); do
+				Files[$this,$i]=${datafile[$i-1]}
+			done
+			Files[$this]=${#datafile[*]}
 		fi
-        for ((i=1; i<=${#datafile[*]}; i++)); do
-            Files[$this,$i]=${datafile[$i-1]}
-        done
-        Files[$this]=${#datafile[*]}
     else
         Files=()
         for ((i=0; i<${#datafile[*]}; i++)); do
@@ -453,7 +459,7 @@ function set_graph() {
 		case ${1,,} in
 		2d) Xsize[${this:-0}]=200
             Ysize[${this:-0}]=125
-            Using[${this:-0},1]=1:c
+            Using[${this:-0},1]=1:¢
             With[${this:-0},1]=l
 			Index_position[${this:-0}]="auto";;
 	    3d) if [[ ${Graph[${this:-0}]} == "2d" ]]; then
@@ -463,7 +469,7 @@ function set_graph() {
 				Xsize[${this:-0}]=200
 				Ysize[${this:-0}]=186
 			fi
-			Using[${this:-0},1]=1:2:c
+			Using[${this:-0},1]=1:2:¢
 			With[${this:-0},1]=pm3d
 			Pm3d[${this:-0}]=on
 			Index_position[${this:-0}]="auto";;
@@ -474,7 +480,7 @@ function set_graph() {
 				Xsize[${this:-0}]=150
 				Ysize[${this:-0}]=150
 			fi
-			Using[${this:-0},1]=1:2:c
+			Using[${this:-0},1]=1:2:¢
 			With[${this:-0},1]=¶
 			Index_position[${this:-0}]="auto";;
 	   off) Graph[${this:-0}]="¶";;
