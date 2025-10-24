@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.440 released on 2025-10-24 (since 2007/12/25)
+# ME build 7.5.441 released on 2025-10-25 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -478,7 +478,7 @@ function set_graph() {
             With[${this:-0},1]=l
 			Index_position[${this:-0}]="auto"
 			Graph[${this:-0}]=${1,,};;
-	    3d) if [[ ${Graph[${this:-0}]} == "2d" && $Total_figures > 1 ]]; then
+	    3d) if [[ $this && ${Graph[${this:-0}]} == "2d" && $Total_figures > 1 ]]; then
 				Xsize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.37}")
 				Ysize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*0.93}")
 			else
@@ -490,7 +490,7 @@ function set_graph() {
 			Pm3d[${this:-0}]=on
 			Index_position[${this:-0}]="auto"
 			Graph[${this:-0}]=${1,,};;
-	   map) if [[ ${Graph[${this:-0}]} == "2d" && $Total_figures > 1 ]]; then
+	   map) if [[ $this && ${Graph[${this:-0}]} == "2d" && $Total_figures > 1 ]]; then
 				Xsize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.23}")
 				Ysize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.23}")
 			else
