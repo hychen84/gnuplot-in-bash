@@ -385,11 +385,10 @@ function get_file() {
 	elif [ $this ]; then
 		[[ $((this+1)) > ${Files["N"]} ]] && this=${Files["N"]}
         for ((i=1; i<=${Files[$this]:-0}; i++)); do
-            unset Files[$this,$i]
+            unset Files[$this,$i] 
 			unset Files[$this]
         done
-		[[ $datafile == "." ]] && return
-		if [[ ${Files[$this,0]} == "" ]]; then
+		if [[ ${Files[$this,0]} == "" && $((this+1)) > $Total_figures ]]; then
 			[[ ${Files["N"]} -le $this ]] && ((Files["N"]++))
 			Files[$this,0]=$datafile
 			if [[ ${#datafile[*]} > 1 ]]; then
@@ -443,7 +442,7 @@ function get_column() {
         for ((i=1; i<=${Columns[$this]:-0}; i++)); do
             unset Columns[$this,$i]
         done
-		if [[ ${Columns[$this,0]} == "" ]]; then
+		if [[ ${Columns[$this,0]} == "" && $((this+1)) > $Total_figures ]]; then
 			[[ ${Columns["N"]} -le $this ]] && ((Columns["N"]++))
 			Columns[$this,0]=$cols
 			if [[ ${#cols[*]} > 1 ]]; then
