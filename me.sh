@@ -388,7 +388,7 @@ function get_file() {
             unset Files[$this,$i] 
 			unset Files[$this]
         done
-		if [[ ${Files[$this,0]} == "" && $((this+1)) > $Total_figures ]]; then
+		if [[ ${Files[$this,0]} == "" ]]; then
 			[[ ${Files["N"]} -le $this ]] && ((Files["N"]++))
 			Files[$this,0]=$datafile
 			if [[ ${#datafile[*]} > 1 ]]; then
@@ -396,7 +396,7 @@ function get_file() {
 					Files[$this,$i]=${datafile[$i-1]}
 				done
 				Files[$this]=${#datafile[*]}
-			fi			
+			fi
 		else
 			for ((i=1; i<=${#datafile[*]}; i++)); do
 				Files[$this,$i]=${datafile[$i-1]}
@@ -442,7 +442,7 @@ function get_column() {
         for ((i=1; i<=${Columns[$this]:-0}; i++)); do
             unset Columns[$this,$i]
         done
-		if [[ ${Columns[$this,0]} == "" && $((this+1)) > $Total_figures ]]; then
+		if [[ ${Columns[$this,0]} == "" ]]; then
 			[[ ${Columns["N"]} -le $this ]] && ((Columns["N"]++))
 			Columns[$this,0]=$cols
 			if [[ ${#cols[*]} > 1 ]]; then
