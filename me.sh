@@ -465,7 +465,7 @@ function set_graph() {
             With[${this:-0},1]=l
 			Index_position[${this:-0}]="auto"
 			Graph[${this:-0}]=${1,,};;
-	    3d) if [[ $this && ${Graph[${this:-0}]} == "2d" && $Total_figures > 1 ]]; then
+	    3d) if [[ $this && ${Graph[$this]} == "2d" && $Total_figures > 1 ]]; then
 				Xsize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.37}")
 				Ysize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*0.93}")
 			else
@@ -477,7 +477,7 @@ function set_graph() {
 			Pm3d[${this:-0}]=on
 			Index_position[${this:-0}]="auto"
 			Graph[${this:-0}]=${1,,};;
-	   map) if [[ $this && ${Graph[${this:-0}]} == "2d" && $Total_figures > 1 ]]; then
+	   map) if [[ $this && ${Graph[$this]} == "2d" && $Total_figures > 1 ]]; then
 				Xsize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.23}")
 				Ysize[${this:-0}]=$(awk "{printf \"%.0f\",${Xsize[${this:-0}]}*1.23}")
 			else
