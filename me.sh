@@ -383,7 +383,6 @@ function get_file() {
 		[[ ${Files[$this,$thisline]} == "" ]] && ((Files[$this]++))
 		Files[$this,$thisline]=${datafile[0]}
 	elif [ $this ]; then
-		[[ $((this+1)) > ${Files["N"]} ]] && this=${Files["N"]}
         for ((i=1; i<=${Files[$this]:-0}; i++)); do
             unset Files[$this,$i] 
 			unset Files[$this]
@@ -391,13 +390,8 @@ function get_file() {
 		if [[ ${Files[$this,0]} == "" ]]; then
 			[[ ${Files["N"]} -le $this ]] && ((Files["N"]++))
 			Files[$this,0]=$datafile
-			if [[ ${#datafile[*]} > 1 ]]; then
-				for ((i=1; i<=${#datafile[*]}; i++)); do
-					Files[$this,$i]=${datafile[$i-1]}
-				done
-				Files[$this]=${#datafile[*]}
-			fi
-		else
+		fi
+		if [[ ${Files[$this,0]} != "" || ${#datafile[*]} > 1 ]]; then
 			for ((i=1; i<=${#datafile[*]}; i++)); do
 				Files[$this,$i]=${datafile[$i-1]}
 			done
@@ -445,18 +439,13 @@ function get_column() {
 		if [[ ${Columns[$this,0]} == "" ]]; then
 			[[ ${Columns["N"]} -le $this ]] && ((Columns["N"]++))
 			Columns[$this,0]=$cols
-			if [[ ${#cols[*]} > 1 ]]; then
-				for ((i=1; i<=${#cols[*]}; i++)); do
-					Columns[$this,$i]=${cols[$i-1]}
-				done
-				Columns[$this]=${#cols[*]}
-			fi			
-		else
+		fi
+		if [[ ${Columns[$this,0]} != "" || ${#cols[*]} > 1 ]]; then
 			for ((i=1; i<=${#cols[*]}; i++)); do
 				Columns[$this,$i]=${cols[$i-1]}
 			done
 			Columns[$this]=${#cols[*]}
-		fi
+		fi			
     else
         Columns=()
         for ((i=0; i<${#cols[*]}; i++)); do
