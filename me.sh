@@ -385,7 +385,6 @@ function get_file() {
 	elif [ $this ]; then
         for ((i=1; i<=${Files[$this]:-0}; i++)); do
             unset Files[$this,$i] 
-			unset Files[$this]
         done
 		if [[ ${Files[$this,0]} == "" ]]; then
 			[[ ${Files["N"]} -le $this ]] && ((Files["N"]++))
