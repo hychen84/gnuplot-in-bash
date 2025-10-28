@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.441 released on 2025-10-25 (since 2007/12/25)
+# ME build 7.5.442 released on 2025-10-28 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1568,15 +1568,13 @@ function gnuplot_dgrid3d() {
 }
 
 function gpscript_set_3d() {
-    Files[$1,0]=${Files[$1,1]:-${Files[$1,0]:-${Files[$(($1-1)),0]}}}
 	Zlabel[$1]=${Zlabel[$1]:-${Zlabel[$1-1]:-¶}}
 	zl=${Zlabel[$1]}
     Ztics[$1]=${Ztics[$1]:-${Ztics[$1-1]:-auto}}
 	zl_pos=$(awk "BEGIN {printf \"%.2f\",(7.0-${GPV[$ix,$iy,lzt]}-0.5*${GPV[$ix,$iy,pzl]})*$Digitscale}")",0■right■rotate■by■0"
 	zt_pos="1.0,0"
-    Using[$1,1]=${Using[$1,1]:-${Using[$1-1,1]:-1:2:c}}
-    #gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]}
-	Dgrid=$(gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]})
+    dgrid_input=($(awk "/^$1 1/{print \$6, \$5}" .me/table))
+	Dgrid=$(gnuplot_dgrid3d ${dgrid_input[0]} ${dgrid_input[1]})
 	Pm3d[$1]=${Pm3d[$1]:-${Pm3d[$1-1]:-${Pm3d[0]}}}
 	Palette[$1]=${Palette[$1]:-${Palette[$1-1]:-${Palette[0]}}}
 	gpscript_palette ${Palette[$1]}
@@ -1613,9 +1611,8 @@ set palette $palette" >> .me/gp
 }
 
 function gpscript_set_map() {
-    Files[$1,0]=${Files[$1,1]:-${Files[$1,0]:-${Files[$(($1-1)),0]}}}
-    Using[$1,1]=${Using[$1,1]:-${Using[$1-1,1]:-1:2:c}}
-    Dgrid=$(gnuplot_dgrid3d ${Using[$1,1]} ${Files[$1,0]})
+    dgrid_input=($(awk "/^$1 1/{print \$6, \$5}" .me/table))
+	Dgrid=$(gnuplot_dgrid3d ${dgrid_input[0]} ${dgrid_input[1]})
 	Palette[$1]=${Palette[$1]:-${Palette[$1-1]:-${Palette[0]}}}
 	gpscript_palette ${Palette[$1]}
 	Cbox[$1]=${Cbox[$1]:-${Cbox[$1-1]:-vertical}}
