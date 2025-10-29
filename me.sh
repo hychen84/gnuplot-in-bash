@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.442 released on 2025-10-28 (since 2007/12/25)
+# ME build 7.5.443 released on 2025-10-29 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -193,7 +193,7 @@ function print_parameters() {
 						} else {
                             LK = " "
                         }
-                        w3 = i<Lx[j] ? L[i] - length(c[3]) : 0
+                        w3 = i<Nx ? L[i] - length(c[3]) : 0
                         if (c[3] !~ /🗙/) {
 							gsub("■"," ",c[3])
 							printf "\033[2m%c: \033[0m%s%*s\033[90m%4s\033[0m ",c[1]+97,c[3],w3," ",LK
@@ -216,23 +216,23 @@ function print_parameters() {
                     if (c[7]) {
                         switch(c[7]) {
                             case "l":
-                                w = i<Lx[j] ? L[i] - (length(c[5] c[6] c[8] c[9])+14) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6] c[8] c[9])+14) + 2 : 0
                                 printf "   %2d. \"%s\" u %s dt %s lw %s%*s",ind,c[5],c[6],c[8],c[9], w," "
                                 break
                             case "p":
-                                w = i<Lx[j] ? L[i] - (length(c[5] c[6] c[10] c[11])+14) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6] c[10] c[11])+14) + 2 : 0
                                 printf "   %2s. \"%s\" u %s pt %s ps %s%*s",ind,c[5],c[6],c[10],c[11], w," "
                                 break
                             case "lp":
-                                w = i<Lx[j] ? L[i] - (length(c[5] c[6] c[8] c[10])+14) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6] c[8] c[10])+14) + 2 : 0
                                 printf "   %2d. \"%s\" u %s dt %s pt %s%*s",ind,c[5],c[6],c[8],c[10], w," "
                                 break
                             case "pm3d":
-                                w = i<Lx[j] ? L[i] - (length(c[5] c[6])+11) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6])+11) + 2 : 0
                                 printf "   %2d. \"%s\" u %s pm3d%*s",ind,c[5],c[6], w," "
                                 break
                             case "¶":
-                                w = i<Lx[j] ? L[i] - (length(c[5] c[6])+6) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6])+6) + 2 : 0
                                 printf "   %2d. \"%s\" u %s%*s",c[2],c[5],c[6], w," "
                                 break
                             default:
@@ -241,7 +241,7 @@ function print_parameters() {
                                 break
                         }
                     } else {
-                        if (i<Lx[j]) {printf "%*s",L[i]+8," "}
+                        if (i<Nx) {printf "%*s",L[i]+8," "}
                     }
                     separator(i)
                 }
@@ -251,7 +251,7 @@ function print_parameters() {
 				split(A[i][j][1],c," ")
 				gsub("¶","",c[14])
 				w15 = L_range[i][j] - length(c[15]) + 1
-				w14 = i<Lx[j] ? L[i] - (L_range[i][j]+6) - (length(c[14])+5) + 1 : 0
+				w14 = i<Nx ? L[i] - (L_range[i][j]+6) - (length(c[14])+5) + 1 : 0
 				printf "    xr=［%s］,%*sxl=\"%s\"%*s",c[15], w15," ",c[14], w14," "
 				separator(i)
 			}
@@ -260,7 +260,7 @@ function print_parameters() {
 				split(A[i][j][1],c," ")
 				gsub("¶","",c[17])
 				w18 = L_range[i][j] - length(c[18]) + 1
-				w17 = i<Lx[j] ? L[i] - (L_range[i][j]+6) - (length(c[17])+5) + 1 : 0
+				w17 = i<Nx ? L[i] - (L_range[i][j]+6) - (length(c[17])+5) + 1 : 0
 				printf "    yr=［%s］,%*syl=\"%s\"%*s",c[18], w18," ",c[17], w17," "
 				separator(i)
 			}
@@ -274,7 +274,7 @@ function print_parameters() {
 					split(A[i][j][1],c," ")
 					gsub("¶","",c[20])
 					w21 = L_range[i][j] - length(c[21]) + 1
-					w20 = i<Lx[j] ? L[i] - (L_range[i][j]+6) - (length(c[20])+5) + 1 : 0
+					w20 = i<Nx ? L[i] - (L_range[i][j]+6) - (length(c[20])+5) + 1 : 0
 					if (c[25] == "map")     {printf "    cr=［%s］%*s",c[23],L[i]-(L_range[i][j]+5)+2," "}
 					else if (c[25] == "3d") {printf "    zr=［%s］,%*szl=\"%s\"%*s",c[21], w21," ",c[20], w20," "}
 					else {printf "%*s",L[i]+8," "}
@@ -1294,26 +1294,17 @@ function gpscript_set_origin() {
 	Voffset[$1]=${Voffset[$1]:-${Voffset[$1-1]}}
 	[[ ${Hoffset[$1]} == "" || ${Hoffset[$1]} == "0" ]] && hoffset="" || hoffset="+("${Hoffset[$1]}"/$Wpt.0)"
 	[[ ${Voffset[$1]} == "" || ${Voffset[$1]} == "0" ]] && voffset="" || voffset="+("${Voffset[$1]}"/$Hpt.0)"
-    Xsize[$1]=${Xsize[$1]:-${Xsize[$1-1]:-${Xsize[0]}}}
-    Ysize[$1]=${Ysize[$1]:-${Ysize[$1-1]:-${Ysize[0]}}}
-	echo "XC = $Fontsize*$Digitscale/${Xsize[$1]}; YC = $Fontsize*1.00/${Ysize[$1]}
+    Mxsize=${Mtable[15]}
+    Mysize=${Mtable[16]}
+	echo "XC = $Fontsize*$Digitscale/$Mxsize; YC = $Fontsize*1.00/$Mysize
 set origin ORIGIN_X+OFFSET_X*$ix$hoffset,ORIGIN_Y-OFFSET_Y*$iy$voffset
-set size noratio ${Xsize[$1]}/$Wpt.0,${Ysize[$1]}/$Hpt.0
+set size noratio $Mxsize/$Wpt.0,$Mysize/$Hpt.0
 set border 31
 unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unset ylabel; unset ytics">> .me/gp
-    if [[ $1 == 0 ]]; then
-        Index[0]=${Index[0]:-'(a)'}
-        a1=$(ord ${Index[0]//[^A-Za-z]/})
-    fi
-	if [[ ${Index[$1]} == "" ]]; then
-        Index[$1]=${Index[$1]:-${Index[$1-1]:-${Index[0]}}}
-        index=${Index[$1]/[A-Za-z]/$(chr $((a1+$1)))}${Caption[$1]//■/ }
-	else
-		index=${Index[$1]}${Caption[$1]//■/ }
-	fi
+	Mindex=${Mtable[0]//■/ }
 	Index_position[$1]=${Index_position[$1]:-${Index_position[$1-1]:-auto}}
 	if [[ ${Index_position[$1]} == "auto" ]]; then
-		case ${Graph[$1]} in
+		case $Mgraph in
 			2d) p1="XC,1-YC*$Labelmargin,left";;
 			3d) ipyoffset=$(awk "BEGIN {printf \"%.2f\", 1.25*cos($Vx*0.0174533)*cos($Vz*0.0174533) }")
 				p1="-XC,-XC,1+YC+$ipyoffset,left";;
@@ -1322,8 +1313,8 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
 	else
 		p1=${Index_position[$1]}
 	fi
-	if [[ ${index:0:1} != "🗙" ]]; then
-		echo "set label 1 \"${index% }\" at graph ${p1%,*} ${p1##*,} front" >> .me/gp
+	if [[ ${Tindex:0:1} != "🗙" ]]; then
+		echo "set label 1 \"$Mindex\" at graph ${p1%,*} ${p1##*,} front" >> .me/gp
 	fi
     for ((j=1; j<=${Label[$1]:-0}; j++)); do
         Label_position[$1,$j]=${Label_position[$1,$j]:-${Label_position[$1,$((j-1))]:-${Label_position[0,1]}}}
@@ -1336,7 +1327,7 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
             sys="graph"
         fi
         p2=(${p2[*]})
-		if [[ ${Graph[$1]} == "3d" ]]; then
+		if [[ $Tgraph == "3d" ]]; then
 			lc=${p2[0]}","${p2[1]}","${p2[2]}
 			unset p2[0]; unset p2[1]; unset p2[2]
 		else
@@ -1391,18 +1382,12 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
 }
 
 function gpscript_set_axis() {
-	[[ ${Graph[$1]} == "3d" ]] && Fontset="font \",$(awk "BEGIN {print $Fontsize-2}")\"" || Fontset=""
+	[[ $Mgraph == "3d" ]] && Fontset="font \",$(awk "BEGIN {print $Fontsize-2}")\"" || Fontset=""
 	ex=$((${Layout[0]}-1))
 	ey=$((${Layout[1]}-1))
-	Xlabel[$1]=${Xlabel[$1]:-${Xlabel[$1-1]:-¶}}
-	Ylabel[$1]=${Ylabel[$1]:-${Ylabel[$1-1]:-¶}}
-	xl=${Xlabel[$1]}
-	yl=${Ylabel[$1]}
-    Xtics[$1]=${Xtics[$1]:-${Xtics[$1-1]:-auto}}
-    Ytics[$1]=${Ytics[$1]:-${Ytics[$1-1]:-auto}}
-	xt=${Xtics[$1]}
-	yt=${Ytics[$1]}
-	case ${Graph[$1]} in
+	xl=${Mtable[3]}; xt=${Mtable[5]}
+	yl=${Mtable[6]}; yt=${Mtable[8]}
+	case $Mgraph in
 		2d)	xl_pos="0,0.33■center"
 			yl_pos=$(awk "BEGIN {printf \"%.2f\", (0.075+${GPV[$ix,$iy,pyl]})*$Digitscale}")",0■center"
 			xt_pos="0,0.25"
@@ -1417,26 +1402,24 @@ function gpscript_set_axis() {
 			xt_pos=$(awk "BEGIN {printf \"%.2f,%.2f\", 1.5*$Xrotation,-0.25*$Yrotation}")
             yt_pos="0,"$(awk "BEGIN {printf \"%.2f\", -0.25*$Yrotation}")
 			vs1=-1; hs1=-1;;
-	   map) xsize=${Xsize[$1]}
-			ysize=${Ysize[$1]}
-			if [ $xsize -eq $ysize ]; then
+	   map) if [ $Mxsize -eq $Mysize ]; then
 				xl_pos="0,0.75■center"
 				yl_pos=$(awk "BEGIN {printf \"%.2f\", (0.275+${GPV[$ix,$iy,pyl]})*$Digitscale}")",0■right■rotate■by■0"
                 xt_pos="0,0.625"
                 yt_pos="0.725,0"
-            elif [ $xsize -gt $ysize ]; then
-				xl_pos="0,"$(awk "BEGIN {printf \"%.2f\", -0.25+sqrt($ysize/$xsize.0)}")"■center"
- 				yl_pos=$(awk "BEGIN {printf \"%.2f\", (0.075+${GPV[$ix,$iy,pyl]})*$Digitscale+$xsize/$ysize.0}")",0■right■rotate■by■0"
-                xt_pos="0,0.625-($xsize-$ysize)/$xsize.0"
-                yt_pos="0.375+sqrt(($xsize-$ysize)/$ysize.0),0"
+            elif [ $Mxsize -gt $Mysize ]; then
+				xl_pos="0,"$(awk "BEGIN {printf \"%.2f\", -0.25+sqrt($Mysize/$Mxsize.0)}")"■center"
+ 				yl_pos=$(awk "BEGIN {printf \"%.2f\", (0.075+${GPV[$ix,$iy,pyl]})*$Digitscale+$Mxsize/$Mysize.0}")",0■right■rotate■by■0"
+                xt_pos="0,0.625-($Mxsize-$Mysize)/$Mxsize.0"
+                yt_pos="0.375+sqrt(($Mxsize-$Mysize)/$Mysize.0),0"
             else
-                xl_pos="0,"$(awk "BEGIN {printf \"%.2f\", 0.25+sqrt($ysize/$xsize.0)}")"■center"
-				yl_pos=$(awk "BEGIN {printf \"%.2f\", (0..075+${GPV[$ix,$iy,pyl]}-sqrt($ysize/$xsize.0))*$Digitscale}")",0■right■rotate■by■0"
-                xt_pos="0,0.325+sqrt(($ysize-$xsize)/$xsize.0)"
-                yt_pos="1.325-0.5*$ysize/$xsize.0,0"
+                xl_pos="0,"$(awk "BEGIN {printf \"%.2f\", 0.25+sqrt($Mysize/$Mxsize.0)}")"■center"
+				yl_pos=$(awk "BEGIN {printf \"%.2f\", (0..075+${GPV[$ix,$iy,pyl]}-sqrt($Mysize/$Mxsize.0))*$Digitscale}")",0■right■rotate■by■0"
+                xt_pos="0,0.325+sqrt(($Mysize-$Mxsize)/$Mxsize.0)"
+                yt_pos="1.325-0.5*$Mysize/$Mxsize.0,0"
             fi
-            echo "set xtics scale 0.625*sqrt($xsize/$ysize.0)
-set ytics scale 0.625*sqrt($ysize/$xsize.0)" >> .me/gp
+            echo "set xtics scale 0.625*sqrt($Mxsize/$Mysize.0)
+set ytics scale 0.625*sqrt($Mysize/$Mxsize.0)" >> .me/gp
 			vs1=-1; hs1=-1;;
 	esac
 	vs2=2.76; vs3=1.76
@@ -1568,13 +1551,10 @@ function gnuplot_dgrid3d() {
 }
 
 function gpscript_set_3d() {
-	Zlabel[$1]=${Zlabel[$1]:-${Zlabel[$1-1]:-¶}}
-	zl=${Zlabel[$1]}
-    Ztics[$1]=${Ztics[$1]:-${Ztics[$1-1]:-auto}}
+	zl=${Mtable[9]}; zt=${Mtable[11]}
 	zl_pos=$(awk "BEGIN {printf \"%.2f\",(7.0-${GPV[$ix,$iy,lzt]}-0.5*${GPV[$ix,$iy,pzl]})*$Digitscale}")",0■right■rotate■by■0"
 	zt_pos="1.0,0"
-    dgrid_input=($(awk "/^$1 1/{print \$6, \$5}" .me/table))
-	Dgrid=$(gnuplot_dgrid3d ${dgrid_input[0]} ${dgrid_input[1]})
+	Dgrid=$(gnuplot_dgrid3d ${Mtable[1]} ${Mtable[0]})
 	Pm3d[$1]=${Pm3d[$1]:-${Pm3d[$1-1]:-${Pm3d[0]}}}
 	Palette[$1]=${Palette[$1]:-${Palette[$1-1]:-${Palette[0]}}}
 	gpscript_palette ${Palette[$1]}
@@ -1584,7 +1564,7 @@ function gpscript_set_3d() {
 		echo "set zlabel \"$zl\" offset $zl_pos $Fontset" >> .me/gp
 	fi
 	echo "set zr[${GPV[$ix,$iy,zr]}]" >> .me/gp
-	echo "set ztics offset $zt_pos nomirror out ${Ztics[$1]} format '%g' $Fontset
+	echo "set ztics offset $zt_pos nomirror out $zt format '%g' $Fontset
 set ticslevel 0
 set border 21
 set grid x y z vertical lt -1 lc '#d4d3d3'
@@ -1611,8 +1591,7 @@ set palette $palette" >> .me/gp
 }
 
 function gpscript_set_map() {
-    dgrid_input=($(awk "/^$1 1/{print \$6, \$5}" .me/table))
-	Dgrid=$(gnuplot_dgrid3d ${dgrid_input[0]} ${dgrid_input[1]})
+	Dgrid=$(gnuplot_dgrid3d ${Mtable[1]} ${Mtable[0]})
 	Palette[$1]=${Palette[$1]:-${Palette[$1-1]:-${Palette[0]}}}
 	gpscript_palette ${Palette[$1]}
 	Cbox[$1]=${Cbox[$1]:-${Cbox[$1-1]:-vertical}}
@@ -1624,7 +1603,7 @@ function gpscript_set_map() {
 		colorbox="horizontal user origin graph 0,1+YC*0.5 size graph 1,XC"
         ct_pos="0,2.5"
 	fi
-	Ctics[$1]=${Ctics[$1]:-${Ctics[$1-1]:-auto}}
+	ct=${Mtable[13]}
 	echo "set view map
 unset colorbox
 unset grid
@@ -1633,7 +1612,7 @@ set pm3d map
 set palette $palette
 set colorbox $colorbox
 set cbr[${GPV[$ix,$iy,cr]}]
-set cbtics offset $ct_pos scale 0.1 nomirror ${Ctics[$1]} format '%g' $Fontset" >> .me/gp
+set cbtics offset $ct_pos scale 0.1 nomirror $ct format '%g' $Fontset" >> .me/gp
 }
 
 function gpscript_plot() {
@@ -1788,14 +1767,18 @@ function xgnuplot() {
 	for ((i=0; i<Total_figures; i++)); do
         ix=${Xsite[i]}
         iy=${Ysite[i]}
-        Graph[$i]=${Graph[i]:-${Graph[i-1]:-2d}}
+ 		echo -e "\n# --- Figure $((i+1)) ---" >> .me/gp
+        Mtable=($(awk "/^$i 1/{print \$3, \$5, \$6, \$14, \$15, \$16, \$17, \$18, \$19, \$20, \$21, \$22, \$23, \$24, \$25, \$26, \$27}" .me/table))
+        # [0]: Index            [1]: filename               [2]: using
+        # [3,6,9]: X/Y/Z-label  [4,7,10,12]: X/Y/Z/C-range  [5,8,11,13]: X/Y/Z/C-tics
+        # [14]: Graph           [15]: Xsize                 [16]: Ysize
+        Mgraph=${Mtable[14]}
         View[$i]=${View[i]:-${View[i-1]:-60,52.5}}
 		Vx=${View[$1]%,*}; Vz=${View[$1]#*,}
- 		echo -e "\n# --- Figure $((i+1)) ---" >> .me/gp
         gpscript_set_origin $i
-		if [[ ${Graph[i]} != "¶" ]]; then
+		if [[ $Mgraph != "¶" ]]; then
 			gpscript_set_axis $i
-			case ${Graph[i]} in
+			case $Mgraph in
 				3d) gpscript_set_3d $i
 					Axis3d[$i]=${Axis3d[i]:-${Axis3d[i-1]:-on}}
 					[[ ${Axis3d[i]} == "off" ]] && gpscript_unset_3daxis;;
