@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.443 released on 2025-10-29 (since 2007/12/25)
+# ME build 7.5.444 released on 2025-10-30 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1306,7 +1306,7 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
 	if [[ ${Index_position[$1]} == "auto" ]]; then
 		case $Mgraph in
 			2d) p1="XC,1-YC*$Labelmargin,left";;
-			3d) ipyoffset=$(awk "BEGIN {printf \"%.2f\", 1.25*cos($Vx*0.0174533)*cos($Vz*0.0174533) }")
+			3d) ipyoffset=$(awk "BEGIN {printf \"%.2f\", 1.25*$cos($Vx*0.0174533)*cos($Vz*0.0174533) }")
 				p1="-XC,-XC,1+YC+$ipyoffset,left";;
 		   map) p1="XC,1+YC*$Labelmargin,left";;
 		esac
@@ -1554,7 +1554,7 @@ function gpscript_set_3d() {
 	zl=${Mtable[9]}; zt=${Mtable[11]}
 	zl_pos=$(awk "BEGIN {printf \"%.2f\",(7.0-${GPV[$ix,$iy,lzt]}-0.5*${GPV[$ix,$iy,pzl]})*$Digitscale}")",0■right■rotate■by■0"
 	zt_pos="1.0,0"
-	Dgrid=$(gnuplot_dgrid3d ${Mtable[1]} ${Mtable[0]})
+	Dgrid=$(gnuplot_dgrid3d ${Mtable[2]} ${Mtable[1]})
 	Pm3d[$1]=${Pm3d[$1]:-${Pm3d[$1-1]:-${Pm3d[0]}}}
 	Palette[$1]=${Palette[$1]:-${Palette[$1-1]:-${Palette[0]}}}
 	gpscript_palette ${Palette[$1]}
@@ -1591,7 +1591,7 @@ set palette $palette" >> .me/gp
 }
 
 function gpscript_set_map() {
-	Dgrid=$(gnuplot_dgrid3d ${Mtable[1]} ${Mtable[0]})
+	Dgrid=$(gnuplot_dgrid3d ${Mtable[2]} ${Mtable[1]})
 	Palette[$1]=${Palette[$1]:-${Palette[$1-1]:-${Palette[0]}}}
 	gpscript_palette ${Palette[$1]}
 	Cbox[$1]=${Cbox[$1]:-${Cbox[$1-1]:-vertical}}
@@ -1774,7 +1774,8 @@ function xgnuplot() {
         # [14]: Graph           [15]: Xsize                 [16]: Ysize
         Mgraph=${Mtable[14]}
         View[$i]=${View[i]:-${View[i-1]:-60,52.5}}
-		Vx=${View[$1]%,*}; Vz=${View[$1]#*,}
+		Vx=${View[$1]%,*}
+		Vz=${View[$1]#*,}
         gpscript_set_origin $i
 		if [[ $Mgraph != "¶" ]]; then
 			gpscript_set_axis $i
