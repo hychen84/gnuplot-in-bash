@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.444 released on 2025-10-30 (since 2007/12/25)
+# ME build 7.5.445 released on 2025-10-30 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1313,7 +1313,7 @@ unset label; unset arrow; unset key; unset grid; unset xlabel; unset xtics; unse
 	else
 		p1=${Index_position[$1]}
 	fi
-	if [[ ${Tindex:0:1} != "🗙" ]]; then
+	if [[ ${Mindex:0:1} != "🗙" ]]; then
 		echo "set label 1 \"$Mindex\" at graph ${p1%,*} ${p1##*,} front" >> .me/gp
 	fi
     for ((j=1; j<=${Label[$1]:-0}; j++)); do
@@ -1768,7 +1768,7 @@ function xgnuplot() {
         ix=${Xsite[i]}
         iy=${Ysite[i]}
  		echo -e "\n# --- Figure $((i+1)) ---" >> .me/gp
-        Mtable=($(awk "/^$i 1/{print \$3, \$5, \$6, \$14, \$15, \$16, \$17, \$18, \$19, \$20, \$21, \$22, \$23, \$24, \$25, \$26, \$27}" .me/table))
+        Mtable=($(awk "/^$i 1 /{print \$3, \$5, \$6, \$14, \$15, \$16, \$17, \$18, \$19, \$20, \$21, \$22, \$23, \$24, \$25, \$26, \$27}" .me/table))
         # [0]: Index            [1]: filename               [2]: using
         # [3,6,9]: X/Y/Z-label  [4,7,10,12]: X/Y/Z/C-range  [5,8,11,13]: X/Y/Z/C-tics
         # [14]: Graph           [15]: Xsize                 [16]: Ysize
