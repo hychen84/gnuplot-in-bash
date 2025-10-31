@@ -121,9 +121,8 @@ function print_parameters() {
 			}
 			printf "\033[0m\n"
 		} else {
-            h_line = h_line + Nx*3
-            h_line = terminal_width(h_line)
-			for (k=0; k<=h_line-1; k++) printf "─"
+            k_line = terminal_width(h_line + Nx*3)
+			for (k=0; k<=k_line; k++) printf "─"
 			printf "\n"
 		}
 	}
@@ -133,7 +132,11 @@ function print_parameters() {
             if (A[i][j][1]) {
                 split(A[i][j][1],c," ")
                 w25 = i<Nx ? L[i] - length(c[25] c[26] c[27]) - 11 : 0
-                printf "    【%s】 Size=（%s,%s）%*s",c[25],c[26],c[27],w25," "
+                if (c[25] ~ /¶/) {
+                    printf "    \033[90m【%s】 Size=（%s,%s）\033[0m%*s",c[25],c[26],c[27],w25," "
+                } else {
+                    printf "    【%s】 Size=（%s,%s）%*s",c[25],c[26],c[27],w25," "
+                }
                 separator(i)
             }
 		}
@@ -193,7 +196,7 @@ function print_parameters() {
 						} else {
                             LK = " "
                         }
-                        w3 = i<Nx ? L[i] - length(c[3]) : 0
+                        w3 = L[i] - length(c[3])
                         if (c[3] !~ /🗙/) {
 							gsub("■"," ",c[3])
 							printf "\033[2m%c: \033[0m%s%*s\033[90m%4s\033[0m ",c[1]+97,c[3],w3," ",LK
@@ -294,11 +297,11 @@ function print_parameters() {
 		}
 		if (show_on > 3) {j--; show_info()}
         if (h_line < 86) {
-            h_line = 89; h_line = terminal_width(h_line)
+            k_line = terminal_width(89)
         } else {
-            h_line += Nx*3; h_line = terminal_width(h_line)
+            k_line = terminal_width(h_line + Nx*3)
         }
-		for (k=0; k<=h_line-1; k++) printf "─"
+		for (k=0; k<=k_line; k++) printf "─"
 		printf "\n"
     }' .me/table
 	IFS=""
