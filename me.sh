@@ -105,7 +105,7 @@ function print_parameters() {
     done
     awk -v align=${Align[0]} -v xsite="${Xsite[*]}" -v ysite="${Ysite[*]}" -v lstr="${Lstr[*]}" -v COLUMNS=$(tput cols) '
     function terminal_width(i) {
-        if (i > COLUMNS) {return COLUMNS} else {return i}
+        if (i > COLUMNS) {return COLUMNS-1} else {return i}
     }
     function separator(i) {
         if (i < Nx) {
@@ -239,7 +239,7 @@ function print_parameters() {
                                 printf "   %2d. \"%s\" u %s%*s",c[2],c[5],c[6], w," "
                                 break
                             default:
-                                w = i<Lx[j] ? L[i] - (length(c[5] c[6] c[7])+7) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6] c[7])+7) + 2 : 0
                                 printf "   %2d. \"%s\" u %s %s%*s",c[2],c[5],c[6],c[7], w," "
                                 break
                         }
