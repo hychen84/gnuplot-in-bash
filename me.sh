@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.445 released on 2025-10-30 (since 2007/12/25)
+# ME build 7.5.446 released on 2025-10-31 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -387,8 +387,8 @@ function get_file() {
             unset Files[$this,$i] 
         done
 		if [[ ${Files[$this,0]} == "" ]]; then
-			[[ ${Files["N"]} -le $this ]] && ((Files["N"]++))
 			Files[$this,0]=$datafile
+            ((Files["N"]++))
 		fi
 		if [[ ${Files[$this,0]} != "" || ${#datafile[*]} > 1 ]]; then
 			for ((i=1; i<=${#datafile[*]}; i++)); do
@@ -436,8 +436,8 @@ function get_column() {
             unset Columns[$this,$i]
         done
 		if [[ ${Columns[$this,0]} == "" ]]; then
-			[[ ${Columns["N"]} -le $this ]] && ((Columns["N"]++))
 			Columns[$this,0]=$cols
+            ((Columns["N"]++))
 		fi
 		if [[ ${Columns[$this,0]} != "" || ${#cols[*]} > 1 ]]; then
 			for ((i=1; i<=${#cols[*]}; i++)); do
@@ -692,9 +692,6 @@ function unset_select_line() {
 		Lc[$1,$j]=${Lc[$1,$((j+1))]}; Lc[$1,$((j+1))]=""
 		Key[$1,$j]=${Key[$1,$((j+1))]}; Key[$1,$((j+1))]=""
 	done
-}
-
-function unset_empty_lines(){
 	for key in ${!Files[*]}; do [[ ${Files[$key]} == "" ]] && unset Files[$key]; done
 	for key in ${!Columns[*]}; do [[ ${Columns[$key]} == "" ]] && unset Columns[$key]; done
 	for key in ${!Using[*]}; do [[ ${Using[$key]} == "" ]] && unset Using[$key]; done
@@ -882,14 +879,13 @@ function next() {
 #<-- Parameters : Table -->
 for ((n=0; n<${#Arg[*]}; n++)); do
 	if [ -e ${Arg[$n]} ]; then
-		Ex=${Arg[$n]##*.}
-		[[ $Ex == "gp" || $Ex == "pdf" || $Ex == "PDF" || $Ex == "eps" || $Ex == "zip" ]] && continue
+		Ext=${Arg[$n]##*.}
+		[[ ${Ext,,} == "gp" || ${Ext,,} == "pdf" || ${Ext,,} == "eps" || ${Ext,,} == "zip" ]] && continue
         datafile+=(${Arg[$n]});next;continue
 	elif [ "${Arg[$n]//[:,0-9]/}" == "[]" ]; then
 		get_column ${Arg[$n]};next;continue
 	elif [[ $this && $thisline && ${Arg[$n]} == "{}" ]]; then
-		unset_select_line $this $thisline
-		unset_empty_lines;next;continue
+		unset_select_line $this $thisline;next;continue
 	fi
 	case ${Arg[$n]} in
 		-m[0acf]) Merge=${Arg[$n]:2:1};next;continue;;
