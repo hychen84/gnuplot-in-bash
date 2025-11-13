@@ -1691,7 +1691,7 @@ function gnuplot_enhanced_characters() {
 				s|{s/\\approx}|{w/\\274}|g
 				s|{s/\\perp}|{w/\\077}|g
 				s|{s/\\parallel}|{w/\\153}|g' $1 > .me/tmp
-            awk 'BEGIN {
+            awk 'BEGIN {OFS=""
 				for (i=65;i<91;i++) oct[sprintf("%c",i)] = sprintf("%o",i)
 				for (i=97;i<123;i++) oct[sprintf("%c",i)] = sprintf("%o",i+77)
 														  oct["i"]=266;   oct["R"]=120; oct["r"]=275;
@@ -1716,7 +1716,7 @@ function gnuplot_enhanced_characters() {
 						for (j=1; j<length($i); j++) {
 							char = substr($i,j,1)
 							if (char == "}") break
-							if (oct[char]) gsub(char,oct[char],$i)
+							if (oct[char]) gsub(char,"\\"oct[char],$i)
 						}
 					}
 				}
