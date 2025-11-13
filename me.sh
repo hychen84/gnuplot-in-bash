@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.446 released on 2025-10-31 (since 2007/12/25)
+# ME build 7.5.447 released on 2025-11/14 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -301,7 +301,7 @@ function print_parameters() {
         } else {
             k_line = terminal_width(h_line + Nx*3)
         }
-		for (k=0; k<=k_line; k++) printf "─"
+		for (k=0; k<=k_line-1; k++) printf "─"
 		printf "\n"
     }' .me/table
 	IFS=""
@@ -954,10 +954,10 @@ function set_font() {
 			Labelmargin=1.25
 			Font=cmr10
             sed -i '/^Font=/s/:-.*}/:-cmr10}/' $HOME/bin/me;;
-		arial) Labelmargin=1.25
+		arial) Labelmargin=1.0
 			   Font=Arial
                sed -i '/^Font=/s/:-.*}/:-Arial}/' $HOME/bin/me;;
-		times) Labelmargin=1.25
+		times) Labelmargin=1.0
 			   Font=Times
                sed -i '/^Font=/s/:-.*}/:-Times}/' $HOME/bin/me;;
 	esac
@@ -1387,7 +1387,7 @@ function gpscript_set_axis() {
 	xl=${Mtable[3]}; xt=${Mtable[5]}
 	yl=${Mtable[6]}; yt=${Mtable[8]}
 	case $Mgraph in
-		2d)	xl_pos="0,0.33■center"
+		2d)	xl_pos="0,"$(awk "BEGIN {printf \"%.2f\", 0.425/$Labelmargin}")"■center" 
 			yl_pos=$(awk "BEGIN {printf \"%.2f\", (0.075+${GPV[$ix,$iy,pyl]})*$Digitscale}")",0■center"
 			xt_pos="0,0.25"
 			yt_pos="0.29,0"
@@ -1648,43 +1648,80 @@ function gpscript_plot() {
 
 function gnuplot_enhanced_characters() {
 	case $2 in
-		cmr10) sed -e 's|{s/\\245}|{w/\\061}|g
-				s|{s/\\261}|{w/\\247}|g
-				s|{s/\\265}|{w/\\057}|g
-				s|{s/\\271}|{/Symbol \\271}|g
-				s|{s/\\273}|{w/\\274}|g
-				s|{s/\\320}|{/Symbol \\320}|g' $1 > .me/tmp
-            awk 'BEGIN {
-				for (i=65;i<91;i++) oct[sprintf("%c",i)] = sprintf("%o",i)
-				for (i=97;i<123;i++) oct[sprintf("%c",i)] = sprintf("%o",i+77)
-				oct["C"]=130; oct["D"]=242; oct["F"]=251; oct["G"]=241; oct["J"]="043";oct["L"]=244;
-				oct["P"]=246; oct["Q"]=243; oct["R"]=120; oct["S"]=247; oct["U"]=250;  oct["V"]="046";
-				oct["W"]=255; oct["X"]=245; oct["Y"]=252;
-				oct["c"]=302; oct["f"]=301; oct["g"]=260; oct["h"]=264; oct["i"]=266;  oct["j"]="047";
-				oct["k"]=267; oct["l"]=270; oct["m"]=271; oct["n"]=272; oct["o"]="045";oct["p"]=274;
-				oct["q"]=265; oct["r"]=275; oct["s"]=276; oct["t"]=277; oct["u"]=300;  oct["v"]="044";
-				oct["x"]=273; oct["y"]=303; oct["z"]=263
-				#for (key in oct) print key, oct[key]
+		Arial|Times)  sed -e 's|{s/\\infty}|∞|g
+				s|{s/\\pm}|±|g
+				s|{s/\\propto}|∝|g
+				s|{s/\\ne}|≠|g
+				s|{s/\\approx}|≈|g
+				s|{s/\\perp}|⊥|g
+				s|{s/\\parallel}|∥|g' $1 > .me/tmp
+            awk 'BEGIN {OFS=""
+                chr["A"]="A"; chr["a"]="α"; chr["I"]="Ι"; chr["i"]="ι"; chr["R"]="Ρ"; chr["r"]="ρ"
+                chr["B"]="B"; chr["b"]="β"; chr["K"]="Κ"; chr["k"]="κ"; chr["S"]="Σ"; chr["s"]="σ"
+                chr["C"]="Χ"; chr["c"]="χ"; chr["L"]="Λ"; chr["l"]="λ"; chr["T"]="Τ"; chr["t"]="τ"
+                chr["D"]="Δ"; chr["d"]="δ"; chr["M"]="M"; chr["m"]="μ"; chr["U"]="Υ"; chr["u"]="υ"
+                chr["E"]="Ε"; chr["e"]="ε"; chr["N"]="N"; chr["n"]="ν"; chr["W"]="Ω"; chr["w"]="ω"
+                chr["F"]="Φ"; chr["f"]="φ"; chr["O"]="O"; chr["o"]="ο"; chr["X"]="Ξ"; chr["x"]="ξ"
+                chr["G"]="Γ"; chr["g"]="γ"; chr["P"]="Π"; chr["p"]="π"; chr["Y"]="Ψ"; chr["y"]="ψ"
+                chr["H"]="Η"; chr["h"]="η"; chr["Q"]="Θ"; chr["q"]="θ"; chr["Z"]="Z"; chr["z"]="ζ"
+                #for (key in chr) print key, chr[key]
 			}
-			{
-				if ($0 ~ /{s\/[^\/\\]/ || $0 ~ /{s\/\/[^\\]/) {
-					gsub(/{s\/\/|{s\//,"& ",$0)
-					for (i=3; i<=NF; i++) {
-						if ($i ~ /^[a-zA-Z]+}/) {
-							for (j=1; j<length($i); j++) {
-								char = substr($i,k,1)
-								if (char != "}") {
-									gsub(char,"§"oct[char],$i)
-									break
-								}   
-							}
+			/{s\// {
+				gsub(" ","■",$0)
+				gsub(/{s\/\/|{s\//,"& ",$0)
+				for (i=2; i<=NF; i++) {
+					if ($i ~ /^[a-zA-Z]+}/) {
+						for (j=1; j<length($i); j++) {
+							char = substr($i,j,1)
+							if (char == "}") break
+							if (chr[char]) gsub(char,chr[char],$i)
 						}
 					}
 				}
-				print $0
-			}' .me/tmp | sed -e 's| / §|/\\|g;s| §|\\|g' > $1
-			sed -e 's|{/\([^/]\)|{/cmr10 \1|g
-				s|{//|{/cmti10 |g
+			}{gsub("■"," ",$0);print $0}' .me/tmp > .me/tmp2
+            sed -e 's|{//|{/:Italic |g
+				s|{b/\([^/]\)|{/:Bold \1|g
+				s|{b//|{/:Bold-Italic |g
+				s|{s/\([^/]*\)}|\1|g
+				s|{s//|{/:Italic |g' .me/tmp2 > .me/tmp;;
+		cmr10) sed -e 's|{s/\\infty}|{w/\\061}|g
+				s|{s/\\pm}|{w/\\247}|g
+				s|{s/\\propto}|{w/\\057}|g
+				s|{s/\\ne}|{/Symbol \\271}|g
+				s|{s/\\approx}|{w/\\274}|g
+				s|{s/\\perp}|{w/\\077}|g
+				s|{s/\\parallel}|{w/\\153}|g' $1 > .me/tmp
+            awk 'BEGIN {
+				for (i=65;i<91;i++) oct[sprintf("%c",i)] = sprintf("%o",i)
+				for (i=97;i<123;i++) oct[sprintf("%c",i)] = sprintf("%o",i+77)
+														  oct["i"]=266;   oct["R"]=120; oct["r"]=275;
+														  oct["k"]=267;   oct["S"]=247; oct["s"]=276;
+				oct["C"]=130; oct["c"]=302; oct["L"]=244; oct["l"]=270;   				oct["t"]=277;
+				oct["D"]=242;							  oct["m"]=271;   oct["U"]=250; oct["u"]=300;
+														  oct["n"]=272;   oct["W"]=255; oct["x"]=273;
+				oct["F"]=251; oct["f"]=301;				  oct["o"]="045"; oct["X"]=245; oct["y"]=303;
+				oct["G"]=241; oct["g"]=260; oct["P"]=246; oct["p"]=274;   oct["Y"]=252; oct["z"]=263;
+							  oct["h"]=264;	oct["Q"]=243; oct["q"]=265;
+				oct["J"]="043";
+				oct["v"]="044";
+				oct["V"]="046";
+				oct["j"]="047";
+				#for (key in oct) print key, oct[key]
+			}
+			/{s\// {
+				gsub(" ","■",$0)
+				gsub(/{s\/\/|{s\//,"& ",$0)
+				for (i=2; i<=NF; i++) {
+					if ($i ~ /^[a-zA-Z]+}/) {
+						for (j=1; j<length($i); j++) {
+							char = substr($i,j,1)
+							if (char == "}") break
+							if (oct[char]) gsub(char,oct[char],$i)
+						}
+					}
+				}
+			}{gsub("■"," ",$0); print $0}' .me/tmp > .me/tmp2
+			sed -e 's|{//|{/cmti10 |g
 				s|{b/\([^/]\)|{/cmb10 \1|g
 				s|{b//|{/cmbxti10 |g
 				s|{s/\([^/]\)|{/cmr10 \1|g
@@ -1695,49 +1732,10 @@ function gnuplot_enhanced_characters() {
 				/label/s|'"'"'|^{/cmsy10 \\060}|g
 				/ u .* t /s|\||{/cmsy10 \\152}|g
 				/ u .* t /s|\|\||{/cmsy10 \\153}|g
-				/ u .* t /s|'"'"'|^{/cmsy10 \\060}|g' $1 > .me/tmp;;
-        -cmr10) sed -e 's|{/cmr10 \\|{s/\\|g
-            s|{/cmr10 |{/|g
-            s|{/cmti10 |{//|g
-            s|{/cmb10 |{b/|g
-            s|{/cmbxti10 |{b//|g
-            s|{/cmmi10 |{s//|g
-            s|{/cmsy10 |{w/|g' $1;;
-		Arial) sed -e 's|{s/\\077}|{/cmsy10 \\077}|g
-			s|{s/\\153}|{/cmsy10 \\153}|g
-			s|{/\([^/]\)|{/Arial \1|g
-			s|{//|{/Arial-Italic |g
-			s|{b/\([^/]\)|{/Arial-Bold \1|g
-			s|{b//|{/Arial-Bold-Italic |g
-			s|{s/\([^/]\)|{/Symbol \1|g
-			s|{s//|{/Symbol-Oblique |g
-			s|{w/\([^/]\)|{/ZapfDingbats \1|g' $1 > .me/tmp;;
-        -Arial) sed -e 's|{/Arial |{/|g
-            s|{/Arial-Italic |{//|g
-            s|{/Arial-Bold |{b/|g
-            s|{/Arial-Bold-Italic |{b//|g
-            s|{/Symbol |{s/|g
-            s|{/Symbol-Oblique |{s//|g
-            s|{/ZapfDingbats |{w/|g' $1;;
-		Times) sed -e 's|{s/\\077}|{/cmsy10 \\077}|g
-			s|{s/\\153}|{/cmsy10 \\153}|g
-			s|{/\([^/]\)|{/Times \1|g
-			s|{//|{/Times-Italic |g
-			s|{b/\([^/]\)|{/Times-Bold \1|g
-			s|{b//|{/Times-Bold-Italic |g
-			s|{s/\([^/]\)|{/Symbol \1|g
-			s|{s//|{/Symbol-Oblique |g
-			s|{w/\([^/]\)|{/ZapfDingbats \1|g' $1 > .me/tmp;;
-        -Times) sed -e 's|{/Times |{/|g
-            s|{/Times-Italic |{//|g
-            s|{/Times-Bold |{b/|g
-            s|{/Times-Bold-Italic |{b//|g
-            s|{/Symbol |{s/|g
-            s|{/Symbol-Oblique |{s//|g
-            s|{/ZapfDingbats |{w/|g' $1;;
+				/ u .* t /s|'"'"'|^{/cmsy10 \\060}|g' .me/tmp2 > .me/tmp;;
 	esac
     [[ $3 ]] && sed -e 's|¶||g
-                        s|‖|\|\||g
+						s|‖|\|\||g
                         s|§|$|g
                         s|■| |g
                         s|\^\.|\&{^.}|g
@@ -1829,8 +1827,7 @@ for ((n=0; n<${#Arg[*]}; n++)); do
 				save=${Arg[$n]%.*}.pdf
                 [[ $output != $save ]] && sed -i "/output/s/$output/$save/" ${Arg[$n]}
 				echo ${Arg[$n]}" --> "$save
-                gnuplot_enhanced_characters ${Arg[$n]} -$font > tmp
-                gnuplot_enhanced_characters tmp $font
+                gnuplot_enhanced_characters ${Arg[$n]} $font
                 mv .me/tmp ${Arg[$n]}
 				gnuplot ${Arg[$n]}
 				rm -f tmp;exit;;
@@ -2306,8 +2303,8 @@ Output:      me -O <<filename>>
     G:Γ    g:γ    P:Π    p:π    Y:Ψ    y:ψ
     H:Η    h:η    Q:Θ    q:θ    Z:Z    z:ζ   
 <-- Math Symbols -->
-    \245:∞    \265:∝    \273:≈    \077:⊥
-    \261:±    \271:≠    \320:∠    \153:∥
+    \infty:∞  \propto:∝  \approx:≈  \perp:⊥
+    \pm:±     \ne:≠      \angle:∠   \parallel:∥
 ─────────────────────────────────────────────────
     {}    (delete/off)
 <-- Blank -->
