@@ -1694,19 +1694,14 @@ function gnuplot_enhanced_characters() {
             awk 'BEGIN {OFS=""
 				for (i=65;i<91;i++) oct[sprintf("%c",i)] = sprintf("%o",i)
 				for (i=97;i<123;i++) oct[sprintf("%c",i)] = sprintf("%o",i+77)
-														  oct["i"]=266;   oct["R"]=120; oct["r"]=275;
-														  oct["k"]=267;   oct["S"]=247; oct["s"]=276;
-				oct["C"]=130; oct["c"]=302; oct["L"]=244; oct["l"]=270;   				oct["t"]=277;
-				oct["D"]=242;							  oct["m"]=271;   oct["U"]=250; oct["u"]=300;
-														  oct["n"]=272;   oct["W"]=255; oct["x"]=273;
-				oct["F"]=251; oct["f"]=301;				  oct["o"]="045"; oct["X"]=245; oct["y"]=303;
-				oct["G"]=241; oct["g"]=260; oct["P"]=246; oct["p"]=274;   oct["Y"]=252; oct["z"]=263;
-							  oct["h"]=264;	oct["Q"]=243; oct["q"]=265;
-				oct["J"]="043";
-				oct["v"]="044";
-				oct["V"]="046";
-				oct["j"]="047";
-				#for (key in oct) print key, oct[key]
+														  oct["i"]=266; oct["R"]=120; oct["r"]=275;
+														  oct["k"]=267; oct["S"]=247; oct["s"]=276;
+				oct["C"]=130; oct["c"]=302; oct["L"]=244; oct["l"]=270; 			  oct["t"]=277;
+				oct["D"]=242;							  oct["m"]=271; oct["U"]=250; oct["u"]=300;
+														  oct["n"]=272; oct["W"]=255; 
+				oct["F"]=251; oct["f"]=301;				  				oct["X"]=245; oct["x"]=273;
+				oct["G"]=241; oct["g"]=260; oct["P"]=246; oct["p"]=274; oct["Y"]=252; oct["y"]=303;
+							  oct["h"]=264;	oct["Q"]=243; oct["q"]=265;				  oct["z"]=263;
 			}
 			/{s\// {
 				gsub(" ","■",$0)
