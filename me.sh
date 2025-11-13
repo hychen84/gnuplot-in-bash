@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.447 released on 2025-11/14 (since 2007/12/25)
+# ME build 7.5.448 released on 2025-11/14 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1690,7 +1690,10 @@ function gnuplot_enhanced_characters() {
 				s|{s/\\ne}|{/Symbol \\271}|g
 				s|{s/\\approx}|{w/\\274}|g
 				s|{s/\\perp}|{w/\\077}|g
-				s|{s/\\parallel}|{w/\\153}|g' $1 > .me/tmp
+				s|{s/\\parallel}|{w/\\153}|g
+				s|{s/\\varepsilon}|{s/\\042}|g
+				s|{s/\\vartheta}|{s/\\043}|g
+				s|{s/\\varphi}|{s/\\047}|g' $1 > .me/tmp
             awk 'BEGIN {OFS=""
 				for (i=65;i<91;i++) oct[sprintf("%c",i)] = sprintf("%o",i)
 				for (i=97;i<123;i++) oct[sprintf("%c",i)] = sprintf("%o",i+77)
