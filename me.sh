@@ -951,12 +951,12 @@ function set_font() {
 				wget -q http://mirrors.ctan.org/fonts/cm/ps-type1/bakoma/ttf/cmbxti10.ttf -P ~/bin/.fonts/;echo -n "."
 				wget -q http://mirrors.ctan.org/fonts/cm/ps-type1/bakoma/ttf/cmsy10.ttf -P ~/bin/.fonts/;echo "."
 			fi
-			Labelmargin=1.25
-			Font=cmr10;;
-	 arial) Labelmargin=1.0
-		    Font=Arial;;
-	 times) Labelmargin=1.0
-		    Font=Times;;
+			Font=cmr10
+			Labelmargin=1.25;;
+	 arial) Font=Arial
+			Labelmargin=1.0;;
+	 times) Font=Times
+			Labelmargin=1.0;;
 	esac
 	[[ $f2 != "" && ${f2//[0-9]/} == "" ]] && Fontsize=$f2
 	sed -i "/^Font=/s/:-.*}/:-$Font}/;/^Labelmargin/s/:-.*}/:-$Labelmargin}/" ~/bin/me
@@ -1646,7 +1646,7 @@ function gpscript_plot() {
 
 function gnuplot_enhanced_characters() {
 	case $2 in
-		Arial|Times)  sed -e 's|{s/\\infty}|∞|g
+		Arial|Times) sed -e 's|{s/\\infty}|∞|g
 				s|{s/\\pm}|±|g
 				s|{s/\\propto}|∝|g
 				s|{s/\\ne}|≠|g
@@ -2186,18 +2186,19 @@ function concatEPS() {
 function update() {
 	echo "Current version"
 	sed -n -e '5p' $HOME/bin/me
-	wget -q http://web.phy.ntnu.edu.tw/~hongyi/download/me.sh -O $HOME/bin/me.sh
+	wget -q http://web.phy.ntnu.edu.tw/~hongyi/download/me.sh -O ~/bin/me.sh
 	err=$?
 	if [ $err -ne 0 ]; then
 		echo "Update failed! Please try again."
-		rm -f $HOME/bin/me.sh
+		rm -f ~/bin/me.sh
 		exit
 	else
 		echo "Updated version"
-		sed -n -e '5p' $HOME/bin/me.sh
-		chmod 755 $HOME/bin/me.sh
-		mv $HOME/bin/me.sh $HOME/bin/me
+		sed -n -e '5p' ~/bin/me.sh
+		chmod 755 ~/bin/me.sh
+		mv ~/bin/me.sh ~/bin/me
 	fi
+	sed -i "/^Font=/s/:-.*}/:-$Font}/;/^Labelmargin/s/:-.*}/:-$Labelmargin}/" ~/bin/me
 }
 
 function help() {
