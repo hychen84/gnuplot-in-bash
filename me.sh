@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.448 released on 2025-11/14 (since 2007/12/25)
+# ME build 7.5.449 released on 2025-11=15 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -39,7 +39,7 @@ Pageheight=${Pageheight:-29.7}
 Font=${Font:-Times}
 Fontsize=${Fontsize:-13}
 Digitscale=${Digitscale:-0.67}
-Labelmargin=${Labelmargin:-1.25}
+Labelmargin=${Labelmargin:-1.0}
 Keyboxmargin=${Keyboxmargin:-0.5}
 Merge=${Merge:-c}
 Align=(${Align[*]:-Z 2})
@@ -952,16 +952,14 @@ function set_font() {
 				wget -q http://mirrors.ctan.org/fonts/cm/ps-type1/bakoma/ttf/cmsy10.ttf -P ~/bin/.fonts/;echo "."
 			fi
 			Labelmargin=1.25
-			Font=cmr10
-            sed -i '/^Font=/s/:-.*}/:-cmr10}/' $HOME/bin/me;;
-		arial) Labelmargin=1.0
-			   Font=Arial
-               sed -i '/^Font=/s/:-.*}/:-Arial}/' $HOME/bin/me;;
-		times) Labelmargin=1.0
-			   Font=Times
-               sed -i '/^Font=/s/:-.*}/:-Times}/' $HOME/bin/me;;
+			Font=cmr10;;
+	 arial) Labelmargin=1.0
+		    Font=Arial;;
+	 times) Labelmargin=1.0
+		    Font=Times;;
 	esac
 	[[ $f2 != "" && ${f2//[0-9]/} == "" ]] && Fontsize=$f2
+	sed -i "/^Font=/s/:-.*}/:-$Font}/;/^Labelmargin/s/:-.*}/:-$Labelmargin}/" ~/bin/me
 }
 
 function set_position() {
