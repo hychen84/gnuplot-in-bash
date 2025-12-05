@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.449 released on 2025/11/15 (since 2007/12/25)
+# ME build 7.5.452 released on 2025/12/05 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -440,7 +440,7 @@ function get_column() {
         done
 		if [[ ${Columns[$this,0]} == "" ]]; then
 			Columns[$this,0]=$cols
-            ((Columns["N"]++))
+            [[ $Merge == "f" ]] && ((Columns["N"]++))
 		fi
 		if [[ ${Columns[$this,0]} != "" || ${#cols[*]} > 1 ]]; then
 			for ((i=1; i<=${#cols[*]}; i++)); do
@@ -769,10 +769,12 @@ function make_table_line_style() {
 function make_table() {
 	rm -f .me/table
 	touch .me/table
-	if [[ $Merge == "f" ]]
-    then L1=${Columns["N"]}; L2=${Files["N"]}
-    else L1=${Files["N"]}; L2=${Columns["N"]}
-    fi
+	case $Merge in
+        0) L1=${Files["N"]}; L2=${Columns["N"]};;
+        c) L1=${Files["N"]}; L2=${Columns["N"]};;
+        f) L1=${Columns["N"]}; L2=${Files["N"]};;
+        a) L1=${Files["N"]}; L2=${Columns["N"]};;
+	esac
  	for ((i=0; i<L1; i++)); do
 		for ((j=0; j<L2; j++)); do
 			case $Merge in
@@ -1076,11 +1078,11 @@ done
 
 function gnuplot_show_variables() {
 	echo -e "set terminal unknown\nset datafile separator $separator" > .me/gp
-	awk -v xsite="${Xsite[*]}" -v ysite="${Ysite[*]}" -v plot="${Plot[*]}" '
+	awk -v xsite="${Xsite[*]}" -v ysite="${Ysite[*]}" -v plot="${Plot[*]}" -v total=$Total_figures '
     BEGIN {split(xsite,ix," "); split(ysite,iy," "); split(plot,Plot," ")}
 	{Data[NR] = $0}
 	END { k = 1
-        for (i=1; i<=length(Plot); i++) {
+        for (i=1; i<=total; i++) {
             for (j=1; j<=Plot[i]; j++) {
                 split(Data[k], c, " ")
                 split(c[6], u, "■")
@@ -1706,7 +1708,7 @@ function gnuplot_enhanced_characters() {
 			}
 			/{s\// {
 				gsub(" ","■",$0)
-				gsub(/{s\/\/|{s\//,"& ",$0)
+				gsub(/{s\/\/|{s\/|}/,"& ",$0)
 				for (i=2; i<=NF; i++) {
 					if ($i ~ /^[a-zA-Z]+}/) {
 						for (j=1; j<length($i); j++) {
@@ -1716,7 +1718,8 @@ function gnuplot_enhanced_characters() {
 						}
 					}
 				}
-			}{gsub("■"," ",$0); print $0}' .me/tmp > .me/tmp2
+			}
+			{gsub("■"," ",$0); print $0}' .me/tmp > .me/tmp2
 			sed -e 's|{//|{/cmti10 |g
 				s|{b/\([^/]\)|{/cmb10 \1|g
 				s|{b//|{/cmbxti10 |g
@@ -1730,13 +1733,13 @@ function gnuplot_enhanced_characters() {
 				/ u .* t /s|\|\||{/cmsy10 \\153}|g
 				/ u .* t /s|'"'"'|^{/cmsy10 \\060}|g' .me/tmp2 > .me/tmp;;
 	esac
-    [[ $3 ]] && sed -e 's|¶||g
-						s|‖|\|\||g
-                        s|§|$|g
-                        s|■| |g
-                        s|\^\.|\&{^.}|g
-                        s|\\\.|\&{.}|g
-                        s|\\_| |g' .me/tmp
+    sed -e 's|¶||g
+            s|‖|\|\||g
+            s|§|$|g
+            s|■| |g
+            s|\^\.|\&{^.}|g
+            s|\\\.|\&{.}|g
+            s|\\_| |g' .me/tmp
 }
 
 function gpscript_unset_3daxis() {
@@ -1753,6 +1756,7 @@ function xgnuplot() {
     [[ ${FS:- } == " " ]] && separator=whitespace || separator="'$FS'"
     gnuplot_show_variables
 	gnuplot .me/gp 2> .me/gpval
+	[[ $? > 0 ]] && tail -5 .me/gpval && exit
     #gnuplot_gpval
 	GPV_str=$(gnuplot_gpval)
     eval declare -A GPV=("$GPV_str") #; declare -p GPV
@@ -1781,7 +1785,7 @@ function xgnuplot() {
 			gpscript_plot $i
 		fi
 	done
-	gnuplot_enhanced_characters .me/gp $Font 1 > $Output.gp
+	gnuplot_enhanced_characters .me/gp $Font > $Output.gp 
 	gnuplot $Output.gp
 }
 
@@ -1823,10 +1827,10 @@ for ((n=0; n<${#Arg[*]}; n++)); do
 				save=${Arg[$n]%.*}.pdf
                 [[ $output != $save ]] && sed -i "/output/s/$output/$save/" ${Arg[$n]}
 				echo ${Arg[$n]}" --> "$save
-                gnuplot_enhanced_characters ${Arg[$n]} $font
-                mv .me/tmp ${Arg[$n]}
+                gnuplot_enhanced_characters ${Arg[$n]} $font > .me/tmp2
+                mv .me/tmp2 ${Arg[$n]}
 				gnuplot ${Arg[$n]}
-				rm -f tmp;exit;;
+				rm -f tmp2;exit;;
 		   zip) unzip -o ${Arg[$n]}
 				exit;;
 		esac
