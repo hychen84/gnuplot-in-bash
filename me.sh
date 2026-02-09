@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.452 released on 2025/12/05 (since 2007/12/25)
+# ME build 7.5.456 released on 2026/02/09 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -116,7 +116,7 @@ function print_parameters() {
 		if (align == "N") {
 			for (i=0; i<=Nx; i++) {
 				printf "   \033[2m"
-				for (k=0; k<L[i]+3; k++) printf "─"
+				for (k=0; k<L[i]+4; k++) printf "─"
 				if (i < Nx) printf "  \033[0m│"
 			}
 			printf "\033[0m\n"
@@ -131,7 +131,7 @@ function print_parameters() {
 		for (i=0; i<=Nx; i++) {
             if (A[i][j][1]) {
                 split(A[i][j][1],c," ")
-                w25 = i<Nx ? L[i] - length(c[25] c[26] c[27]) - 11 : 0
+                w25 = i<Nx ? L[i] - length(c[25] c[26] c[27]) - 10 : 0
                 if (c[25] ~ /¶/) {
                     printf "    \033[90m【%s】 Size=（%s,%s）\033[0m%*s",c[25],c[26],c[27],w25," "
                 } else {
@@ -196,7 +196,7 @@ function print_parameters() {
 						} else {
                             LK = " "
                         }
-                        w3 = L[i] - length(c[3])
+                        w3 = L[i] - length(c[3]) + 1
                         if (c[3] !~ /🗙/) {
 							gsub("■"," ",c[3])
 							printf "\033[2m%c: \033[0m%s%*s\033[90m%4s\033[0m ",c[1]+97,c[3],w3," ",LK
@@ -219,27 +219,27 @@ function print_parameters() {
                     if (c[7]) {
                         switch(c[7]) {
                             case "l":
-                                w = i<Nx ? L[i] - (length(c[5] c[6] c[8] c[9])+14) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6] c[8] c[9])+14) + 3 : 0
                                 printf "   %2d. \"%s\" u %s dt %s lw %s%*s",ind,c[5],c[6],c[8],c[9], w," "
                                 break
                             case "p":
-                                w = i<Nx ? L[i] - (length(c[5] c[6] c[10] c[11])+14) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6] c[10] c[11])+14) + 3 : 0
                                 printf "   %2s. \"%s\" u %s pt %s ps %s%*s",ind,c[5],c[6],c[10],c[11], w," "
                                 break
                             case "lp":
-                                w = i<Nx ? L[i] - (length(c[5] c[6] c[8] c[10])+14) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6] c[8] c[10])+14) + 3 : 0
                                 printf "   %2d. \"%s\" u %s dt %s pt %s%*s",ind,c[5],c[6],c[8],c[10], w," "
                                 break
                             case "pm3d":
-                                w = i<Nx ? L[i] - (length(c[5] c[6])+11) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6])+11) + 3 : 0
                                 printf "   %2d. \"%s\" u %s pm3d%*s",ind,c[5],c[6], w," "
                                 break
                             case "¶":
-                                w = i<Nx ? L[i] - (length(c[5] c[6])+6) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6])+6) + 3 : 0
                                 printf "   %2d. \"%s\" u %s%*s",c[2],c[5],c[6], w," "
                                 break
                             default:
-                                w = i<Nx ? L[i] - (length(c[5] c[6] c[7])+7) + 2 : 0
+                                w = i<Nx ? L[i] - (length(c[5] c[6] c[7])+7) + 3 : 0
                                 printf "   %2d. \"%s\" u %s %s%*s",c[2],c[5],c[6],c[7], w," "
                                 break
                         }
@@ -253,18 +253,18 @@ function print_parameters() {
 			for (i=0; i<=Lx[j]; i++) {
 				split(A[i][j][1],c," ")
 				gsub("¶","",c[14])
-				w15 = L_range[i][j] - length(c[15]) + 1
-				w14 = i<Nx ? L[i] - (L_range[i][j]+6) - (length(c[14])+5) + 1 : 0
-				printf "    xr=［%s］,%*sxl=\"%s\"%*s",c[15], w15," ",c[14], w14," "
+				w15 = L_range[i][j] - length(c[15]) + 2
+				w14 = i<Nx ? L[i] - (L_range[i][j]+6) - (length(c[14])+5) : 0
+				printf "    xr=［%s］，%*sxl=\"%s\"%*s",c[15], w15," ",c[14], w14," "
 				separator(i)
 			}
 			printf "\n"
 			for (i=0; i<=Lx[j]; i++) {
 				split(A[i][j][1],c," ")
 				gsub("¶","",c[17])
-				w18 = L_range[i][j] - length(c[18]) + 1
-				w17 = i<Nx ? L[i] - (L_range[i][j]+6) - (length(c[17])+5) + 1 : 0
-				printf "    yr=［%s］,%*syl=\"%s\"%*s",c[18], w18," ",c[17], w17," "
+				w18 = L_range[i][j] - length(c[18]) + 2
+				w17 = i<Nx ? L[i] - (L_range[i][j]+6) - (length(c[17])+5) : 0
+				printf "    yr=［%s］，%*syl=\"%s\"%*s",c[18], w18," ",c[17], w17," "
 				separator(i)
 			}
 			printf "\n"
@@ -276,10 +276,10 @@ function print_parameters() {
 				for (i=0; i<=Lx[j]; i++) {
 					split(A[i][j][1],c," ")
 					gsub("¶","",c[20])
-					w21 = L_range[i][j] - length(c[21]) + 1
-					w20 = i<Nx ? L[i] - (L_range[i][j]+6) - (length(c[20])+5) + 1 : 0
+					w21 = L_range[i][j] - length(c[21]) + 2
+					w20 = i<Nx ? L[i] - (L_range[i][j]+6) - (length(c[20])+5) : 0
 					if (c[25] == "map")     {printf "    cr=［%s］%*s",c[23],L[i]-(L_range[i][j]+5)+2," "}
-					else if (c[25] == "3d") {printf "    zr=［%s］,%*szl=\"%s\"%*s",c[21], w21," ",c[20], w20," "}
+					else if (c[25] == "3d") {printf "    zr=［%s］，%*szl=\"%s\"%*s",c[21], w21," ",c[20], w20," "}
 					else {printf "%*s",L[i]+8," "}
 					separator(i)
 				}
@@ -287,7 +287,7 @@ function print_parameters() {
 			}
             if (j < Ny) {
                 if (align == "N" && show_on == 3) {
-                    for (i=0; i<Nx; i++) printf "%*s│", L[i]+8, " "
+                    for (i=0; i<Nx; i++) printf "%*s│", L[i]+9, " "
                     printf "\n"
                 } else {
                     if (show_on > 3) show_info()
@@ -299,7 +299,7 @@ function print_parameters() {
         if (h_line < 86) {
             k_line = terminal_width(89)
         } else {
-            k_line = terminal_width(h_line + Nx*3)
+            k_line = terminal_width(h_line + Nx*3 + 4)
         }
 		for (k=0; k<=k_line-1; k++) printf "─"
 		printf "\n"
@@ -1092,8 +1092,9 @@ function gnuplot_show_variables() {
 				if (c[19] ~ /,/) {split(c[19], d, ","); yt = d[2]} else {yt = c[19]}
 				if (c[22] ~ /,/) {split(c[22], d, ","); zt = d[2]} else {zt = c[22]}
 				if (c[24] ~ /,/) {split(c[24], d, ","); ct = d[2]} else {ct = c[24]}
+                if (c[25] == "map") {cc21 = c[23]} else {cc21 = c[21]}
                 if (c[2] == 1) {
-                    printf "%s [%s] [%s] [%s] \"%s\" u %s t \"ix= %d iy= %d Graph= %d Xsize= %f Ysize= %f xl= %s yl= %s zl= %s xt= %f yt= %f zt= %f ct= %f \"", c[4], c[15], c[18], c[21], c[5], u[1], ix[i], iy[i], c[25], c[26], c[27], c[14], c[17], c[20], xt, yt, zt, ct
+                    printf "%s [%s] [%s] [%s] \"%s\" u %s t \"ix= %d iy= %d Graph= %d Xsize= %f Ysize= %f xl= %s yl= %s zl= %s xt= %f yt= %f zt= %f ct= %f \"", c[4], c[15], c[18], cc21, c[5], u[1], ix[i], iy[i], c[25], c[26], c[27], c[14], c[17], c[20], xt, yt, zt, ct
                 } else {
                     printf " \"%s\" u %s", c[5], u[1]
                 }
@@ -1737,7 +1738,7 @@ function gnuplot_enhanced_characters() {
             s|‖|\|\||g
             s|§|$|g
             s|■| |g
-            s|\^\.|\&{^.}|g
+            s|[^{]\^\.|\&{^.}|g
             s|\\\.|\&{.}|g
             s|\\_| |g' .me/tmp
 }
@@ -1795,7 +1796,7 @@ function xeps() {
 	else
 		A=${1%.*};B=${1##*.}
 	fi
-	pdftops $A.$B .me/ps
+	pdf2ps $A.$B .me/ps
 	ps2eps -f .me/ps
 	mv .me/ps.eps $A.eps
 }
