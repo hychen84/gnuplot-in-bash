@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.456 released on 2026/02/09 (since 2007/12/25)
+# ME build 7.5.457 released on 2026/05/31 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -244,7 +244,7 @@ function print_parameters() {
                                 break
                         }
                     } else {
-                        if (i<Nx) {printf "%*s",L[i]+8," "}
+                        if (i<Nx) {printf "%*s",L[i]+9," "}
                     }
                     separator(i)
                 }
