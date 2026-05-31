@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.458 released on 2026/05/31 (since 2007/12/25)
+# ME build 7.5.459 released on 2026/05/31 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -2334,16 +2334,16 @@ Output:      me -O <<filename>>
     │bl    b    br│ bo
     └──────┴──────┘
 position=<<system>>,coordiante,<<graph>>,<<fontsize>>
-system:      first|second
-coordiante:  0.5,0.5<<,left|,right|,center>>
-graph:       point_pt_7_ps_0.5_lc_6|tc_lt_5
-fontsize:    11
+    system:      first|second
+    coordiante:  0.5,0.5<<,left|,right|,center>>
+    graph:       point_pt_7_ps_0.5_lc_6|tc_lt_5
+    fontsize:    11
 ────<-- Colormaps of Pm3d -->───────────────────
-    heat     \033[34m▬▬\033[36m▬▬\033[96m▬▬\033[97m▬▬\033[91m▬▬\033[31m▬▬\033[0m
-    jet      \033[34m▬▬\033[36m▬▬\033[92m▬▬\033[93m▬▬\033[91m▬▬\033[31m▬▬\033[0m
-    parula   \033[34m▬▬\033[94m▬▬\033[36m▬▬\033[92m▬▬\033[93m▬▬\033[97m▬▬\033[0m  (default)
-    viridis  \033[35m▬▬\033[34m▬▬\033[94m▬▬\033[36m▬▬\033[92m▬▬\033[93m▬▬\033[0m
-    green/grey
+heat        \033[34m▬▬▬▬\033[36m▬▬▬▬\033[96m▬▬▬▬\033[97m▬▬▬▬\033[91m▬▬▬▬\033[31m▬▬▬▬\033[0m
+jet         \033[34m▬▬▬▬\033[36m▬▬▬▬\033[92m▬▬▬▬\033[93m▬▬▬▬\033[91m▬▬▬▬\033[31m▬▬▬▬\033[0m
+parula      \033[34m▬▬▬▬\033[94m▬▬▬▬\033[36m▬▬▬▬\033[92m▬▬▬▬\033[93m▬▬▬▬\033[97m▬▬▬▬\033[0m  (default)
+viridis     \033[91m▬▬▬▬\033[35m▬▬▬▬\033[34m▬▬▬▬\033[36m▬▬▬▬\033[92m▬▬▬▬\033[93m▬▬▬▬\033[0m
+green/grey
 ────<-- Numerics -->────────────────────────────
 Transpose:   me -tra
 Calculation: me -cal '\$1*sin(30)'
