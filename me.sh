@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.457 released on 2026/05/31 (since 2007/12/25)
+# ME build 7.5.458 released on 2026/05/31 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1721,6 +1721,7 @@ function gnuplot_enhanced_characters() {
 				}
 			}
 			{gsub("■"," ",$0); print $0}' .me/tmp > .me/tmp2
+			grep 
 			sed -e 's|{//|{/cmti10 |g
 				s|{b/\([^/]\)|{/cmb10 \1|g
 				s|{b//|{/cmbxti10 |g
@@ -1738,7 +1739,7 @@ function gnuplot_enhanced_characters() {
             s|‖|\|\||g
             s|§|$|g
             s|■| |g
-            s|[^{]\^\.|\&{^.}|g
+            s|\([^{]\)\^\.|\1\&{^.}|g
             s|\\\.|\&{.}|g
             s|\\_| |g' .me/tmp
 }
