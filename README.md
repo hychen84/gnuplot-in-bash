@@ -2,7 +2,7 @@
 
 This is a bash script to use gnuplot, to output a simple graph and output to a PDF file.
 
-<img width="400" height="800" alt="image" src="https://github.com/user-attachments/assets/bc6ce0b2-29d5-4bc7-b7f6-d2272915860c" />
+<img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/bc6ce0b2-29d5-4bc7-b7f6-d2272915860c" />
 
 ## Usage
 
