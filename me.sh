@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.459 released on 2026/05/31 (since 2007/12/25)
+# ME build 7.5.460 released on 2026/06/12 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -39,7 +39,7 @@ Pageheight=${Pageheight:-29.7}
 Font=${Font:-Times}
 Fontsize=${Fontsize:-13}
 Digitscale=${Digitscale:-0.67}
-Labelmargin=${Labelmargin:-1.0}
+Labelmargin=${Labelmargin:-1.25}
 Keyboxmargin=${Keyboxmargin:-0.5}
 Merge=${Merge:-c}
 Align=(${Align[*]:-Z 2})
