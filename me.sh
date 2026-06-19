@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.462 released on 2026/06/19 (since 2007/12/25)
+# ME build 7.5.463 released on 2026/06/19 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -17,7 +17,7 @@ function save_parameters() {
 	arraytostring() {
 		declare -n aa=$1
 		if [ ${#aa[*]} -gt 0 ]; then
-			for key in ${!aa[*]}; do
+			for key in ${!aa[@]}; do
 				echo -n "[$key]=\"${aa[$key]}\" "
 			done
 		else
@@ -575,9 +575,12 @@ function set_key() {
 		echo "Key:"
 		for ((i=0; i<Total_figures; i++)); do
             A=$A"—$(chr $((i+97)))—box-width=—\"${Key_box[i]:-¶}\"—box-position=—\"${Key_position[i]:-¶}\"—box-layout=—\"${Key_layout[i]:-¶}\""
-			for ((j=1; j<=${Plot[i]:-1}; j++)); do
-				L=$L"—$(chr $(($i+97)))$j—key=—\"${Key[$i,$j]:-¶}\""
-                K=$K${Key[$i,$j]}
+			for j in "${!Key[@]}"; do
+				p=${j#*,}
+				if [[ ${j%,*} == $i ]]; then
+					L=$L"—$(chr $(($i+97)))$p—key=—\"${Key[$i,$p]:-¶}\""
+					K=$K${Key[$i,$p]}
+				fi
             done
         done
 		if [[ $K ]]; then
@@ -1726,7 +1729,6 @@ function gnuplot_enhanced_characters() {
 				}
 			}
 			{gsub("■"," ",$0); print $0}' .me/tmp > .me/tmp2
-			grep 
 			sed -e 's|{//|{/cmti10 |g
 				s|{b/\([^/]\)|{/cmb10 \1|g
 				s|{b//|{/cmbxti10 |g
