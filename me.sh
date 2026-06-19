@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.461 released on 2026/06/19 (since 2007/12/25)
+# ME build 7.5.462 released on 2026/06/19 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -1649,14 +1649,16 @@ function gpscript_plot() {
 }
 
 function gnuplot_enhanced_characters() {
-	case $2 in
-		Arial|Times) sed -e 's|{s/\\infty}|∞|g
-				s|{s/\\pm}|±|g
-				s|{s/\\propto}|∝|g
-				s|{s/\\ne}|≠|g
-				s|{s/\\approx}|≈|g
+ 	case $2 in
+		Arial|Times) sed -e 's|{s/\\up}|↑|g
+				s|{s/\\down}|↓|g
 				s|{s/\\perp}|⊥|g
-				s|{s/\\parallel}|∥|g' $1 > .me/tmp
+				s|{s/\\parallel}|∥|g
+				s|{s/\\pm}|±|g
+				s|{s/\\ne}|≠|g
+				s|{s/\\infty}|∞|g
+				s|{s/\\propto}|∝|g
+				s|{s/\\approx}|≈|g' $1 > .me/tmp
             awk 'BEGIN {OFS=""
                 chr["A"]="A"; chr["a"]="α"; chr["I"]="Ι"; chr["i"]="ι"; chr["R"]="Ρ"; chr["r"]="ρ"
                 chr["B"]="B"; chr["b"]="β"; chr["K"]="Κ"; chr["k"]="κ"; chr["S"]="Σ"; chr["s"]="σ"
@@ -1686,16 +1688,18 @@ function gnuplot_enhanced_characters() {
 				s|{b//|{/:Bold-Italic |g
 				s|{s/\([^/]*\)}|\1|g
 				s|{s//|{/:Italic |g' .me/tmp2 > .me/tmp;;
-		cmr10) sed -e 's|{s/\\infty}|{w/\\061}|g
-				s|{s/\\pm}|{w/\\247}|g
-				s|{s/\\propto}|{w/\\057}|g
-				s|{s/\\ne}|{/Symbol \\271}|g
-				s|{s/\\approx}|{w/\\274}|g
+		cmr10) sed -e 's|{s/\\up}|{w/\\042}|g
+				s|{s/\\down}|{w/\\043}|g
 				s|{s/\\perp}|{w/\\077}|g
 				s|{s/\\parallel}|{w/\\153}|g
+				s|{s/\\pm}|{w/\\247}|g
+				s|{s/\\ne}|{/Symbol \\271}|g
+				s|{s/\\infty}|{w/\\061}|g
+				s|{s/\\propto}|{w/\\057}|g
+				s|{s/\\approx}|{w/\\274}|g
 				s|{s/\\varepsilon}|{s/\\042}|g
-				s|{s/\\vartheta}|{s/\\043}|g
-				s|{s/\\varphi}|{s/\\047}|g' $1 > .me/tmp
+				s|{s/\\varphi}|{s/\\047}|g
+				s|{s/\\vartheta}|{s/\\043}|g' $1 > .me/tmp
             awk 'BEGIN {OFS=""
 				for (i=65;i<91;i++) oct[sprintf("%c",i)] = sprintf("%o",i)
 				for (i=97;i<123;i++) oct[sprintf("%c",i)] = sprintf("%o",i+77)
@@ -2307,8 +2311,8 @@ Output:      me -O <<filename>>
     G:Γ    g:γ    P:Π    p:π    Y:Ψ    y:ψ
     H:Η    h:η    Q:Θ    q:θ    Z:Z    z:ζ   
 <-- Math Symbols -->
-    \infty:∞  \propto:∝  \approx:≈  \perp:⊥
-    \pm:±     \ne:≠      \angle:∠   \parallel:∥
+    \up:↑  \down:↓  \perp:⊥   \parallel:∥
+    \pm:±  \ne:≠    \infty:∞  \propto:∝
 ─────────────────────────────────────────────────
     {}    (delete/off)
 <-- Blank -->
