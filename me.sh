@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.460 released on 2026/06/12 (since 2007/12/25)
+# ME build 7.5.461 released on 2026/06/19 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -767,6 +767,7 @@ function make_table_line_style() {
 }
 
 function make_table() {
+	Corder=(6 7 4 1 2 3 5 6 7 4 1 2 3 5 6 7 4 1 2 3 5) #Matlab
 	rm -f .me/table
 	touch .me/table
 	case $Merge in
@@ -790,19 +791,19 @@ function make_table() {
 				else df=${Files[$i,0]}; closestindex Columns $j 0; col=${Columns[$j,0]:-${Columns[$s,0]}}
 				fi
 				make_table_line_style $n $k
-				echo "$n $k $index $pl $df ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
+				echo "$n $k $index $pl $df ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/${Corder[((k-1))]}} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 			elif [[ ${Columns[$n]:-0} > 0 && ${Files[$n]:-0} == 0 ]]; then
 				for ((k=1; k<=${Columns[$n]}; k++)); do
 					closestindex Columns $n $k; col=${Columns[$n,$k]:-${Columns[$s,$t]}}
 					make_table_line_style $n $k
-					echo "$n $k $index $pl ${Files[$n,0]} ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
+					echo "$n $k $index $pl ${Files[$n,0]} ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/${Corder[((k-1))]}} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 				done
 				((k--))
 			elif [[ ${Columns[$n]:-0} == 0 && ${Files[$n]:-0} > 0 ]]; then
 				closestindex Columns $n 0; col=${Columns[$n,0]:-${Columns[$s,0]}}
 				for ((k=1; k<=${Files[$n]}; k++)); do
 					make_table_line_style $n $k
-					echo "$n $k $index $pl ${Files[$n,$k]} ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
+					echo "$n $k $index $pl ${Files[$n,$k]} ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/${Corder[((k-1))]}} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 				done
 				((k--))
 			else
@@ -818,7 +819,7 @@ function make_table() {
 						fi						
 						k=$(((l-1)*N2+m))
 						make_table_line_style $n $k
-						echo "$n $k $index $pl $df ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/$((k+5))} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
+						echo "$n $k $index $pl $df ${uc/¢/$col} $ws $dt $lw $pt $ps ${lc/¢/${Corder[((k-1))]}} \"${Key[$n,$k]}\" $xl $xr $xt $yl $yr $yt $zl $zr $zt $cr $ct $gr $xs $ys" >> .me/table
 					done
 				done
 			fi
