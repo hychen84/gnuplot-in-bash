@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.463 released on 2026/06/19 (since 2007/12/25)
+# ME build 7.5.464 released on 2026/06/19 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -565,9 +565,11 @@ function set_key() {
 	if [[ $1 == "{}" ]]; then
 	    unset Key[${this:-0},${thisline:-1}]
 	elif [[ $1 != "" ]]; then
-		case $1 in
-			vertical) 	Key_layout[${this:-0}]='vertical■maxcols■1';;
-			horizontal) Key_layout[${this:-0}]='horizontal■maxrows■1';;
+		case ${1%,*} in
+			vertical) 	[[ ${1/vertical/} != "" ]] && p="columns■1■" || p="maxrows■1"
+						Key_layout[${this:-0}]="vertical■$p";;
+			horizontal) [[ ${1/horizontal/} != "" ]] && p="columns■"${1#*,}"■" || p="maxrows■1"
+						Key_layout[${this:-0}]="horizontal■$p";;
 			*) 	Key[${this:-0},${thisline:-1}]=$1
 				echo -e "    $(chr $((${this:-0}+97)))${thisline:-1}:  key= \"${Key[${this:-0},${thisline:-1}]}\"";;
 		esac
