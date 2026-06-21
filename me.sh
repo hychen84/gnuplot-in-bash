@@ -2,7 +2,7 @@
 # 
 # ME is a bash shell script using gnuplot to make a PDF file.
 #
-# ME build 7.5.464 released on 2026/06/19 (since 2007/12/25)
+# ME build 7.5.465 released on 2026/06/21 (since 2007/12/25)
 #
 # This work is licensed under a creative commons
 # Attribution-Noncommercial-ShareAlike 4.0 International
@@ -566,9 +566,9 @@ function set_key() {
 	    unset Key[${this:-0},${thisline:-1}]
 	elif [[ $1 != "" ]]; then
 		case ${1%,*} in
-			vertical) 	[[ ${1/vertical/} != "" ]] && p="columns■1■" || p="maxrows■1"
+			vertical) 	[[ ${1/vertical/} != "" ]] && p="columns■1" || p="maxrows■1"
 						Key_layout[${this:-0}]="vertical■$p";;
-			horizontal) [[ ${1/horizontal/} != "" ]] && p="columns■"${1#*,}"■" || p="maxrows■1"
+			horizontal) [[ ${1/horizontal/} != "" ]] && p="columns■"${1#*,} || p="maxrows■1"
 						Key_layout[${this:-0}]="horizontal■$p";;
 			*) 	Key[${this:-0},${thisline:-1}]=$1
 				echo -e "    $(chr $((${this:-0}+97)))${thisline:-1}:  key= \"${Key[${this:-0},${thisline:-1}]}\"";;
@@ -1284,8 +1284,8 @@ function gpscript_head() {
 	echo "#<-- Figure head -->
 ORIGIN_X = 0.5*($Wpt - ${GPV[xsizemax]}*${Layout[0]} - $Fontsize*($xspace))/$Wpt.0
 ORIGIN_Y = 0.5*($Hpt + ${GPV[ysizemax]}*(${Layout[1]}-1.5) + $Fontsize*$yspace)/$Hpt.0
-OFFSET_X = (${GPV[xsizemax]} + $Fontsize*$hspace)/$Wpt.0
-OFFSET_Y = (${GPV[ysizemax]} + $Fontsize*$vspace)/$Hpt.0
+XF = $Fontsize*$Digitscale; OFFSET_X = (${GPV[xsizemax]} + XF*$hspace)/$Wpt.0
+YF = $Fontsize*1.00; OFFSET_Y = (${GPV[ysizemax]} + YF*$vspace)/$Hpt.0
 
 set datafile separator $separator
 set encoding iso_8859_1
@@ -1302,7 +1302,7 @@ function gpscript_set_origin() {
 	[[ ${Voffset[$1]} == "" || ${Voffset[$1]} == "0" ]] && voffset="" || voffset="+("${Voffset[$1]}"/$Hpt.0)"
     Mxsize=${Mtable[15]}
     Mysize=${Mtable[16]}
-	echo "XC = $Fontsize*$Digitscale/$Mxsize; YC = $Fontsize*1.00/$Mysize
+	echo "XC = XF/$Mxsize; YC = YF/$Mysize
 set origin ORIGIN_X+OFFSET_X*$ix$hoffset,ORIGIN_Y-OFFSET_Y*$iy$voffset
 set size noratio $Mxsize/$Wpt.0,$Mysize/$Hpt.0
 set border 31
@@ -2338,9 +2338,9 @@ Output:      me -O <<filename>>
     ┌──────┬──────┐
     │tl    t    tr│ to    (o:outside)
     │      │      │
-    ├l ─── c ─── r┤ o
+    ├l ─── c ─── r┤ o     (XC/YC fontsize in graph)
     │      │      │
-    │bl    b    br│ bo
+    │bl    b    br│ bo    (XF/YF fontsize in page)
     └──────┴──────┘
 position=<<system>>,coordiante,<<graph>>,<<fontsize>>
     system:      first|second
